@@ -1,0 +1,43 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/post_fragment_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="de.gamedots.mindlr.mindlrfrontend.PostViewFragment">
+
+    <!-- TODO: clean code -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical|center_horizontal"
+        android:orientation="vertical">
+
+
+        <TextView
+
+            android:id="@+id/postTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:breakStrategy="balanced"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.2"
+            android:onClick="onTextClick"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/postTextContent"
+            android:textIsSelectable="false"
+            android:textSize="22sp" />
+
+        <ImageView
+            android:id="@+id/favorizeIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:onClick="onFavorClick"
+            android:src="@drawable/outstar32" />
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>

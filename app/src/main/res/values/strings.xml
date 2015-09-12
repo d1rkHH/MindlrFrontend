@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Mindlr</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="profil_string">Profil</string>
+    <string name="post_string">Posts</string>
+    <string name="fav_string">Favoriten</string>
+    <string name="setting_string">Settings</string>
+    <string name="default_string">default</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="postTextContent">Hallo wie gehts dir dHallo wie gehts dir dHallo wie gehts dir dHallo wie gehts dir dHallo wie gehts dir dHallo wie gehts dir dHallo wie gehts dir d</string>
+    <string name="title_activity_write_post">WritePostActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <string-array name="categories">
+        <item>Sport</item>
+        <item>Spiele</item>
+        <item>Wissenschaft</item>
+        <item>Mode</item>
+    </string-array>
+    <string name="title_activity_user_posts">UserPostsActivity</string>
+</resources>
