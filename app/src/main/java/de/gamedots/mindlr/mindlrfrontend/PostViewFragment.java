@@ -49,24 +49,15 @@ public class PostViewFragment extends Fragment {
                 public void onSwipeRight() {
                     //TODO: post collection, maximum swipe back
                     //postView.startAnimation(AnimationUtils.loadAnimation(getApplication(), R.anim.textview_left_to_right));
-                    FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right);
-                    fragmentTransaction.replace(R.id.activity_content, new PostViewFragment());
-                    fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
-                    Toast.makeText(getActivity(), "RIght", Toast.LENGTH_SHORT).show();
 
+                    fragmentTrans(R.anim.enter_from_left, R.anim.exit_to_right, "Right");
                 }
 
                 public void onSwipeLeft() {
                     //TODO: post collection, maximum swipe forward -> reloading
                     // postView.startAnimation(AnimationUtils.loadAnimation(getApplication(), R.anim.textview_right_to_left));
-                    FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
-                    fragmentTransaction.replace(R.id.activity_content, new PostViewFragment());
-                    fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
-                    Toast.makeText(getActivity(), "Left", Toast.LENGTH_SHORT).show();
+
+                    fragmentTrans(R.anim.enter_from_right, R.anim.exit_to_left, "Left");
                 }
 
                 @Override
@@ -110,6 +101,16 @@ public class PostViewFragment extends Fragment {
             favorStar.setImageResource(R.drawable.outstar32);
             toggle = !toggle;
         }
+    }
+
+    // TODO: maybe move to a specific Transaction class to fulfill SRY
+    private void fragmentTrans(int animStart, int animEnd, String log){
+        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.setCustomAnimations(animStart, animEnd);
+        fragmentTransaction.replace(R.id.activity_content, new PostViewFragment());
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+        Toast.makeText(getActivity(), log, Toast.LENGTH_SHORT).show();
     }
 
 
