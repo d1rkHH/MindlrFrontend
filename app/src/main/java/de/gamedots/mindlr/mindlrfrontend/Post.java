@@ -12,6 +12,7 @@ public class Post {
     private String category;
     private int upVotes;
     private int downVotes;
+    private int test;
 
 
     public Post(String postText, String category, String date) {
