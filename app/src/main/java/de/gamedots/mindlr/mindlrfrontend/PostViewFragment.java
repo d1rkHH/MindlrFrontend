@@ -19,21 +19,20 @@ import android.widget.Toast;
 public class PostViewFragment extends Fragment {
 
     private TextView postView;
+    private ImageView favorStar;
+
     private boolean toggle = false; // TODO: remove toggle for real logic
     private View view;
     private static final int offset = 56;
-    private ImageView favorStar;
 
 
     public PostViewFragment() {
-        // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         view = inflater.inflate(R.layout.fragment_post_view, container, false);
         postView = (TextView) view.findViewById(R.id.postTextView);
         favorStar = (ImageView) view.findViewById(R.id.favorizeIcon);
@@ -104,7 +103,7 @@ public class PostViewFragment extends Fragment {
     }
 
     // TODO: maybe move to a specific Transaction class to fulfill SRY
-    private void fragmentTrans(int animStart, int animEnd, String log){
+    private void fragmentTrans(int animStart, int animEnd, String log) {
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setCustomAnimations(animStart, animEnd);
         fragmentTransaction.replace(R.id.activity_content, new PostViewFragment());
@@ -112,6 +111,4 @@ public class PostViewFragment extends Fragment {
         fragmentTransaction.commit();
         Toast.makeText(getActivity(), log, Toast.LENGTH_SHORT).show();
     }
-
-
 }
