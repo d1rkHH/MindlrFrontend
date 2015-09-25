@@ -15,12 +15,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class UserPostsActivity extends AppCompatActivity {
+public class UserPostsActivity extends ToolbarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_posts);
 
         ListView listView = (ListView) findViewById(R.id.listview);
 
@@ -42,6 +41,10 @@ public class UserPostsActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
     }
 
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_user_posts;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

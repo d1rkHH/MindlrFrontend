@@ -11,25 +11,15 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
-public class WritePostActivity extends AppCompatActivity {
+public class WritePostActivity extends ToolbarActivity {
 
-    private Toolbar toolbar; // TODO : use inheritance for superactivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_write_post);
 
-        /* toolbar setup and app icon */
-        toolbar = (Toolbar) findViewById(R.id.app_bar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        //getSupportActionBar().setIcon(R.mipmap.ic_action_brain_);
-        getSupportActionBar().setLogo(R.mipmap.ic_action_brain_);
-        toolbar.setNavigationIcon(R.drawable.prev24);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        getToolbar().setNavigationIcon(R.drawable.prev24);
+        getToolbar().setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
@@ -41,6 +31,11 @@ public class WritePostActivity extends AppCompatActivity {
                 R.array.categories, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_write_post;
     }
 
     @Override

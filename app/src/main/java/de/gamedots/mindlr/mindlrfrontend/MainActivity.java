@@ -23,15 +23,11 @@ import android.widget.Toast;
 
 import java.lang.reflect.Method;
 
-public class MainActivity extends AppCompatActivity {
-//TODO: superactivity
-    private Toolbar toolbar;
-
+public class MainActivity extends ToolbarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
         /* setup first fragment shown dynamically */
@@ -40,15 +36,12 @@ public class MainActivity extends AppCompatActivity {
             transaction.commit();
         }
 
-        /* toolbar setup and app icon */
-        toolbar = (Toolbar) findViewById(R.id.app_bar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        //getSupportActionBar().setIcon(R.mipmap.ic_action_brain_);
-        getSupportActionBar().setLogo(R.mipmap.ic_action_brain_);
     }
 
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_main;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -56,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -100,4 +92,5 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }
