@@ -1,7 +1,23 @@
 package de.gamedots.mindlr.mindlrfrontend;
 
+import android.os.AsyncTask;
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import de.gamedots.mindlr.mindlrfrontend.models.ViewPost;
+
+import static de.gamedots.mindlr.mindlrfrontend.Global.BACKEND_METHOD_KEY;
+import static de.gamedots.mindlr.mindlrfrontend.Global.BACKEND_METHOD_LOAD_POSTS;
+import static de.gamedots.mindlr.mindlrfrontend.Global.LOAD_POSTS_COUNT;
+import static de.gamedots.mindlr.mindlrfrontend.Global.LOAD_POSTS_URL;
+import static de.gamedots.mindlr.mindlrfrontend.Global.METHOD_POST;
 
 /**
  * Created by max on 26.09.15.
@@ -9,25 +25,25 @@ import java.util.Arrays;
 public class PostLoader {
 
     private int indexCurrent = 0;
-    private ArrayList<Post> postList = new ArrayList<>();
+    private ArrayList<ViewPost> postList = new ArrayList<>();
 
     public PostLoader(){
-        Post[] posts = {new Post("First", "Sport", "15.1.15"),
-                new Post("Second", "Sport", "15.1.15"),
-                new Post("Third", "Sport", "15.1.15"),
-                new Post("Fourth", "Sport", "15.1.15"),
-                new Post("Fifth", "Sport", "15.1.15"),
-                new Post("Sixth", "Sport", "15.1.15"),
-                new Post("Seventh", "Sport", "15.1.15"),
-                new Post("Number 8", "Sport", "15.1.15"),
-                new Post("Number 9", "Sport", "15.1.15"),
-                new Post("The 10. Post", "Sport", "15.1.15"),
-                new Post("The 11. Posts", "Sport", "15.1.15"),
-                new Post("The Last / 12. Post", "Sport", "15.1.15")};
+        ViewPost[] posts = {new ViewPost("First"),
+                new ViewPost("Second"),
+                new ViewPost("Third"),
+                new ViewPost("Fourth"),
+                new ViewPost("Fifth"),
+                new ViewPost("Sixth"),
+                new ViewPost("Seventh"),
+                new ViewPost("Number 8"),
+                new ViewPost("Number 9"),
+                new ViewPost("The 10. Post"),
+                new ViewPost("The 11. Posts"),
+                new ViewPost("The Last / 12. Post")};
         postList.addAll(Arrays.asList(posts));
     }
 
-    public Post getCurrent(){
+    public ViewPost getCurrent(){
         return postList.get(indexCurrent);
     }
 
@@ -69,6 +85,47 @@ public class PostLoader {
     }
 
     public void loadNewPosts(){
-
+      //  new LoadNewPostsTask(LOAD_POSTS_COUNT).execute();
     }
+
+    private class LoadNewPostsTask extends AsyncTask<Void, Void, JSONObject> {
+
+        private int numberOfPosts;
+
+        public LoadNewPostsTask(int numberOfPosts) {
+            this.numberOfPosts = numberOfPosts;
+        }
+
+        protected void onPreExecute(){
+            //Keine Funktionalität
+        }
+
+        protected JSONObject doInBackground(Void... params){
+            HashMap<String, String> parameter = new HashMap<>();
+            //TODO: Different URLS for different methods
+            parameter.put(BACKEND_METHOD_KEY,BACKEND_METHOD_LOAD_POSTS);
+            parameter.put("NUMBER_OF_POSTS", Integer.toString(numberOfPosts));
+            JSONParser parser = new JSONParser();
+            return parser.makeHttpRequest(LOAD_POSTS_URL, METHOD_POST, parameter);
+        }
+
+        protected void onPostExecute(JSONObject jsonPosts){
+            try {
+                Iterator<?> keys = jsonPosts.keys();
+                Log.e("Max", "keys: "+keys.toString());
+                while(keys.hasNext()) {
+                    String key = (String) keys.next();
+                    Log.e("Max", "key: " + key);
+                    JSONObject jsonPost = jsonPosts.getJSONObject(key);
+                    Log.e("Max", "jObj: " + jsonPost.toString());
+
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 }

@@ -1,19 +1,14 @@
 package de.gamedots.mindlr.mindlrfrontend;
 
-import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Date;
+
+import de.gamedots.mindlr.mindlrfrontend.models.UserPost;
 
 public class UserPostsActivity extends ToolbarActivity {
 
@@ -23,18 +18,20 @@ public class UserPostsActivity extends ToolbarActivity {
 
         ListView listView = (ListView) findViewById(R.id.listview);
 
-        Post[] posts = {new Post("Lipsum orodi madura", "Sport", "15.1.15"),
-                new Post("Lipsum orodi madura", "Sport", "15.1.15"),
-                new Post("Lipsum orodi madura", "Sport", "15.1.15"),
-                new Post("Lipsum orodi madura", "Sport", "15.1.15"),
-                new Post("Lipsum orodi madura", "Sport", "15.1.15"),
-                new Post("Lipsum orodi madura", "Sport", "15.1.15"),
-                new Post("Lipsum orodi madura", "Sport", "15.1.15"),
-                new Post("Lipsum orodi madura", "Sport", "15.1.15"),
-                new Post("Lipsum orodi madura", "Sport", "15.1.15"),
-                new Post("Lipsum orodi madura", "Sport", "15.1.15"),
-                new Post("Lipsum orodi madura", "Sport", "15.1.15"),
-                new Post("Lipsum orodi madura", "Sport", "15.1.15", 880000, 5000000)};
+        UserPost[] posts = {new UserPost(1, new Date(), "This is a hardcoded string.", 1),
+                new UserPost(1, new Date(), "This is a hardcoded string.", 1),
+                new UserPost(1, new Date(), "This is a hardcoded string.", 2),
+                new UserPost(1, new Date(), "This is a hardcoded string.", 4),
+                new UserPost(1, new Date(), "This is a hardcoded string.", 6),
+                new UserPost(1, new Date(), "This is a hardcoded string.", 1),
+                new UserPost(1, new Date(), "This is a hardcoded string.", 1),
+                new UserPost(1, new Date(), "This is a hardcoded string.", 2),
+                new UserPost(1, new Date(), "This is a hardcoded string.", 2),
+                new UserPost(1, new Date(), "This is a hardcoded string.", 1),
+                new UserPost(1, new Date(), "This is a hardcoded string.", 7),
+                new UserPost(1, new Date(), "This is a hardcoded string.", 7),
+                new UserPost(1, new Date(), "This is a hardcoded string.", 5),
+                new UserPost(1, new Date(), "This is a hardcoded string.", 1)};
 
         PostListAdapter adapter =
                 new PostListAdapter(this, R.layout.post_list_item, Arrays.asList(posts));

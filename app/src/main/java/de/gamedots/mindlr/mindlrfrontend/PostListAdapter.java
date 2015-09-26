@@ -9,16 +9,18 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import de.gamedots.mindlr.mindlrfrontend.models.UserPost;
+
 /**
  * Created by Dirk on 05.09.15.
  */
-public class PostListAdapter extends ArrayAdapter<Post> {
+public class PostListAdapter extends ArrayAdapter<UserPost> {
 
     private Context context;
     private int layoutResourceId;
-    private List<Post> postList;
+    private List<UserPost> postList;
 
-    public PostListAdapter(Context context, int resource, List<Post> postList) {
+    public PostListAdapter(Context context, int resource, List<UserPost> postList) {
         super(context, resource, postList);
 
         this.layoutResourceId = resource;
@@ -39,18 +41,18 @@ public class PostListAdapter extends ArrayAdapter<Post> {
         TextView upvote = (TextView) customView.findViewById(R.id.postUpVoteNumber);
         TextView downvote = (TextView) customView.findViewById(R.id.postDownVoteNumber);
 
-        Post post = postList.get(position);
-        date.setText(post.getCreateDate());
-        category.setText(post.getCategory());
-        postPrev.setText(post.getPostText());
-        upvote.setText("" + post.getUpVotes());
-        downvote.setText("" + post.getDownVotes());
+        UserPost post = postList.get(position);
+        date.setText(post.getSubmitDate().toString());
+        category.setText("" + post.getCategoryID());
+        postPrev.setText(post.getContentText());
+        upvote.setText("" + post.getUpvotes());
+        downvote.setText("" + post.getDownvotes());
 
         return customView;
     }
 
     @Override
-    public Post getItem(int position) {
+    public UserPost getItem(int position) {
         return super.getItem(position);
     }
 }
