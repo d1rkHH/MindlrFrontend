@@ -22,12 +22,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+
+import static de.gamedots.mindlr.mindlrfrontend.Global.*;
 
 public class MainActivity extends ToolbarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Load the first bunch of posts in the list of posts
+        postLoader = new PostLoader();
+        postLoader.initialize();
 
         if (savedInstanceState == null) {
         /* setup first fragment shown dynamically */

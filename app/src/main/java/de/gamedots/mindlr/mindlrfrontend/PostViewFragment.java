@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import static de.gamedots.mindlr.mindlrfrontend.Global.*;
+
 
 public class PostViewFragment extends Fragment {
 
@@ -35,6 +37,7 @@ public class PostViewFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_post_view, container, false);
         postView = (TextView) view.findViewById(R.id.postTextView);
+        postView.setText(postLoader.getCurrent().getPostText());
         favorStar = (ImageView) view.findViewById(R.id.favorizeIcon);
         favorStar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,15 +51,24 @@ public class PostViewFragment extends Fragment {
                 public void onSwipeRight() {
                     //TODO: post collection, maximum swipe back
                     //postView.startAnimation(AnimationUtils.loadAnimation(getApplication(), R.anim.textview_left_to_right));
-
-                    fragmentTrans(R.anim.enter_from_left, R.anim.exit_to_right, "Right");
+                    // Execute previous method and play animation if successfull
+                    if(postLoader.previous()) {
+                        fragmentTrans(R.anim.enter_from_left, R.anim.exit_to_right, "Right");
+                    } else {
+                        Toast.makeText(getActivity(), "No older posts available", Toast.LENGTH_SHORT).show();
+                    }
                 }
 
                 public void onSwipeLeft() {
                     //TODO: post collection, maximum swipe forward -> reloading
                     // postView.startAnimation(AnimationUtils.loadAnimation(getApplication(), R.anim.textview_right_to_left));
-
-                    fragmentTrans(R.anim.enter_from_right, R.anim.exit_to_left, "Left");
+                    // Execute next method and play animation if successfull
+                    if(postLoader.next()) {
+                        fragmentTrans(R.anim.enter_from_right, R.anim.exit_to_left, "Left");
+                    } else{
+                        //TODO: Text/Bild/Animation anzeigen, der deutlich macht, dass gerade keine Posts geladen werden konnten
+                        Toast.makeText(getActivity(), "You reached the last post. Swipe again to load new posts.", Toast.LENGTH_SHORT).show();
+                    }
                 }
 
                 @Override
