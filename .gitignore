@@ -6,4 +6,5 @@
 /build
 *.class
 /captures
+*.iml
 
