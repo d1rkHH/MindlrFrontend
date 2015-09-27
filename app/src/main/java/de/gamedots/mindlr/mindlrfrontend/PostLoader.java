@@ -47,9 +47,9 @@ public class PostLoader {
         }
     }
 
-    public void initialize(TextView view){
+    public void initialize(){
         Log.d(LOG.POSTS, "Load posts from the server for the first time");
-        new LoadNewPostsTask(LOAD_POSTS_COUNT, view).execute();
+        new LoadNewPostsTask(LOAD_POSTS_COUNT).execute();
     }
 
     /**
@@ -95,16 +95,9 @@ public class PostLoader {
     private class LoadNewPostsTask extends AsyncTask<Void, Void, JSONObject> {
 
         private int numberOfPosts;
-        private TextView view;
 
         public LoadNewPostsTask(int numberOfPosts) {
             this.numberOfPosts = numberOfPosts;
-        }
-
-        //TODO: Maybe delete?
-        public LoadNewPostsTask(int numberOfPosts, TextView view) {
-            this.numberOfPosts = numberOfPosts;
-            this.view = view;
         }
 
         protected void onPreExecute(){

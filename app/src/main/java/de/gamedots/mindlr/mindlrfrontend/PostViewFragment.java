@@ -41,9 +41,7 @@ public class PostViewFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_post_view, container, false);
         postView = (TextView) view.findViewById(R.id.postTextView);
-        if(postLoader.isInitialized()){
-            postView.setText(postLoader.getCurrent().getContentText());
-        }
+        postView.setText(postLoader.getCurrent().getContentText());
         favorStar = (ImageView) view.findViewById(R.id.favorizeIcon);
         favorStar.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -34,12 +34,12 @@ public class MainActivity extends ToolbarActivity {
 
         //Load the first bunch of posts in the list of posts
         postLoader = new PostLoader();
-        PostViewFragment firstFragment = new PostViewFragment();
-        postLoader.initialize(firstFragment.getPostView());
+        postLoader.initialize();
+
         if (savedInstanceState == null) {
         /* setup first fragment shown dynamically */
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.add(R.id.activity_content, firstFragment);
+            transaction.add(R.id.activity_content, new PostViewFragment());
             transaction.commit();
         }
 
