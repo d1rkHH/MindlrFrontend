@@ -31,13 +31,19 @@ public class PostViewFragment extends Fragment {
     public PostViewFragment() {
     }
 
+    public TextView getPostView(){
+        return postView;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_post_view, container, false);
         postView = (TextView) view.findViewById(R.id.postTextView);
-        postView.setText(postLoader.getCurrent().getContentText());
+        if(postLoader.isInitialized()){
+            postView.setText(postLoader.getCurrent().getContentText());
+        }
         favorStar = (ImageView) view.findViewById(R.id.favorizeIcon);
         favorStar.setOnClickListener(new View.OnClickListener() {
             @Override

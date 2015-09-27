@@ -43,7 +43,7 @@ public class PostListAdapter extends ArrayAdapter<UserPost> {
 
         UserPost post = postList.get(position);
         date.setText(post.getSubmitDate().toString());
-        category.setText("" + post.getCategoryID());
+        category.setText(post.getCategory().getName());
         postPrev.setText(post.getContentText());
         upvote.setText("" + post.getUpvotes());
         downvote.setText("" + post.getDownvotes());

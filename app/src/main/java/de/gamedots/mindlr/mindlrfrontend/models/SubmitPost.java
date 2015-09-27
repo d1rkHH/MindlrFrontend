@@ -11,13 +11,13 @@ public class SubmitPost {
     private long userID;
     private Date submitDate;
     private String contentText;
-    private int categoryID; //TODO: Create Category Class to represent DB table
+    private Category category; //TODO: Create Category Class to represent DB table
 
-    public SubmitPost(long userID, Date submitDate, String contentText, int categoryID) {
+    public SubmitPost(long userID, Date submitDate, String contentText, Category category) {
         this.userID = userID;
         this.submitDate = submitDate;
         this.contentText = contentText;
-        this.categoryID = categoryID;
+        this.category = category;
     }
 
     public long getUserID() {
@@ -28,8 +28,8 @@ public class SubmitPost {
         return submitDate;
     }
 
-    public int getCategoryID() {
-        return categoryID;
+    public Category getCategory() {
+        return category;
     }
 
     public String getContentText() {

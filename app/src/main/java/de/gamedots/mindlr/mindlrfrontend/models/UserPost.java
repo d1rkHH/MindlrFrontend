@@ -11,24 +11,24 @@ public class UserPost {
     private long userID;
     private Date submitDate;
     private String contentText;
-    private int categoryID; //TODO: Create Category Class to represent DB table
+    private Category category;
     private int seen;
     private int upvotes;
     private int downvotes;
     private int quality;
 
-    public UserPost(long userID, Date submitDate, String contentText, int categoryID){
+    public UserPost(long userID, Date submitDate, String contentText, Category category){
         this.userID = userID;
         this.submitDate = submitDate;
         this.contentText = contentText;
-        this.categoryID = categoryID;
+        this.category = category;
     }
 
-    public UserPost(long userID, Date submitDate, String contentText, int categoryID, int quality, int seen, int upvotes, int downvotes) {
+    public UserPost(long userID, Date submitDate, String contentText, Category category, int quality, int seen, int upvotes, int downvotes) {
         this.userID = userID;
         this.submitDate = submitDate;
         this.contentText = contentText;
-        this.categoryID = categoryID;
+        this.category = category;
         this.quality = quality;
         this.seen = seen;
         this.upvotes = upvotes;
@@ -43,8 +43,8 @@ public class UserPost {
         return contentText;
     }
 
-    public int getCategoryID() {
-        return categoryID;
+    public Category getCategory() {
+        return category;
     }
 
     public long getUserID() {
