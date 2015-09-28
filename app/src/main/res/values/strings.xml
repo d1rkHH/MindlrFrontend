@@ -9,7 +9,7 @@
     <string name="default_string">default</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="postTextContent">Hallo wie gehts dir dHallo wie gehts dir dHallo wie gehts dir dHallo wie gehts dir dHallo wie gehts dir dHallo wie gehts dir dHallo wie gehts dir d</string>
+    <string name="postTextContent"></string>
     <string name="title_activity_write_post">WritePostActivity</string>
 
     <string name="hello_world">Hello world!</string>

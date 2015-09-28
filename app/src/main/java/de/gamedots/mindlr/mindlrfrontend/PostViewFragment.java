@@ -41,7 +41,9 @@ public class PostViewFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_post_view, container, false);
         postView = (TextView) view.findViewById(R.id.postTextView);
-        postView.setText(postLoader.getCurrent().getContentText());
+        if(postLoader.isInitialized()) {
+            postView.setText(postLoader.getCurrent().getContentText());
+        }
         favorStar = (ImageView) view.findViewById(R.id.favorizeIcon);
         favorStar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,6 +127,5 @@ public class PostViewFragment extends Fragment {
         fragmentTransaction.replace(R.id.activity_content, new PostViewFragment());
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
-        Toast.makeText(getActivity(), log, Toast.LENGTH_SHORT).show();
     }
 }

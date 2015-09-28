@@ -51,7 +51,7 @@ public class JSONParser {
                     Log.d(LOG.CONNECTION, "Try to connect to the URL");
                     conn.connect();
                 } catch(Throwable t){
-                    Log.d(LOG.CONNECTION, "ERROR: Probably no Internet allowed");
+                    Log.d(LOG.CONNECTION, "ERROR: Can't connect to server");
                 }
 
                 Log.d(LOG.CONNECTION, "Try to write parameters to server");

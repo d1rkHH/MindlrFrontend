@@ -10,7 +10,7 @@ import de.gamedots.mindlr.mindlrfrontend.models.Category;
  */
 public class Global {
 
-    public static PostLoader postLoader;
+    public static final PostLoader postLoader = new PostLoader();
     public static final String LOAD_POSTS_URL = "http://quickiez.no-ip.org:8080/placeholder.jsp";
     public static final int LOAD_POSTS_COUNT = 50;
     public static final String BACKEND_METHOD_KEY = "BACKEND_METHOD";

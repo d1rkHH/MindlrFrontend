@@ -24,24 +24,32 @@ import android.widget.Toast;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import de.gamedots.mindlr.mindlrfrontend.models.ViewPost;
+
 import static de.gamedots.mindlr.mindlrfrontend.Global.*;
 
 public class MainActivity extends ToolbarActivity {
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        PostViewFragment fragment = new PostViewFragment();
+
         //Load the first bunch of posts in the list of posts
-        postLoader = new PostLoader();
-        postLoader.initialize();
+        if (!postLoader.isInitialized()) {
+            postLoader.initialize(fragment);
+        }
 
         if (savedInstanceState == null) {
         /* setup first fragment shown dynamically */
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.add(R.id.activity_content, new PostViewFragment());
+            transaction.add(R.id.activity_content, fragment);
             transaction.commit();
         }
+
 
     }
 
