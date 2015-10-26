@@ -122,7 +122,7 @@ public class JSONParser {
         try {
             jObj = new JSONObject(result.toString());
         } catch (JSONException e) {
-            Log.d(LOG.CONNECTION, "Error parsing data into JSONObject: " + e.toString());
+            Log.d(LOG.JSON, "Error parsing data into JSONObject: " + e.toString());
         }
 
         // return JSON Object

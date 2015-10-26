@@ -15,7 +15,6 @@ import de.gamedots.mindlr.mindlrfrontend.models.ViewPost;
 
 import static de.gamedots.mindlr.mindlrfrontend.Global.BACKEND_METHOD_KEY;
 import static de.gamedots.mindlr.mindlrfrontend.Global.BACKEND_METHOD_LOAD_POSTS;
-import static de.gamedots.mindlr.mindlrfrontend.Global.LOAD_POSTS_COUNT;
 import static de.gamedots.mindlr.mindlrfrontend.Global.SERVER_URL;
 import static de.gamedots.mindlr.mindlrfrontend.Global.METHOD_POST;
 
@@ -45,7 +44,7 @@ public class PostLoader {
 
     public void initialize(PostViewFragment fragment){
         Log.d(LOG.POSTS, "Load posts from the server for the first time");
-        new LoadNewPostsTask(LOAD_POSTS_COUNT, fragment).execute();
+        new LoadNewPostsTask(fragment).execute();
     }
 
     /**
@@ -85,20 +84,18 @@ public class PostLoader {
 
     public void loadNewPosts(){
         Log.d(LOG.POSTS, "Load new Posts from Server");
-        new LoadNewPostsTask(LOAD_POSTS_COUNT).execute();
+        new LoadNewPostsTask().execute();
     }
 
     private class LoadNewPostsTask extends AsyncTask<Void, Void, JSONObject> {
 
-        private int numberOfPosts;
         PostViewFragment fragment;
 
-        public LoadNewPostsTask(int numberOfPosts) {
-            this.numberOfPosts = numberOfPosts;
+        public LoadNewPostsTask(){
+
         }
 
-        public LoadNewPostsTask(int numberOfPosts, PostViewFragment fragment) {
-            this.numberOfPosts = numberOfPosts;
+        public LoadNewPostsTask(PostViewFragment fragment) {
             this.fragment = fragment;
         }
 
@@ -115,7 +112,6 @@ public class PostLoader {
             parameter.put("SDK", "" + Build.VERSION.SDK_INT);
             parameter.put("TIME", "" + Build.TIME);
             parameter.put(BACKEND_METHOD_KEY,BACKEND_METHOD_LOAD_POSTS);
-            parameter.put("NUMBER_OF_POSTS", Integer.toString(numberOfPosts));
             Log.d(LOG.JSON, "About to create JSONParser");
             JSONParser parser = new JSONParser();
             Log.d(LOG.CONNECTION, "About to make HTTPRequest");
