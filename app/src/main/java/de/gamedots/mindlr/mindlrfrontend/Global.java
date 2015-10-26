@@ -1,6 +1,7 @@
 package de.gamedots.mindlr.mindlrfrontend;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.gamedots.mindlr.mindlrfrontend.models.Category;
@@ -11,12 +12,21 @@ import de.gamedots.mindlr.mindlrfrontend.models.Category;
 public class Global {
 
     public static final PostLoader postLoader = new PostLoader();
-    public static final String LOAD_POSTS_URL = "http://quickiez.no-ip.org:8080/placeholder.jsp";
-    public static final int LOAD_POSTS_COUNT = 50;
+
+    //Server Connection
+    public static final String SERVER_URL = "http://quickiez.no-ip.org:8080/placeholder.jsp";
+    //Methods
     public static final String BACKEND_METHOD_KEY = "BACKEND_METHOD";
+    //Load Posts
     public static final String BACKEND_METHOD_LOAD_POSTS = "LOAD_POSTS";
+        public static final int LOAD_POSTS_COUNT = 50;
+    //Write Post
+    public static final String BACKEND_METHOD_WRITE_POST = "WRITE_POST";
+        public static final int DEFAULT_USER_ID = 1;
     public static final String METHOD_POST = "POST";
     public static final String METHOD_GET = "GET";
+
+
 
     public static class Categories {
         //TODO: Dynamicly update categories from database
@@ -30,9 +40,10 @@ public class Global {
         public static final Category LIFESTYLE_MALE = new Category(8, "Lifestyle (Male)");
         public static final Category LIFESTYLE_FEMALE = new Category(9, "Lifestyle (Female)");
         public static final Category POLITICS_ECONOMICS = new Category(10, "Politics & Economics");
-        public static final Category PERSONAL = new Category(1, "Personal");
-        public static final Category FUNNY_FASCINATING = new Category(11, "Funny & Fascinating");
-        public static final Category QUOTES_MOTIVATION = new Category(12, "Quotes & Motivation");
+        public static final Category PERSONAL = new Category(11, "Personal");
+        public static final Category FUNNY_FASCINATING = new Category(12, "Funny & Fascinating");
+        public static final Category QUOTES_MOTIVATION = new Category(13, "Quotes & Motivation");
+
 
         public static final String[] CATEGORIES = {SPORTS.getName(), GAMING.getName(),
                 TECHNOLOGY.getName(), SCIENCE_NATURE.getName(), ART_CULTURE.getName(),

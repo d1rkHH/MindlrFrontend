@@ -1,15 +1,33 @@
 package de.gamedots.mindlr.mindlrfrontend;
 
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import de.gamedots.mindlr.mindlrfrontend.models.Category;
+import de.gamedots.mindlr.mindlrfrontend.models.ViewPost;
+
+import static de.gamedots.mindlr.mindlrfrontend.Global.BACKEND_METHOD_KEY;
+import static de.gamedots.mindlr.mindlrfrontend.Global.BACKEND_METHOD_WRITE_POST;
+import static de.gamedots.mindlr.mindlrfrontend.Global.SERVER_URL;
+import static de.gamedots.mindlr.mindlrfrontend.Global.METHOD_POST;
+import static de.gamedots.mindlr.mindlrfrontend.Global.DEFAULT_USER_ID;
 
 public class WritePostActivity extends ToolbarActivity {
 
@@ -26,12 +44,13 @@ public class WritePostActivity extends ToolbarActivity {
             }
         });
 
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        Spinner spinner = (Spinner) findViewById(R.id.category_spinner);
 
        // ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.categories, android.R.layout.simple_spinner_item);
        // adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
        // spinner.setAdapter(adapter);
 
+        //TODO: Change Spinner to represent real category objects and only display the name, so you can get the categoryID easyly
         ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, Global.Categories.CATEGORIES);
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(categoryAdapter);
@@ -48,6 +67,7 @@ public class WritePostActivity extends ToolbarActivity {
         return true;
     }
 
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -62,5 +82,68 @@ public class WritePostActivity extends ToolbarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void writePost(View view){
+        EditText editText = (EditText) findViewById(R.id.postWriteArea);
+        Spinner spinner = (Spinner) findViewById(R.id.category_spinner);
+        String catString = spinner.getSelectedItem().toString();
+        new WritePostTask(editText.getText().toString(), Category.getCategoryIDForName(catString));
+        Toast.makeText(this,"Posted", Toast.LENGTH_SHORT).show();
+    }
+
+    private class WritePostTask extends AsyncTask<Void, Void, JSONObject> {
+
+        String text;
+        int categoryID;
+
+        public WritePostTask(String text, int categoryID) {
+            this.text = text;
+            this.categoryID = categoryID;
+        }
+
+        protected void onPreExecute(){
+            //Keine Funktionalität
+        }
+
+        protected JSONObject doInBackground(Void... params){
+            //Needed parameters: UserID, Text, Category, User Information, Method
+            HashMap<String, String> parameter = new HashMap<>();
+            //LOGGING PARAMETERS
+            parameter.put("BRAND", android.os.Build.BRAND);
+            parameter.put("MODEL", android.os.Build.MODEL);
+            parameter.put("PRODUCT", Build.PRODUCT);
+            parameter.put("SDK", "" + Build.VERSION.SDK_INT);
+            parameter.put("TIME", "" + new Date());
+            //METHOD SPECIFIC PARAMETERS
+            parameter.put(BACKEND_METHOD_KEY,BACKEND_METHOD_WRITE_POST);
+            parameter.put("USER_ID", Integer.toString(DEFAULT_USER_ID));
+            parameter.put("CONTENT_TEXT", text);
+            parameter.put("CATEGORY_ID", Integer.toString(categoryID));
+
+            Log.d(LOG.JSON, "About to create JSONParser");
+            JSONParser parser = new JSONParser();
+            Log.d(LOG.CONNECTION, "About to make HTTPRequest");
+            return parser.makeHttpRequest(SERVER_URL, METHOD_POST, parameter);
+        }
+
+        protected void onPostExecute(JSONObject result){
+            if(result != null){
+                try {
+                    boolean success = result.getBoolean("SUCCESS");
+                    if(success){
+                        //TODO: Switch to "My posts" List and show the new post
+                    } else {
+                        //TODO: Handle eventual errors or tell user that his post isn't meeting the guidelines
+                    }
+
+                } catch (JSONException e) {
+                    Log.d(LOG.JSON, "Error parsing data into objects");
+                    e.printStackTrace();
+                }
+            } else{
+                Log.d(LOG.JSON, "JSONObject was null");
+            }
+        }
     }
 }

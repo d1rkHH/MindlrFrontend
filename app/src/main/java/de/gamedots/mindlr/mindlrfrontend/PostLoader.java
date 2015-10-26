@@ -3,13 +3,11 @@ package de.gamedots.mindlr.mindlrfrontend;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
-import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -18,10 +16,8 @@ import de.gamedots.mindlr.mindlrfrontend.models.ViewPost;
 import static de.gamedots.mindlr.mindlrfrontend.Global.BACKEND_METHOD_KEY;
 import static de.gamedots.mindlr.mindlrfrontend.Global.BACKEND_METHOD_LOAD_POSTS;
 import static de.gamedots.mindlr.mindlrfrontend.Global.LOAD_POSTS_COUNT;
-import static de.gamedots.mindlr.mindlrfrontend.Global.LOAD_POSTS_URL;
+import static de.gamedots.mindlr.mindlrfrontend.Global.SERVER_URL;
 import static de.gamedots.mindlr.mindlrfrontend.Global.METHOD_POST;
-import static de.gamedots.mindlr.mindlrfrontend.Global.METHOD_GET;
-import static de.gamedots.mindlr.mindlrfrontend.Global.postLoader;
 
 /**
  * Created by max on 26.09.15.
@@ -39,11 +35,7 @@ public class PostLoader {
     }
 
     public boolean isInitialized(){
-        if(postList.size() > 0 ){
-            return true;
-        } else{
-            return false;
-        }
+        return postList.size() > 0;
     }
 
     public void initialize(PostViewFragment fragment){
@@ -122,7 +114,7 @@ public class PostLoader {
             Log.d(LOG.JSON, "About to create JSONParser");
             JSONParser parser = new JSONParser();
             Log.d(LOG.CONNECTION, "About to make HTTPRequest");
-            return parser.makeHttpRequest(LOAD_POSTS_URL, METHOD_POST, parameter);
+            return parser.makeHttpRequest(SERVER_URL, METHOD_POST, parameter);
         }
 
         protected void onPostExecute(JSONObject jsonPosts){
