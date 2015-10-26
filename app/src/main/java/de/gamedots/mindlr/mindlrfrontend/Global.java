@@ -9,20 +9,21 @@ import de.gamedots.mindlr.mindlrfrontend.models.Category;
 /**
  * Created by max on 26.09.15.
  */
-public class Global {
+public final class Global {
+
+    private Global(){}
 
     public static final PostLoader postLoader = new PostLoader();
 
     //Server Connection
-    public static final String SERVER_URL = "http://quickiez.no-ip.org:8080/placeholder.jsp";
+    public static final String SERVER_URL = "http://backend.mindlr.com:8080/requesthandler/";
     //Methods
     public static final String BACKEND_METHOD_KEY = "BACKEND_METHOD";
     //Load Posts
     public static final String BACKEND_METHOD_LOAD_POSTS = "LOAD_POSTS";
-        public static final int LOAD_POSTS_COUNT = 50;
     //Write Post
     public static final String BACKEND_METHOD_WRITE_POST = "WRITE_POST";
-        public static final int DEFAULT_USER_ID = 1;
+    public static final int DEFAULT_USER_ID = 1;
     public static final String METHOD_POST = "POST";
     public static final String METHOD_GET = "GET";
 
