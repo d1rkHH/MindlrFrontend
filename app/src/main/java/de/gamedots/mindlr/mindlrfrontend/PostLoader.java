@@ -24,10 +24,15 @@ import static de.gamedots.mindlr.mindlrfrontend.Global.METHOD_POST;
  */
 public class PostLoader {
 
+    private static final PostLoader LOADER = new PostLoader();
     private int indexCurrent = 0;
     private ArrayList<ViewPost> postList = new ArrayList<>();
 
-    public PostLoader(){
+    private PostLoader(){
+    }
+
+    public static PostLoader getInstance(){
+        return LOADER;
     }
 
     public ViewPost getCurrent(){

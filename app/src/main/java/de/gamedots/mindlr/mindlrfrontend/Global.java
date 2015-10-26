@@ -11,7 +11,7 @@ import de.gamedots.mindlr.mindlrfrontend.models.Category;
  */
 public class Global {
 
-    public static final PostLoader postLoader = new PostLoader();
+    //public static final PostLoader postLoader = new PostLoader();
 
     //Server Connection
     public static final String SERVER_URL = "http://quickiez.no-ip.org:8080/placeholder.jsp";

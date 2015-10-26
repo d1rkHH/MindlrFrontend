@@ -41,8 +41,8 @@ public class PostViewFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_post_view, container, false);
         postView = (TextView) view.findViewById(R.id.postTextView);
-        if(postLoader.isInitialized()) {
-            postView.setText(postLoader.getCurrent().getContentText());
+        if(PostLoader.getInstance().isInitialized()) {
+            postView.setText(PostLoader.getInstance().getCurrent().getContentText());
         }
         favorStar = (ImageView) view.findViewById(R.id.favorizeIcon);
         favorStar.setOnClickListener(new View.OnClickListener() {
@@ -58,7 +58,7 @@ public class PostViewFragment extends Fragment {
                     //TODO: post collection, maximum swipe back
                     //postView.startAnimation(AnimationUtils.loadAnimation(getApplication(), R.anim.textview_left_to_right));
                     // Execute previous method and play animation if successfull
-                    if(postLoader.previous()) {
+                    if(PostLoader.getInstance().previous()) {
                         fragmentTrans(R.anim.enter_from_left, R.anim.exit_to_right, "Right");
                     } else {
                         Toast.makeText(getActivity(), "No older posts available", Toast.LENGTH_SHORT).show();
@@ -69,7 +69,7 @@ public class PostViewFragment extends Fragment {
                     //TODO: post collection, maximum swipe forward -> reloading
                     // postView.startAnimation(AnimationUtils.loadAnimation(getApplication(), R.anim.textview_right_to_left));
                     // Execute next method and play animation if successfull
-                    if(postLoader.next()) {
+                    if(PostLoader.getInstance().next()) {
                         fragmentTrans(R.anim.enter_from_right, R.anim.exit_to_left, "Left");
                     } else{
                         //TODO: Text/Bild/Animation anzeigen, der deutlich macht, dass gerade keine Posts geladen werden konnten

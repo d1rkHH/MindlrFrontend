@@ -39,8 +39,8 @@ public class MainActivity extends ToolbarActivity {
         PostViewFragment fragment = new PostViewFragment();
 
         //Load the first bunch of posts in the list of posts
-        if (!postLoader.isInitialized()) {
-            postLoader.initialize(fragment);
+        if (!PostLoader.getInstance().isInitialized()) {
+            PostLoader.getInstance().initialize(fragment);
         }
 
         if (savedInstanceState == null) {
