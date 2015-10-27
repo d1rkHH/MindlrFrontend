@@ -1,5 +1,7 @@
 package de.gamedots.mindlr.mindlrfrontend;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -85,19 +87,21 @@ public class WritePostActivity extends ToolbarActivity {
     }
 
     public void writePost(View view){
+        Log.d(LOG.WRITE, "About to create WritePostTask");
         EditText editText = (EditText) findViewById(R.id.postWriteArea);
         Spinner spinner = (Spinner) findViewById(R.id.category_spinner);
         String catString = spinner.getSelectedItem().toString();
-        new WritePostTask(editText.getText().toString(), Category.getCategoryIDForName(catString));
-        Toast.makeText(this,"Posted", Toast.LENGTH_SHORT).show();
+        new WritePostTask(this, editText.getText().toString(), Category.getCategoryIDForName(catString)).execute();
     }
 
     private class WritePostTask extends AsyncTask<Void, Void, JSONObject> {
 
+        Context context;
         String text;
         int categoryID;
 
-        public WritePostTask(String text, int categoryID) {
+        public WritePostTask(Context context, String text, int categoryID) {
+            this.context = context;
             this.text = text;
             this.categoryID = categoryID;
         }
@@ -132,9 +136,12 @@ public class WritePostActivity extends ToolbarActivity {
                 try {
                     boolean success = result.getBoolean("SUCCESS");
                     if(success){
-                        //TODO: Switch to "My posts" List and show the new post
+                        Log.d(LOG.POSTS, "Successfull posted.");
+                        Toast.makeText(context, "Erfolgreich gepostet", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(context, MainActivity.class));
                     } else {
-                        //TODO: Handle eventual errors or tell user that his post isn't meeting the guidelines
+                        Log.d(LOG.POSTS, "Could not post.");
+                        Toast.makeText(context, "Post konnte nicht gespeichert werden", Toast.LENGTH_SHORT).show();
                     }
 
                 } catch (JSONException e) {
