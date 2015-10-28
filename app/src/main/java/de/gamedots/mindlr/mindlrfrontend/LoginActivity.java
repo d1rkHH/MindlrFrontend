@@ -68,9 +68,9 @@ public class LoginActivity extends AppCompatActivity implements
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Plus.API)
-                .addScope(Plus.SCOPE_PLUS_LOGIN)
-//                .addScope(new Scope(Scopes.PROFILE)) // access to basic profile information
-//                .addScope(new Scope(Scopes.EMAIL))   // access to the users email address
+                        // .addScope(Plus.SCOPE_PLUS_LOGIN)
+                .addScope(new Scope(Scopes.PROFILE)) // access to basic profile information
+                .addScope(new Scope(Scopes.EMAIL))   // access to the users email address
                         // PLUS_LOGIN or PLUS_ME for Google+ ID
                 .build();
 
