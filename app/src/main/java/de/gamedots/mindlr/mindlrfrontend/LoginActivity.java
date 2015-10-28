@@ -20,6 +20,9 @@ import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by dirk on 27.10.2015.
@@ -95,7 +98,8 @@ public class LoginActivity extends AppCompatActivity implements
         // establish a service connection to Google Play services.
         mShouldResolve = false;
         Log.d(TAG, "connection successful");
-        //startActivity(new Intent(this, MainActivity.class));
+        //TODO: look for good way to start in mainactivity and check if loged in, otherwise redirect to login activity
+        startActivity(new Intent(this, MainActivity.class));
 
         /* Get Profile Information only CLIENT SIDE !!!!! NOT USED TO SEND TO BACKEND */
         // if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
