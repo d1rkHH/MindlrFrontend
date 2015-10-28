@@ -54,7 +54,7 @@ public class PostLoader {
     public boolean next(){
         Log.d(LOG.POSTS, "Next Post");
         //If only 10 posts are in the pipeline or less than 10 in the whole list, load new posts from the DB
-        if(postList.size() - 1 - indexCurrent == 10 || postList.size() < 10){
+        if(postList.size() - indexCurrent == 10 || postList.size() < 10){
             Log.d(LOG.POSTS, "Condition for loading new posts true (Only 10 Posts remaining)");
             loadNewPosts();
         }
