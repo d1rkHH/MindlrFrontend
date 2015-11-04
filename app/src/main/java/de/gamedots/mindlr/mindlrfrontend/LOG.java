@@ -11,4 +11,5 @@ public class LOG {
     public static final String JSON = "LOG.JSON"; /* Use this log for JSON operations */
     public static final String POSTS = "LOG.POSTS"; /* Use this log for operations that involve handling ViewPosts */
     public static final String WRITE = "LOG.WRITE"; /* Use this log for operations that involve sending new posts to the server */
+    public static final String VERIFIED = "LOG.VERIFIED"; /* Use this log for whenever a verification process started/finished */
 }
