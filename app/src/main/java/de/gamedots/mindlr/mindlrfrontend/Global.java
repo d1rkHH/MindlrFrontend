@@ -23,9 +23,7 @@ public final class Global {
     public static final String BACKEND_METHOD_LOAD_POSTS = "LOAD_POSTS";
     //Write Post
     public static final String BACKEND_METHOD_WRITE_POST = "WRITE_POST";
-    public static final int DEFAULT_USER_ID = 1;
     public static final String METHOD_POST = "POST";
-    public static final String METHOD_GET = "GET";
 
     public static final String METHOD_VERIFY = "VERIFY_TOKEN";
 

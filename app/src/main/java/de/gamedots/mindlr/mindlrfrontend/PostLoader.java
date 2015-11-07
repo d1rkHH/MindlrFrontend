@@ -7,6 +7,7 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -126,12 +127,22 @@ public class PostLoader {
                         String key = (String) keys.next();
                         String text = jsonPosts.getString(key);
                         Log.d(LOG.JSON, "Key: " + key +  " - Text: " + text);
-                        int id = Integer.parseInt(key);
-                        ViewPost post = new ViewPost(id,text);
-                        Log.d(LOG.POSTS, "Add post to postList");
-                        postList.add(post);
-                        if(this.fragment != null && postList.size() == 1){
-                            fragment.getPostView().setText(post.getContentText());
+                        if(key.equals("SUCCESS") && text.equals("false")){
+                            //SUCCESS = false gets passed, when the user Auth failed
+                            //TODO: Make Toast to communicate problems with user auth, maybe make user relog
+                        } else {
+                            try {
+                                int id = Integer.parseInt(key);
+                                ViewPost post = new ViewPost(id, text);
+                                Log.d(LOG.POSTS, "Add post to postList");
+                                postList.add(post);
+                                if (this.fragment != null && postList.size() == 1) {
+                                    fragment.getPostView().setText(post.getContentText());
+                                }
+                            } catch (NumberFormatException e){
+                                Log.d(LOG.JSON, "JSON key is NaN");
+                            }
+
                         }
                     }
 
