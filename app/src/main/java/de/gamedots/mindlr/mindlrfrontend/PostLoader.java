@@ -1,8 +1,10 @@
 package de.gamedots.mindlr.mindlrfrontend;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -91,12 +93,18 @@ public class PostLoader {
     private class LoadNewPostsTask extends AsyncTask<Void, Void, JSONObject> {
 
         PostViewFragment fragment;
+        Context context;
 
         public LoadNewPostsTask(){
 
         }
 
         public LoadNewPostsTask(PostViewFragment fragment) {
+            this.fragment = fragment;
+        }
+
+        public LoadNewPostsTask(PostViewFragment fragment, Context context) {
+            this.context = context;
             this.fragment = fragment;
         }
 
@@ -112,6 +120,7 @@ public class PostLoader {
             parameter.put("PRODUCT", Build.PRODUCT);
             parameter.put("SDK", "" + Build.VERSION.SDK_INT);
             parameter.put("TIME", "" + Build.TIME);
+            parameter.put("USER_ID", "TRIAL");
             parameter.put(BACKEND_METHOD_KEY,BACKEND_METHOD_LOAD_POSTS);
             Log.d(LOG.JSON, "About to create JSONParser");
             JSONParser parser = new JSONParser();
@@ -127,8 +136,8 @@ public class PostLoader {
                         String key = (String) keys.next();
                         String text = jsonPosts.getString(key);
                         Log.d(LOG.JSON, "Key: " + key +  " - Text: " + text);
-                        if(key.equals("SUCCESS") && text.equals("false")){
-                            //SUCCESS = false gets passed, when the user Auth failed
+                        if(key.equals("ERROR")){
+                            Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
                             //TODO: Make Toast to communicate problems with user auth, maybe make user relog
                         } else {
                             try {
