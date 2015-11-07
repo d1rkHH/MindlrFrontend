@@ -1,298 +1,178 @@
 package de.gamedots.mindlr.mindlrfrontend;
 
-import android.accounts.Account;
+
 import android.content.Intent;
-import android.content.IntentSender;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
-import com.google.android.gms.auth.GoogleAuthException;
-import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Scope;
-import com.google.android.gms.plus.Plus;
-import com.google.android.gms.plus.model.people.Person;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import static de.gamedots.mindlr.mindlrfrontend.Global.BACKEND_METHOD_KEY;
-import static de.gamedots.mindlr.mindlrfrontend.Global.METHOD_POST;
-import static de.gamedots.mindlr.mindlrfrontend.Global.METHOD_VERIFY;
-import static de.gamedots.mindlr.mindlrfrontend.Global.SERVER_URL;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 
 /**
  * Created by dirk on 27.10.2015.
  */
 public class LoginActivity extends AppCompatActivity implements
-        GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
 
-    private final String SERVER_CLIENT_ID
-            = "319486160725-00pmin4g2p7sar8p7k7mjod7fra8hiep.apps.googleusercontent.com";
+    //****************************************************************
+    private static final String TAG = "SignInActivity";
+    private static final int RC_SIGN_IN = 9001;
+    private static final int RC_GET_TOKEN = 9002;
 
-    public static final String TAG = "LoginActivity";
-
-    /* Keys for persisting instance variables in savedInstanceState */
-    private static final String KEY_IS_RESOLVING = "is_resolving";
-    private static final String KEY_SHOULD_RESOLVE = "should_resolve";
-
-    /* Request code used to invoke sign in user interactions. */
-    private static final int RC_SIGN_IN = 0;
-
-    /* Google Client used to interact with Google APIs. */
     private GoogleApiClient mGoogleApiClient;
-
-    /* Is there a ConnectionResult resolution in progress? */
-    private boolean mIsResolving = false;
-
-    private boolean mShouldResolve = false;
-
-    private ConnectionResult mConnectionResult;
+    //****************************************************************
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "On Create()-method");
         setContentView(R.layout.activity_login);
 
-        // Restore from saved instance state
-        if (savedInstanceState != null) {
-            mIsResolving = savedInstanceState.getBoolean(KEY_IS_RESOLVING);
-            mShouldResolve = savedInstanceState.getBoolean(KEY_SHOULD_RESOLVE);
-        }
+        findViewById(R.id.sign_in_button).setOnClickListener(this); // Button listeners
 
-        // Build GoogleApiClient and specify the initial scope
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Plus.API)
-                        // .addScope(Plus.SCOPE_PLUS_LOGIN)
-                .addScope(new Scope(Scopes.PROFILE)) // access to basic profile information
-                .addScope(new Scope(Scopes.EMAIL))   // access to the users email address
-                        // PLUS_LOGIN or PLUS_ME for Google+ ID
+        // Request only the user's ID token, which can be used to identify the
+        // user securely to your backend. This will contain the user's basic
+        // profile (name, profile picture URL, etc) so you should not need to
+        // make an additional call to personalize your application.
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.server_client_id))
+                .requestEmail()
                 .build();
 
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
+        // Build GoogleAPIClient with the Google Sign-In API and the above options.
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
+        //Styling stuff for the SignButton, depending on the actual scopes that are used
+        SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
+        signInButton.setSize(SignInButton.SIZE_STANDARD);
+        signInButton.setColorScheme(SignInButton.COLOR_DARK);
+        signInButton.setScopes(gso.getScopeArray());
+    }
+
+    /**
+     * Start SignIn-process by starting the SignIn_Intent
+     * which will be retrieved in onActivityResult()
+     */
+    private void signInAndGetIdToken() {
+        // Show an account picker to let the user choose a Google account from the device.
+        // If the GoogleSignInOptions only asks for IDToken and/or profile and/or email then no
+        // consent screen will be shown here.
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, RC_GET_TOKEN);
+    }
+
+    /**
+     * Clears the account which is connected to Mindlr.
+     * To sign in again, the user must choose their account again.
+     */
+    private void signOut() {
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        Log.d(TAG, "signOut:onResult:" + status);
+                        updateUI(false);
+                    }
+                });
+    }
+
+    /**
+     * [OPTIONAL]
+     * Completely disconnect the user´s google account from Mindlr.
+     * Delete all information obtained from Google API´s
+     */
+    private void revokeAccess() {
+        Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        Log.d(TAG, "revokeAccess:onResult:" + status);
+                        //TODO: redirect to login status/ delete all collection informations
+                    }
+                });
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d(TAG, "Client connect OnSTART()");
-        mGoogleApiClient.connect();
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_GET_TOKEN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            Log.d(TAG, "onActivityResult:GET_TOKEN:success:" + result.getStatus().isSuccess());
+
+            if (result.isSuccess()) {
+                GoogleSignInAccount acct = result.getSignInAccount();
+                String idToken = acct.getIdToken();
+
+                // Show signed-in UI.
+                Log.d(TAG, "idToken:" + idToken);
+
+                // TODO(user): send token to server and validate server-side
+            }
+            handleSignInResult(result);
+        }
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.d(TAG, "disconnect client OnSTOP()");
-        mGoogleApiClient.disconnect();
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        // onConnected indicates that an account was selected on the device, that the selected
-        // account has granted any requested permissions to our app and that we were able to
-        // establish a service connection to Google Play services.
-        mShouldResolve = false;
-        Log.d(TAG, "connection successful");
-
-        Log.d(TAG, "start SendGetIdTokenTask");
-        new GetAndSendIdTokenTask().execute();
-
-        //TODO: look for good way to start in mainactivity and check if loged in, otherwise redirect to login activity
-        startActivity(new Intent(this, MainActivity.class));
-
-        /* Get Profile Information only CLIENT SIDE !!!!! NOT USED TO SEND TO BACKEND */
-        // if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-        // Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-        // String personName = currentPerson.getDisplayName();
-        // String personPhoto = currentPerson.getImage().getUrl();
-        // String personGooglePlusProfile = currentPerson.getUrl();
+    //TODO: remove and add switch activity when succesful retrieved idtoken on backend server
+    private void handleSignInResult(GoogleSignInResult result) {
+        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+        if (result.isSuccess()) {
+            // Signed in successfully, show authenticated UI.
+            GoogleSignInAccount acct = result.getSignInAccount();
+            //  mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
+            startActivity(new Intent(this, MainActivity.class));
+            updateUI(true);
+        } else {
+            // Signed out, show unauthenticated UI.
+            updateUI(false);
+        }
     }
 
 
     @Override
-    public void onConnectionSuspended(int i) {
-        // The connection to Google Play services was lost. The GoogleApiClient will automatically
-        // attempt to re-connect. Any UI elements that depend on connection to Google APIs should
-        // be hidden or disabled until onConnected is called again.
-        Log.w(TAG, "onConnectionSuspended:" + i);
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        // An unresolvable error has occurred and Google APIs (including Sign-In) will not
+        // be available.
+        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+    }
+
+    private void updateUI(boolean signedIn) {
+        if (signedIn) {
+            findViewById(R.id.sign_in_button).setVisibility(View.GONE);
+            //findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
+        } else {
+          //  mStatusTextView.setText(R.string.signed_out);
+
+            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
+           // findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
+        }
     }
 
     @Override
     public void onClick(View v) {
-        Log.d(TAG, "sign in clicked");
-
-        if (v.getId() == R.id.sign_in_button)
-            signInWithGplus();
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        // Could not connect to Google Play Services.  The user needs to select an account,
-        // grant permissions or resolve an error in order to sign in.
-
-        Log.d(TAG, "connec failed" + connectionResult);
-        if (!connectionResult.hasResolution()) {
-            GooglePlayServicesUtil.getErrorDialog(connectionResult.getErrorCode(), this,
-                    0).show();
-            return;
-        }
-
-        if (!mIsResolving) {
-            // Store the ConnectionResult for later usage
-            mConnectionResult = connectionResult;
-
-            if (mShouldResolve) {
-                // The user has already clicked 'sign-in' so we attempt to
-                // resolve all errors until the user is signed in, or they cancel.
-                resolveSignInError();
-            }
+        switch (v.getId()) {
+            case R.id.sign_in_button:
+                signInAndGetIdToken();
+                break;
+            /*case R.id.sign_out_button:
+                signOut();
+                break;
+            case R.id.disconnect_button:
+                revokeAccess();
+                break;*/
         }
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
-
-        Log.d(TAG, "Activity Result comes");
-        if (requestCode == RC_SIGN_IN) {
-            if (responseCode != RESULT_OK) {
-                mShouldResolve = false;  // if error solution was not successful - not resolve further
-            }
-
-            mIsResolving = false;
-
-            // user has resolved the issue -> call connect() again
-            if (!mGoogleApiClient.isConnecting()) {
-                mGoogleApiClient.connect();
-            }
-        }
-    }
-
-    /**
-     * Sign-in into google
-     */
-    private void signInWithGplus() {
-        Log.d(TAG, "SIGNIN with GPLUS");
-        if (!mGoogleApiClient.isConnecting() && !mGoogleApiClient.isConnected()) {
-            // User clicked the sign-in button, so begin the sign-in process and automatically
-            // attempt to resolve any errors that occur.
-            mShouldResolve = true;
-            resolveSignInError();
-        }
-    }
-
-    /**
-     * Method to resolve any signin errors
-     */
-    private void resolveSignInError() {
-        Log.d(TAG, "resolving Error" + (mConnectionResult == null));
-        if (!mIsResolving && mShouldResolve) {
-
-            // is there a resolution that can be started?
-            if (mConnectionResult.hasResolution()) {
-                try {
-                    mIsResolving = true;
-                    // resolves an error by starting any intents requiring user interaction
-                    // the activity's onActivityResult method will be invoked after the user is done
-                    mConnectionResult.startResolutionForResult(this, RC_SIGN_IN);
-
-                } catch (IntentSender.SendIntentException e) {
-                    mIsResolving = false;
-                    mGoogleApiClient.connect();
-                }
-            }
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(KEY_IS_RESOLVING, mIsResolving);
-        outState.putBoolean(KEY_SHOULD_RESOLVE, mShouldResolve);
-    }
-
-
-    // Step 1: get the auth token for the user by calling getToken(...) and send it to the server via https
-    // Step 2: the server verify the token using GoogleIdTokenVerfier class
-    // Step 3: handle the server´s verification result in onPostExecute()
-    private class GetAndSendIdTokenTask extends AsyncTask<Void, Void, JSONObject> {
-
-        @Override
-        protected JSONObject doInBackground(Void... params) {
-            String accountName = Plus.AccountApi.getAccountName(mGoogleApiClient);
-            Account account = new Account(accountName, GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
-            String scopes = "audience:server:client_id:" + SERVER_CLIENT_ID;
-
-            try {
-                /* get token */
-                String idToken = GoogleAuthUtil.getToken(getApplicationContext(), account, scopes);
-                Log.i(TAG, "ID token: " + idToken);
-
-                /* prepare to send IdToken to the server */
-                if (idToken != null) {
-                    HashMap<String, String> parameter = new HashMap<>();
-                    parameter.put("idToken", idToken);
-                    parameter.put(BACKEND_METHOD_KEY, METHOD_VERIFY);
-
-                /* send the token via HTTPS */
-                    Log.d(LOG.JSON, "About to create JSONParser");
-                    JSONParser parser = new JSONParser();
-                    Log.d(LOG.CONNECTION, "About to make HTTPRequest");
-
-                    // TODO: verification on the backend
-                    return parser.makeHttpRequest(SERVER_URL, METHOD_VERIFY, parameter);
-
-                } else {
-                    // There was some error getting the ID Token
-                    Toast.makeText(getApplication(), "No token available", Toast.LENGTH_SHORT).show();
-                    return null;
-                }
-            } catch (IOException e) {
-                Log.e(TAG, "Error retrieving ID token.", e);
-                return null;
-            } catch (GoogleAuthException e) {
-                Log.e(TAG, "Error retrieving ID token.", e);
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject result) {
-            if (result != null) {
-                try {
-                    if (result.getBoolean("SUCCESS")) {
-                        // TODO: read json, save triplet .....
-                        Log.d(LOG.VERIFIED, "Sucessfuly verified the Google user on the backend");
-                        Toast.makeText(getApplication(), "Nutzer wurde im Backend verifiziert", Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException jex) {
-                    Log.d(LOG.JSON, "Error parsing data into objects");
-                    jex.printStackTrace();
-                }
-            }
-        }
-
-    }
-
-
 }

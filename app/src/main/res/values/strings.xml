@@ -22,4 +22,5 @@
         <item>Mode</item>
     </string-array>
     <string name="title_activity_user_posts">UserPostsActivity</string>
+    <string name="server_client_id">319486160725-gksup5cr2bgric18al3q6h47h3p23dia.apps.googleusercontent.com</string>
 </resources>
