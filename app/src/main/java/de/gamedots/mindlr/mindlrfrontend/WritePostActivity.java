@@ -29,7 +29,6 @@ import static de.gamedots.mindlr.mindlrfrontend.Global.BACKEND_METHOD_KEY;
 import static de.gamedots.mindlr.mindlrfrontend.Global.BACKEND_METHOD_WRITE_POST;
 import static de.gamedots.mindlr.mindlrfrontend.Global.SERVER_URL;
 import static de.gamedots.mindlr.mindlrfrontend.Global.METHOD_POST;
-import static de.gamedots.mindlr.mindlrfrontend.Global.DEFAULT_USER_ID;
 
 public class WritePostActivity extends ToolbarActivity {
 
@@ -121,7 +120,7 @@ public class WritePostActivity extends ToolbarActivity {
             parameter.put("TIME", "" + new Date());
             //METHOD SPECIFIC PARAMETERS
             parameter.put(BACKEND_METHOD_KEY,BACKEND_METHOD_WRITE_POST);
-            parameter.put("USER_ID", Integer.toString(DEFAULT_USER_ID));
+            parameter.put("USER_ID", "1"); //TODO: Test "TRIAL"
             parameter.put("CONTENT_TEXT", text);
             parameter.put("CATEGORY_ID", Integer.toString(categoryID));
 
