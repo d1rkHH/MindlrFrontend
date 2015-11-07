@@ -8,6 +8,6 @@ captures/
 .idea
 *.apk
 *.ap_
-google-services.json
+app/google-services.json
 proguard/
 
