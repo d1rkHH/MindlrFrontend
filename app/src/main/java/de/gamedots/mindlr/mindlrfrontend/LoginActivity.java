@@ -44,7 +44,7 @@ public class LoginActivity extends AppCompatActivity implements
         // profile (name, profile picture URL, etc) so you should not need to
         // make an additional call to personalize your application.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.server_client_id))
+               // .requestIdToken(getString(R.string.server_client_id))
                 .requestEmail()
                 .build();
 
@@ -70,7 +70,7 @@ public class LoginActivity extends AppCompatActivity implements
         // If the GoogleSignInOptions only asks for IDToken and/or profile and/or email then no
         // consent screen will be shown here.
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_GET_TOKEN);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     /**
@@ -109,11 +109,11 @@ public class LoginActivity extends AppCompatActivity implements
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_GET_TOKEN) {
+        if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            Log.d(TAG, "onActivityResult:GET_TOKEN:success:" + result.getStatus().isSuccess());
+           // Log.d(TAG, "onActivityResult:GET_TOKEN:success:" + result.getStatus().isSuccess());
 
-            if (result.isSuccess()) {
+           /* if (result.isSuccess()) {
                 GoogleSignInAccount acct = result.getSignInAccount();
                 String idToken = acct.getIdToken();
 
@@ -121,7 +121,7 @@ public class LoginActivity extends AppCompatActivity implements
                 Log.d(TAG, "idToken:" + idToken);
 
                 // TODO(user): send token to server and validate server-side
-            }
+            }*/
             handleSignInResult(result);
         }
     }
