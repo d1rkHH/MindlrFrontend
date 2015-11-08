@@ -111,13 +111,8 @@ public class WritePostActivity extends ToolbarActivity {
 
         protected JSONObject doInBackground(Void... params){
             //Needed parameters: UserID, Text, Category, User Information, Method
-            HashMap<String, String> parameter = new HashMap<>();
-            //LOGGING PARAMETERS
-            parameter.put("BRAND", android.os.Build.BRAND);
-            parameter.put("MODEL", android.os.Build.MODEL);
-            parameter.put("PRODUCT", Build.PRODUCT);
-            parameter.put("SDK", "" + Build.VERSION.SDK_INT);
-            parameter.put("TIME", "" + new Date());
+            //Generate default HashMap with logging values
+            HashMap<String, String> parameter = ServerCommunicationUtilities.newDefaultParameterHashMap();
             //METHOD SPECIFIC PARAMETERS
             parameter.put(BACKEND_METHOD_KEY,BACKEND_METHOD_WRITE_POST);
             parameter.put("USER_ID", "1"); //TODO: Test "TRIAL"
@@ -139,10 +134,10 @@ public class WritePostActivity extends ToolbarActivity {
                         Toast.makeText(context, "Erfolgreich gepostet", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(context, MainActivity.class));
                     } else {
-                        Log.d(LOG.POSTS, "Could not post.");
-                        Toast.makeText(context, "Post konnte nicht gespeichert werden", Toast.LENGTH_SHORT).show();
+                        String text = result.getString("ERROR");
+                        Log.d(LOG.POSTS, text);
+                        Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
                     }
-
                 } catch (JSONException e) {
                     Log.d(LOG.JSON, "Error parsing data into objects");
                     e.printStackTrace();
