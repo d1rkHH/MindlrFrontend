@@ -80,12 +80,13 @@ public class PostViewFragment extends Fragment {
                 @Override
                 public void onSwipeTop() {
                     Toast.makeText(getActivity(), "UP", Toast.LENGTH_SHORT).show();
+                    PostLoader.getInstance().getCurrent().ratePositive();
                 }
 
                 @Override
                 public void onSwipeBottom() {
                     Toast.makeText(getActivity(), "DOWN", Toast.LENGTH_SHORT).show();
-
+                    PostLoader.getInstance().getCurrent().rateNegative();
                 }
             });
         }

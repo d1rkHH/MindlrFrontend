@@ -1,5 +1,6 @@
 package de.gamedots.mindlr.mindlrfrontend;
 
+import android.os.Build;
 import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -150,4 +151,5 @@ public class JSONParser {
         paramsString = sbParams.toString();
         Log.d(LOG.CONNECTION, "End of method createParameters()");
     }
+
 }
