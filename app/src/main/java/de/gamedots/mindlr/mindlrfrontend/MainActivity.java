@@ -1,35 +1,13 @@
 package de.gamedots.mindlr.mindlrfrontend;
 
 import android.content.Intent;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.MotionEventCompat;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-
-import de.gamedots.mindlr.mindlrfrontend.models.ViewPost;
-
-import static de.gamedots.mindlr.mindlrfrontend.Global.*;
-
 public class MainActivity extends ToolbarActivity {
-
 
 
     @Override
@@ -107,5 +85,4 @@ public class MainActivity extends ToolbarActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
 }
