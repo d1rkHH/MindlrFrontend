@@ -127,8 +127,8 @@ public class LoginActivity extends AppCompatActivity implements
             Log.d(TAG, "idToken:" + idToken);
             Toast.makeText(this, "idToken: " + idToken, Toast.LENGTH_LONG).show();
             //TODO: show sign in UI -> Main View
-            // Intent intent = new Intent(this, MainActivity.class);
-            //startActivity(intent);
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
 
             // TODO(user): send token to server and validate server-side
             Log.d(TAG, "start idTokenTask");
@@ -256,23 +256,22 @@ public class LoginActivity extends AppCompatActivity implements
 
         @Override
         protected void onPostExecute(JSONObject result) {
-            super.onPostExecute(result);
-
-            if( result != null){
-                try {
-                    boolean success = result.getBoolean("Success");
-
-                    if(success){
-                        Log.d(LOG.VERIFIED, "successful verified the user on backend");
-                        Toast.makeText(getApplicationContext(), "Verfied User", Toast.LENGTH_LONG ).show();
-                    }else{
+            new PostExecuteBehaviour() {
+                @Override
+                public void onSuccess(JSONObject result) {
+                    Log.d(LOG.VERIFIED, "successful verified the user on backend");
+                    Toast.makeText(getApplicationContext(), "Verfied User", Toast.LENGTH_LONG ).show();
+                }
+                @Override
+                public void onFailure(JSONObject result) {
+                    try {
                         String errorMsg = result.getString("ERROR");
                         Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                    } catch (JSONException e){
+                        Log.e(LOG.JSON, Log.getStackTraceString(e));
                     }
-                } catch (JSONException jsonEx) {
-                    jsonEx.printStackTrace();
                 }
-            }
+            }.onPostExec(result);
         }
     }
 }

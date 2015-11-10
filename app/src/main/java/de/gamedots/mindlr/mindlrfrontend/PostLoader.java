@@ -1,6 +1,7 @@
 package de.gamedots.mindlr.mindlrfrontend;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
@@ -149,7 +150,7 @@ public class PostLoader {
         PostViewFragment fragment;
         Context context;
 
-        public LoadNewPostsTask(){
+        public LoadNewPostsTask() {
 
         }
 
@@ -162,14 +163,14 @@ public class PostLoader {
             this.fragment = fragment;
         }
 
-        protected void onPreExecute(){
+        protected void onPreExecute() {
             //Keine Funktionalität
         }
 
-        protected JSONObject doInBackground(Void... params){
+        protected JSONObject doInBackground(Void... params) {
             HashMap<String, String> parameter = ServerCommunicationUtilities.newDefaultParameterHashMap();
 
-            parameter.put(BACKEND_METHOD_KEY,BACKEND_METHOD_LOAD_POSTS);
+            parameter.put(BACKEND_METHOD_KEY, BACKEND_METHOD_LOAD_POSTS);
             parameter.put("USER_ID", "TRIAL");
 
             Log.d(LOG.JSON, "About to create JSONParser");
@@ -178,58 +179,61 @@ public class PostLoader {
             return parser.makeHttpRequest(SERVER_URL, METHOD_POST, parameter);
         }
 
-        protected void onPostExecute(JSONObject jsonPosts){
-            if(jsonPosts != null){
-                try {
-                    boolean success = jsonPosts.getBoolean("SUCCESS");
-                    jsonPosts.remove("SUCCESS");
-                    if(success){
-                        Iterator<?> keys = jsonPosts.keys();
-                        while(keys.hasNext()) {
-                            String key = (String) keys.next();
-                            String text = jsonPosts.getString(key);
-                            Log.d(LOG.JSON, "Key: " + key +  " - Text: " + text);
+        protected void onPostExecute(JSONObject result) {
+            new PostExecuteBehaviour() {
+                @Override
+                public void onSuccess(JSONObject result) {
+                    Iterator<?> keys = result.keys();
+                    while (keys.hasNext()) {
+                        String key = (String) keys.next();
+                        try {
+                            String text = result.getString(key);
+                            Log.d(LOG.JSON, "Key: " + key + " - Text: " + text);
                             try {
                                 int id = Integer.parseInt(key);
                                 ViewPost post = new ViewPost(id, text);
                                 Log.d(LOG.POSTS, "Add post to postList");
                                 postList.add(post);
-                                if (this.fragment != null && postList.size() == 1) {
+                                if (fragment != null && postList.size() == 1) {
                                     fragment.getPostView().setText(post.getContentText());
                                 }
-                            } catch (NumberFormatException e){
+                            } catch (NumberFormatException e) {
                                 Log.d(LOG.JSON, "JSON key is NaN");
                             }
+                        } catch (JSONException e) {
+                            Log.e(LOG.JSON, Log.getStackTraceString(e));
                         }
-                    } else {
-                        String text = jsonPosts.getString("ERROR");
-                        Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
                     }
-                } catch (JSONException e) {
-                    Log.d(LOG.JSON, "Error parsing data into objects");
-                    e.printStackTrace();
+
                 }
-            } else{
-                Log.d(LOG.JSON, "JSONObject was null");
-            }
+
+                @Override
+                public void onFailure(JSONObject result) {
+                    try {
+                        String text = result.getString("ERROR");
+                        Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                    } catch (JSONException e) {
+                        Log.e(LOG.JSON, Log.getStackTraceString(e));
+                    }
+                }
+            }.onPostExec(result);
         }
     }
 
+    private class SendVotesTask extends AsyncTask<Void, Void, JSONObject> {
 
-    private class SendVotesTask extends AsyncTask<Void, Void, JSONObject>{
-
-        protected void onPreExecute(){
+        protected void onPreExecute() {
             //Keine Funktionalität
         }
 
-        protected JSONObject doInBackground(Void... params){
+        protected JSONObject doInBackground(Void... params) {
             //Generate new HashMap with default values such as SDK etc.
             HashMap<String, String> parameter = ServerCommunicationUtilities.newDefaultParameterHashMap();
 
-            parameter.put(BACKEND_METHOD_KEY,BACKEND_METHOD_SEND_VOTES);
+            parameter.put(BACKEND_METHOD_KEY, BACKEND_METHOD_SEND_VOTES);
             parameter.put("USER_ID", "1"); //should only work with real user, not TRIAL
             sendPosts = getOldestPosts();
-            for(ViewPost post : sendPosts){
+            for (ViewPost post : sendPosts) {
                 parameter.put(Long.toString(post.getId()), Integer.toString(post.getVote()));
             }
             Log.d(LOG.JSON, "About to create JSONParser");
@@ -238,32 +242,28 @@ public class PostLoader {
             return parser.makeHttpRequest(SERVER_URL, METHOD_POST, parameter);
         }
 
-        protected void onPostExecute(JSONObject result){
-            if(result != null){
-                try {
-                    boolean success = result.getBoolean("SUCCESS");
-                    if(success){
-                        Log.d(LOG.POSTS, "Successfull posted.");
-                        removeSendPosts();
-                    } else {
-                        String text = result.getString("ERROR");
-                        Log.d(LOG.POSTS, text);
+        protected void onPostExecute(JSONObject result) {
+            new PostExecuteBehaviour() {
+                @Override
+                public void onSuccess(JSONObject result) {
+                    Log.d(LOG.POSTS, "Successfull posted.");
+                    removeSendPosts();
+                }
+
+                @Override
+                public void onFailure(JSONObject result) {
+                    try {
                         JSONArray failedPostIDs = result.getJSONArray("FAILED");
                         List<Long> postIDs = new ArrayList<>();
-                        for(int i = 0; i < failedPostIDs.length(); i++){
+                        for (int i = 0; i < failedPostIDs.length(); i++) {
                             postIDs.add(failedPostIDs.getLong(i));
                         }
                         removeSendPosts(postIDs);
+                    } catch (JSONException e) {
+                        Log.e(LOG.JSON, Log.getStackTraceString(e));
                     }
-
-                } catch (JSONException e) {
-                    Log.d(LOG.JSON, "Error parsing data into objects");
-                    e.printStackTrace();
                 }
-            } else{
-                Log.d(LOG.JSON, "JSONObject was null");
-            }
+            }.onPostExec(result);
         }
     }
-
 }

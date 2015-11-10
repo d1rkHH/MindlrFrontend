@@ -90,17 +90,15 @@ public class WritePostActivity extends ToolbarActivity {
         EditText editText = (EditText) findViewById(R.id.postWriteArea);
         Spinner spinner = (Spinner) findViewById(R.id.category_spinner);
         String catString = spinner.getSelectedItem().toString();
-        new WritePostTask(this, editText.getText().toString(), Category.getCategoryIDForName(catString)).execute();
+        new WritePostTask(editText.getText().toString(), Category.getCategoryIDForName(catString)).execute();
     }
 
     private class WritePostTask extends AsyncTask<Void, Void, JSONObject> {
 
-        Context context;
         String text;
         int categoryID;
 
-        public WritePostTask(Context context, String text, int categoryID) {
-            this.context = context;
+        public WritePostTask(String text, int categoryID) {
             this.text = text;
             this.categoryID = categoryID;
         }
@@ -126,25 +124,23 @@ public class WritePostActivity extends ToolbarActivity {
         }
 
         protected void onPostExecute(JSONObject result){
-            if(result != null){
-                try {
-                    boolean success = result.getBoolean("SUCCESS");
-                    if(success){
-                        Log.d(LOG.POSTS, "Successfull posted.");
-                        Toast.makeText(context, "Erfolgreich gepostet", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(context, MainActivity.class));
-                    } else {
-                        String text = result.getString("ERROR");
-                        Log.d(LOG.POSTS, text);
-                        Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    Log.d(LOG.JSON, "Error parsing data into objects");
-                    e.printStackTrace();
+            new PostExecuteBehaviour() {
+                @Override
+                public void onSuccess(JSONObject result) {
+                    Log.d(LOG.POSTS, "Successfull posted.");
+                    Toast.makeText(getApplicationContext(), "Erfolgreich gepostet", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 }
-            } else{
-                Log.d(LOG.JSON, "JSONObject was null");
-            }
+                @Override
+                public void onFailure(JSONObject result) {
+                    try {
+                        String text = result.getString("ERROR");
+                        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+                    } catch (JSONException e) {
+                        Log.e(LOG.JSON, Log.getStackTraceString(e));
+                    }
+                }
+            }.onPostExec(result);
         }
     }
 }
