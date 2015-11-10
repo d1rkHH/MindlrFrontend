@@ -16,6 +16,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -70,9 +71,8 @@ public class LoginActivity extends AppCompatActivity implements
         super.onStart();
 
         /* Try GoogleSilentSignIn */
-       // googleSilentSignIn();
+        googleSilentSignIn();
     }
-
 
     @Override
     public void onClick(View v) {
@@ -120,15 +120,17 @@ public class LoginActivity extends AppCompatActivity implements
         Log.d(TAG, "handleGoogleSign-in:" + result.isSuccess());
 
         if (result.isSuccess()) {
+            /* when success GoogleAPIClient is connected as well*/
             GoogleSignInAccount acct = result.getSignInAccount();
             String idToken = acct.getIdToken();
+            Log.d(TAG, "API Client : isConnected = " + _mGoogleApiClient.isConnected() );
 
             // Show signed-in UI.
             Log.d(TAG, "idToken:" + idToken);
             Toast.makeText(this, "idToken: " + idToken, Toast.LENGTH_LONG).show();
             //TODO: show sign in UI -> Main View
-            // Intent intent = new Intent(this, MainActivity.class);
-            //startActivity(intent);
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
 
             // TODO(user): send token to server and validate server-side
             Log.d(TAG, "start idTokenTask");
@@ -162,6 +164,7 @@ public class LoginActivity extends AppCompatActivity implements
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+        _mGoogleApiClient.connect();
     }
 
     private void googleSilentSignIn() {
@@ -236,7 +239,6 @@ public class LoginActivity extends AppCompatActivity implements
             _mProgressDialog.hide();
         }
     }
-
 
     private class SendIdTokenTask extends AsyncTask<String, Void,JSONObject>{
 
