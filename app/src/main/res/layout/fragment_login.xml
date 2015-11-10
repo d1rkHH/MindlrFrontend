@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:background="#B0BEC5"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/needToLoginText"
+        android:text="@string/loginInfoText"
+        android:textSize="30sp"
+        android:textColor="@color/white"
+        android:lineSpacingExtra="3dp"
+        android:layout_width="wrap_content"
+        android:gravity="center"
+        android:layout_height="wrap_content" />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/sign_in_button"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:padding="16dp" />
+</LinearLayout>

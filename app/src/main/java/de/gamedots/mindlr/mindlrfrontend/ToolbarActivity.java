@@ -7,7 +7,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
+
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
 
 /**
  * Created by Dirk on 24.09.15.
@@ -37,6 +41,14 @@ public abstract class ToolbarActivity extends AppCompatActivity {
 
     public Toolbar getToolbar(){
         return toolbar;
+    }
+
+    public void hideToolbar(){
+        toolbar.setVisibility(INVISIBLE);
+    }
+
+    public void showToolbar(){
+        toolbar.setVisibility(VISIBLE);
     }
 
 }

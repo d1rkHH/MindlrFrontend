@@ -69,9 +69,10 @@ public class LoginActivity extends AppCompatActivity implements
     @Override
     public void onStart() {
         super.onStart();
+        Log.d(TAG, "API: " + _mGoogleApiClient.isConnected());
 
         /* Try GoogleSilentSignIn */
-        googleSilentSignIn();
+        //googleSilentSignIn();
     }
 
     @Override
@@ -134,7 +135,7 @@ public class LoginActivity extends AppCompatActivity implements
 
             // TODO(user): send token to server and validate server-side
             Log.d(TAG, "start idTokenTask");
-            //new SendIdTokenTask().execute(idToken);
+            //new SendIdTokenTask().execute(idToken, acct.getEmail());
 
         } else {
             //signed out, show log in UI
@@ -164,7 +165,6 @@ public class LoginActivity extends AppCompatActivity implements
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-        _mGoogleApiClient.connect();
     }
 
     private void googleSilentSignIn() {
@@ -247,8 +247,9 @@ public class LoginActivity extends AppCompatActivity implements
             HashMap<String, String> parameter = ServerCommunicationUtilities.newDefaultParameterHashMap();
             //METHOD SPECIFIC PARAMETERS
             parameter.put(BACKEND_METHOD_KEY, METHOD_VERIFY);
-            parameter.put("USER_ID", "1"); //TODO: Test "TRIAL"
-            parameter.put("idToken", params[0] /* idToken */);
+            parameter.put("AUTH_PROVIDER", Global.AuthProvider.GOOGLE.name());
+            parameter.put("EMAIL", params[1] );
+            parameter.put("ID_TOKEN", params[0] /* idToken */);
 
             Log.d(LOG.JSON, "About to create JSONParser");
             JSONParser parser = new JSONParser();

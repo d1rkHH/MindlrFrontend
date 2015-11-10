@@ -8,4 +8,7 @@
     <string name="setting_string">Settings</string>
     <string name="default_string">default</string>
     <string name="loading">Loading....</string>
+    <string name="loginInfoText">Willkommen \n zu \n Mindlr! \n Bitte logge dich ein</string>
+    <string name="LoginStatePreference">LoginStatePref</string>
+    <string name="UserLoginState">userLoginState</string>
 </resources>

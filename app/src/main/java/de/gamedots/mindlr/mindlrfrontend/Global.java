@@ -29,6 +29,10 @@ public final class Global {
 
     public static final String METHOD_VERIFY = "VERIFY_TOKEN";
 
+    private static final String AUTH_PROVIDER = "AUTH_PROVIDER";
+
+    public enum AuthProvider { GOOGLE }
+
 
 
     public static class Categories {
