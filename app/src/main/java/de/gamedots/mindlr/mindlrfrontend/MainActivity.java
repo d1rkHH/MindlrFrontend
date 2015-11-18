@@ -245,7 +245,14 @@ public class MainActivity extends ToolbarActivity implements
                         Log.d(TAG, "signOut:onResult:" + status);
                     }
                 });
-        findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
+        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.LoginStatePreference), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(getString(R.string.UserLoginState), false);
+        editor.commit();
+        _isUserSignedIn = false;
+        handleUserSignInResult(_isUserSignedIn);
+        Log.d(TAG, "AFTER SIGN OUT API CLIENT Is: " + _mGoogleApiClient.isConnected());
+        //findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
     }
 
     /**
@@ -331,6 +338,7 @@ public class MainActivity extends ToolbarActivity implements
         }
         if (id == R.id.settings) {
             //TODO: start setting acitivity
+            signOut();
             Toast.makeText(this, " Settings clicked", Toast.LENGTH_SHORT).show();
             return true;
         }
