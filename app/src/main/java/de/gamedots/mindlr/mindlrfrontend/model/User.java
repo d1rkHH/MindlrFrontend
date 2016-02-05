@@ -1,4 +1,4 @@
-package de.gamedots.mindlr.mindlrfrontend.models;
+package de.gamedots.mindlr.mindlrfrontend.model;
 
 /**
  * This class represents the App´s user. A User has a final ID used for

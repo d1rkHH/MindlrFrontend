@@ -1,6 +1,8 @@
-package de.gamedots.mindlr.mindlrfrontend.models;
+package de.gamedots.mindlr.mindlrfrontend.model.post;
 
 import java.util.Date;
+
+import de.gamedots.mindlr.mindlrfrontend.model.Category;
 
 /**
  * Created by max on 26.09.15.

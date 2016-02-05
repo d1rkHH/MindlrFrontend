@@ -1,4 +1,4 @@
-package de.gamedots.mindlr.mindlrfrontend;
+package de.gamedots.mindlr.mindlrfrontend.view.activity;
 
 import android.os.Bundle;
 import android.view.Menu;
@@ -8,10 +8,12 @@ import android.widget.ListView;
 import java.util.Arrays;
 import java.util.Date;
 
-import de.gamedots.mindlr.mindlrfrontend.models.UserPost;
-import static de.gamedots.mindlr.mindlrfrontend.Global.Categories.*;
+import de.gamedots.mindlr.mindlrfrontend.adapter.PostListAdapter;
+import de.gamedots.mindlr.mindlrfrontend.R;
+import de.gamedots.mindlr.mindlrfrontend.model.post.UserPost;
+import static de.gamedots.mindlr.mindlrfrontend.util.Global.Categories.*;
 
-public class UserPostsActivity extends ToolbarActivity {
+public class UserPostsActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

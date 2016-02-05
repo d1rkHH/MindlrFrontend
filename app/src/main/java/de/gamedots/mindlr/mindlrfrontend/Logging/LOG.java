@@ -1,4 +1,4 @@
-package de.gamedots.mindlr.mindlrfrontend;
+package de.gamedots.mindlr.mindlrfrontend.logging;
 
 /**
  * Created by max on 27.09.15.

@@ -1,9 +1,7 @@
-package de.gamedots.mindlr.mindlrfrontend;
+package de.gamedots.mindlr.mindlrfrontend.helper;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -11,21 +9,22 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.FormatFlagsConversionMismatchException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import de.gamedots.mindlr.mindlrfrontend.models.ViewPost;
+import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
+import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
+import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
+import de.gamedots.mindlr.mindlrfrontend.util.PostExecuteTemplate;
+import de.gamedots.mindlr.mindlrfrontend.util.ServerComUtil;
 
-import static de.gamedots.mindlr.mindlrfrontend.Global.BACKEND_METHOD_KEY;
-import static de.gamedots.mindlr.mindlrfrontend.Global.BACKEND_METHOD_LOAD_POSTS;
-import static de.gamedots.mindlr.mindlrfrontend.Global.BACKEND_METHOD_SEND_VOTES;
-import static de.gamedots.mindlr.mindlrfrontend.Global.SERVER_URL;
-import static de.gamedots.mindlr.mindlrfrontend.Global.METHOD_POST;
+import static de.gamedots.mindlr.mindlrfrontend.util.Global.BACKEND_METHOD_KEY;
+import static de.gamedots.mindlr.mindlrfrontend.util.Global.BACKEND_METHOD_LOAD_POSTS;
+import static de.gamedots.mindlr.mindlrfrontend.util.Global.BACKEND_METHOD_SEND_VOTES;
+import static de.gamedots.mindlr.mindlrfrontend.util.Global.SERVER_URL;
+import static de.gamedots.mindlr.mindlrfrontend.util.Global.METHOD_POST;
 
 /**
  * Created by max on 26.09.15.
@@ -99,24 +98,24 @@ public class PostLoader {
         }
     }
 
-    public void loadNewPosts(){
+    private void loadNewPosts(){
         Log.d(LOG.POSTS, "Load new Posts from Server");
         new LoadNewPostsTask().execute();
     }
 
-    public List<ViewPost> getOldestPosts(){
+    private List<ViewPost> getOldestPosts(){
         return postList.subList(0, indexCurrent - 30); // only 30 posts remain
     }
 
-    public void sendVotes(){
+    private void sendVotes(){
         new SendVotesTask().execute();
     }
 
-    public void removeSendPosts(){
+    private void removeSendPosts(){
         removeSendPosts(new ArrayList<Long>());
     }
 
-    public void removeSendPosts(List<Long> failedPostIDs){
+    private void removeSendPosts(List<Long> failedPostIDs){
         Log.d(LOG.POSTS, "About to remove send posts from postList");
         ArrayList<ViewPost> sendPostsCopy = new ArrayList<>(sendPosts);
         ArrayList<ViewPost> postListCopy = new ArrayList<>(postList);
@@ -168,7 +167,7 @@ public class PostLoader {
         }
 
         protected JSONObject doInBackground(Void... params) {
-            HashMap<String, String> parameter = ServerCommunicationUtilities.newDefaultParameterHashMap();
+            HashMap<String, String> parameter = ServerComUtil.newDefaultParameterHashMap();
 
             parameter.put(BACKEND_METHOD_KEY, BACKEND_METHOD_LOAD_POSTS);
             parameter.put("USER_ID", "TRIAL");
@@ -180,7 +179,7 @@ public class PostLoader {
         }
 
         protected void onPostExecute(JSONObject result) {
-            new PostExecuteBehaviour() {
+            new PostExecuteTemplate() {
                 @Override
                 public void onSuccess(JSONObject result) {
                     Iterator<?> keys = result.keys();
@@ -228,7 +227,7 @@ public class PostLoader {
 
         protected JSONObject doInBackground(Void... params) {
             //Generate new HashMap with default values such as SDK etc.
-            HashMap<String, String> parameter = ServerCommunicationUtilities.newDefaultParameterHashMap();
+            HashMap<String, String> parameter = ServerComUtil.newDefaultParameterHashMap();
 
             parameter.put(BACKEND_METHOD_KEY, BACKEND_METHOD_SEND_VOTES);
             parameter.put("USER_ID", "1"); //should only work with real user, not TRIAL
@@ -243,7 +242,7 @@ public class PostLoader {
         }
 
         protected void onPostExecute(JSONObject result) {
-            new PostExecuteBehaviour() {
+            new PostExecuteTemplate() {
                 @Override
                 public void onSuccess(JSONObject result) {
                     Log.d(LOG.POSTS, "Successfull posted.");

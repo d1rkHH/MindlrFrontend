@@ -1,8 +1,6 @@
-package de.gamedots.mindlr.mindlrfrontend;
+package de.gamedots.mindlr.mindlrfrontend.view.activity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,7 +8,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -18,19 +15,22 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 
-import de.gamedots.mindlr.mindlrfrontend.models.Category;
-import de.gamedots.mindlr.mindlrfrontend.models.ViewPost;
+import de.gamedots.mindlr.mindlrfrontend.R;
+import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
+import de.gamedots.mindlr.mindlrfrontend.model.Category;
+import de.gamedots.mindlr.mindlrfrontend.util.Global;
+import de.gamedots.mindlr.mindlrfrontend.helper.JSONParser;
+import de.gamedots.mindlr.mindlrfrontend.util.PostExecuteTemplate;
+import de.gamedots.mindlr.mindlrfrontend.util.ServerComUtil;
 
-import static de.gamedots.mindlr.mindlrfrontend.Global.BACKEND_METHOD_KEY;
-import static de.gamedots.mindlr.mindlrfrontend.Global.BACKEND_METHOD_WRITE_POST;
-import static de.gamedots.mindlr.mindlrfrontend.Global.SERVER_URL;
-import static de.gamedots.mindlr.mindlrfrontend.Global.METHOD_POST;
+import static de.gamedots.mindlr.mindlrfrontend.util.Global.BACKEND_METHOD_KEY;
+import static de.gamedots.mindlr.mindlrfrontend.util.Global.BACKEND_METHOD_WRITE_POST;
+import static de.gamedots.mindlr.mindlrfrontend.util.Global.SERVER_URL;
+import static de.gamedots.mindlr.mindlrfrontend.util.Global.METHOD_POST;
 
-public class WritePostActivity extends ToolbarActivity {
+public class WritePostActivity extends BaseActivity {
 
 
     @Override
@@ -78,11 +78,8 @@ public class WritePostActivity extends ToolbarActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-        if (id == android.R.id.home) {
-            return true;
-        }
+        return id == android.R.id.home || super.onOptionsItemSelected(item);
 
-        return super.onOptionsItemSelected(item);
     }
 
     public void writePost(View view){
@@ -110,7 +107,7 @@ public class WritePostActivity extends ToolbarActivity {
         protected JSONObject doInBackground(Void... params){
             //Needed parameters: UserID, Text, Category, User Information, Method
             //Generate default HashMap with logging values
-            HashMap<String, String> parameter = ServerCommunicationUtilities.newDefaultParameterHashMap();
+            HashMap<String, String> parameter = ServerComUtil.newDefaultParameterHashMap();
             //METHOD SPECIFIC PARAMETERS
             parameter.put(BACKEND_METHOD_KEY,BACKEND_METHOD_WRITE_POST);
             parameter.put("USER_ID", "1"); //TODO: Test "TRIAL"
@@ -124,7 +121,7 @@ public class WritePostActivity extends ToolbarActivity {
         }
 
         protected void onPostExecute(JSONObject result){
-            new PostExecuteBehaviour() {
+            new PostExecuteTemplate() {
                 @Override
                 public void onSuccess(JSONObject result) {
                     Log.d(LOG.POSTS, "Successfull posted.");

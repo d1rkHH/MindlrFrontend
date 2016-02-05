@@ -1,4 +1,4 @@
-package de.gamedots.mindlr.mindlrfrontend;
+package de.gamedots.mindlr.mindlrfrontend.util;
 
 import android.os.Build;
 
@@ -7,7 +7,7 @@ import java.util.HashMap;
 /**
  * Created by max on 08.11.15.
  */
-public class ServerCommunicationUtilities {
+public class ServerComUtil {
 
     public static HashMap<String, String> newDefaultParameterHashMap(){
         HashMap<String, String> parameter = new HashMap<>();

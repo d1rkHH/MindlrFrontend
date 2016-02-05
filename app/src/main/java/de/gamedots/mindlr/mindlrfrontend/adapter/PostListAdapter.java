@@ -1,4 +1,4 @@
-package de.gamedots.mindlr.mindlrfrontend;
+package de.gamedots.mindlr.mindlrfrontend.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,7 +9,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import de.gamedots.mindlr.mindlrfrontend.models.UserPost;
+import de.gamedots.mindlr.mindlrfrontend.R;
+import de.gamedots.mindlr.mindlrfrontend.model.post.UserPost;
 
 /**
  * Created by Dirk on 05.09.15.

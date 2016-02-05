@@ -1,6 +1,5 @@
-package de.gamedots.mindlr.mindlrfrontend;
+package de.gamedots.mindlr.mindlrfrontend.helper;
 
-import android.os.Build;
 import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,6 +14,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
+
+import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 
 /**
  * JSONParser to make HTTP Requests and get JSON back

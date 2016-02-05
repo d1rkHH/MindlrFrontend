@@ -1,8 +1,10 @@
-package de.gamedots.mindlr.mindlrfrontend;
+package de.gamedots.mindlr.mindlrfrontend.util;
 
 import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 
 
 /**
@@ -21,7 +23,7 @@ import org.json.JSONObject;
  * Uses abstract class instead of interface, because no 1.8 support in Android (yet)
  * Created by Max Wiechmann on 09.11.2015.
  */
-public abstract class PostExecuteBehaviour {
+public abstract class PostExecuteTemplate {
 
     public final void onPostExec(JSONObject result) {
         if (result != null) {
@@ -49,8 +51,8 @@ public abstract class PostExecuteBehaviour {
         }
     }
 
-    abstract void onSuccess(JSONObject result);
+    public abstract void onSuccess(JSONObject result);
 
-    abstract void onFailure(JSONObject result);
+    public abstract void onFailure(JSONObject result);
 
 }

@@ -1,10 +1,6 @@
-package de.gamedots.mindlr.mindlrfrontend;
+package de.gamedots.mindlr.mindlrfrontend.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import de.gamedots.mindlr.mindlrfrontend.models.Category;
+import de.gamedots.mindlr.mindlrfrontend.model.Category;
 
 /**
  * Created by max on 26.09.15.
@@ -16,7 +12,7 @@ public final class Global {
     //public static final PostLoader postLoader = new PostLoader();
 
     //Server Connection
-    public static final String SERVER_URL = "http://backend.mindlr.com:8080/requesthandler";
+    public static final String SERVER_URL = "http://192.168.2.100:8080/requesthandler";
     //Methods
     public static final String BACKEND_METHOD_KEY = "BACKEND_METHOD";
     //Load Posts

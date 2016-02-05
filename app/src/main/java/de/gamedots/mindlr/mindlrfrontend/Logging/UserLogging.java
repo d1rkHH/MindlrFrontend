@@ -1,4 +1,4 @@
-package de.gamedots.mindlr.mindlrfrontend.models;
+package de.gamedots.mindlr.mindlrfrontend.logging;
 
 import java.util.Date;
 

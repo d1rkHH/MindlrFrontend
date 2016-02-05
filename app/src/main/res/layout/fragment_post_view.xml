@@ -3,7 +3,7 @@
     android:id="@+id/post_fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="de.gamedots.mindlr.mindlrfrontend.PostViewFragment">
+    tools:context=".fragment.PostViewFragment">
 
     <!-- TODO: clean code -->
     <LinearLayout
@@ -28,16 +28,7 @@
             android:textIsSelectable="false"
             android:textSize="22sp" />
 
-        <ImageView
-            android:id="@+id/favorizeIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:onClick="onFavorClick"
-            android:src="@drawable/outstar32" />
-
     </LinearLayout>
-
 
 
 </RelativeLayout>

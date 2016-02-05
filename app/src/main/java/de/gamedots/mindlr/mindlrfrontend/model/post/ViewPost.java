@@ -1,4 +1,4 @@
-package de.gamedots.mindlr.mindlrfrontend.models;
+package de.gamedots.mindlr.mindlrfrontend.model.post;
 
 /**
  * Created by max on 26.09.15.

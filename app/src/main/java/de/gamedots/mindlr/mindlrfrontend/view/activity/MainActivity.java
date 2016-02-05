@@ -1,13 +1,16 @@
-package de.gamedots.mindlr.mindlrfrontend;
-
+package de.gamedots.mindlr.mindlrfrontend.view.activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -16,7 +19,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -26,17 +28,31 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
-import static de.gamedots.mindlr.mindlrfrontend.Global.BACKEND_METHOD_KEY;
-import static de.gamedots.mindlr.mindlrfrontend.Global.METHOD_POST;
-import static de.gamedots.mindlr.mindlrfrontend.Global.METHOD_VERIFY;
-import static de.gamedots.mindlr.mindlrfrontend.Global.SERVER_URL;
+import de.gamedots.mindlr.mindlrfrontend.helper.PostLoader;
+import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
+import de.gamedots.mindlr.mindlrfrontend.R;
+import de.gamedots.mindlr.mindlrfrontend.view.fragment.LoginFragment;
+import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
+import de.gamedots.mindlr.mindlrfrontend.util.Global;
+import de.gamedots.mindlr.mindlrfrontend.helper.JSONParser;
+import de.gamedots.mindlr.mindlrfrontend.util.PostExecuteTemplate;
+import de.gamedots.mindlr.mindlrfrontend.util.ServerComUtil;
 
-/**
- * Created by dirk on 27.10.2015.
- */
-public class LoginActivity extends AppCompatActivity implements
+import static de.gamedots.mindlr.mindlrfrontend.util.Global.BACKEND_METHOD_KEY;
+import static de.gamedots.mindlr.mindlrfrontend.util.Global.METHOD_POST;
+import static de.gamedots.mindlr.mindlrfrontend.util.Global.METHOD_VERIFY;
+import static de.gamedots.mindlr.mindlrfrontend.util.Global.SERVER_URL;
+
+public class MainActivity extends BaseActivity implements
         GoogleApiClient.OnConnectionFailedListener,
-        View.OnClickListener {
+        LoginFragment.OnSignInButtonClickedListener{
+
+    @Override
+    public void onSignInButtonClicked() {
+        signInAndGetIdToken();
+    }
+
+    private enum FragTrans {ADD, REPLACE}
 
     private static final String TAG = "SignInActivity";
 
@@ -50,44 +66,80 @@ public class LoginActivity extends AppCompatActivity implements
     private ProgressDialog _mProgressDialog;
 
 
+    private boolean saveInstanceAvaibable;
+
+
+    private boolean _isUserSignedIn;
+
+
+    private boolean _shouldReplace;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
 
-        // Button listeners
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
-        findViewById(R.id.sign_out_button).setOnClickListener(this);
-
-
+        saveInstanceAvaibable = savedInstanceState != null;
         Log.d(TAG, "bilde api client");
         buildGoogleApiClient();
 
-
     }
 
+
     @Override
-    public void onStart() {
+    protected void onStart() {
         super.onStart();
-        Log.d(TAG, "API: " + _mGoogleApiClient.isConnected());
+
+        SharedPreferences sharedPref =
+                getSharedPreferences(getString(R.string.LoginStatePreference), Context.MODE_PRIVATE);
+        _isUserSignedIn = sharedPref.getBoolean(getString(R.string.UserLoginState), false);
+
+        Log.d(TAG, "user signed in : " + _isUserSignedIn);
+        handleUserSignInResult(_isUserSignedIn);
+
+
 
         /* Try GoogleSilentSignIn */
         //googleSilentSignIn();
     }
 
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.sign_in_button:
-                signInAndGetIdToken();
-                break;
-            case R.id.sign_out_button:
-                signOut();
-                break;
-            /*
-            case R.id.disconnect_button:
-                revokeAccess();
-                break;*/
+    protected void onPause() {
+        super.onPause();
+
+        // save any state that should be persistent upon user session
+    }
+
+
+    private void handleUserSignInResult(boolean isUserSignedIn) {
+
+        if (isUserSignedIn) {
+            PostViewFragment fragment = new PostViewFragment();
+
+            //Load the first bunch of posts in the list of posts
+            if (!PostLoader.getInstance().isInitialized()) {
+                PostLoader.getInstance().initialize(fragment);
+            }
+
+            if (_shouldReplace) {
+                /* setup post View fragment shown dynamically */
+                handleFragmentTransaction(fragment, FragTrans.REPLACE);
+            } else {
+                handleFragmentTransaction(fragment, FragTrans.ADD);
+            }
+
+            if (!saveInstanceAvaibable) {
+            }
+
+        } else { /* user need to sign in -> launch login fragment */
+            boolean shouldAdd = (this.getSupportFragmentManager().getFragments() == null); /* no fragments attached earlier */
+            LoginFragment fragment = LoginFragment.newInstance();
+            if (shouldAdd) {
+                handleFragmentTransaction(fragment, FragTrans.ADD);
+            } else {
+                handleFragmentTransaction(fragment, FragTrans.REPLACE);
+            }
         }
     }
 
@@ -99,7 +151,9 @@ public class LoginActivity extends AppCompatActivity implements
         // Show an account picker to let the user choose a Google account from the device.
         // If the GoogleSignInOptions only asks for IDToken and/or profile and/or email then no
         // consent screen will be shown here.
-        findViewById(R.id.sign_in_button).setVisibility(View.INVISIBLE);
+        //findViewById(R.id.sign_in_button).setVisibility(View.INVISIBLE);
+        Log.d(TAG, "auth api is : " + (Auth.GoogleSignInApi == null));
+        Log.d(TAG, "api client is: " + (_mGoogleApiClient == null));
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(_mGoogleApiClient);
         startActivityForResult(signInIntent, RC_GET_TOKEN);
     }
@@ -124,18 +178,23 @@ public class LoginActivity extends AppCompatActivity implements
             /* when success GoogleAPIClient is connected as well*/
             GoogleSignInAccount acct = result.getSignInAccount();
             String idToken = acct.getIdToken();
-            Log.d(TAG, "API Client : isConnected = " + _mGoogleApiClient.isConnected() );
+            Log.d(TAG, "API Client : isConnected = " + _mGoogleApiClient.isConnected());
+
+            _isUserSignedIn = true;
+            _shouldReplace = true;
+            SharedPreferences sharedPref = getSharedPreferences(getString(R.string.LoginStatePreference), Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putBoolean(getString(R.string.UserLoginState), true);
+            editor.commit();
+            handleUserSignInResult(_isUserSignedIn);
 
             // Show signed-in UI.
             Log.d(TAG, "idToken:" + idToken);
             Toast.makeText(this, "idToken: " + idToken, Toast.LENGTH_LONG).show();
-            //TODO: show sign in UI -> Main View
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
 
             // TODO(user): send token to server and validate server-side
             Log.d(TAG, "start idTokenTask");
-            //new SendIdTokenTask().execute(idToken, acct.getEmail());
+            new SendIdTokenTask().execute(idToken, acct.getEmail());
 
         } else {
             //signed out, show log in UI
@@ -203,7 +262,14 @@ public class LoginActivity extends AppCompatActivity implements
                         Log.d(TAG, "signOut:onResult:" + status);
                     }
                 });
-        findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
+        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.LoginStatePreference), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(getString(R.string.UserLoginState), false);
+        editor.commit();
+        _isUserSignedIn = false;
+        handleUserSignInResult(_isUserSignedIn);
+        Log.d(TAG, "AFTER SIGN OUT API CLIENT Is: " + _mGoogleApiClient.isConnected());
+        //findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
     }
 
     /**
@@ -212,6 +278,7 @@ public class LoginActivity extends AppCompatActivity implements
      * Delete all information obtained from Google API´s
      */
     private void revokeAccess() {
+        // TODO: confirmation dialog if(confirm) -> revokeAccess else -> ...
         Auth.GoogleSignInApi.revokeAccess(_mGoogleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override
@@ -240,16 +307,87 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-    private class SendIdTokenTask extends AsyncTask<String, Void,JSONObject>{
+    //****************************************************************************
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.overflowmenu) {
+            return true;
+        }
+        if (id == R.id.writePost) {
+            //TODO: start post write activity
+            startActivity(new Intent(this, WritePostActivity.class));
+            Toast.makeText(this, "Post Write clicked", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        if (id == R.id.share) {
+            //TODO: start share activity
+            Toast.makeText(this, "Share clicked", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        if (id == R.id.profil) {
+            //TODO: start profil activity
+            Toast.makeText(this, " Profil clicked", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        if (id == R.id.posts) {
+            //TODO: start posts activity
+            startActivity(new Intent(this, UserPostsActivity.class));
+            Toast.makeText(this, " Show Posts clicked", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        if (id == R.id.favorit) {
+            //TODO: start favorits acitivity
+            Toast.makeText(this, " Favorits clicked", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        if (id == R.id.settings) {
+            //TODO: start setting acitivity
+            signOut();
+            Toast.makeText(this, " Settings clicked", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void handleFragmentTransaction(Fragment fragment, FragTrans todo) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        switch (todo) {
+            case ADD:
+                transaction.add(R.id.activity_content, fragment);
+                break;
+            case REPLACE:
+                transaction.replace(R.id.activity_content, fragment);
+                break;
+        }
+        transaction.commit();
+    }
+
+    private class SendIdTokenTask extends AsyncTask<String, Void, JSONObject> {
 
         @Override
         protected JSONObject doInBackground(String... params) {
-            HashMap<String, String> parameter = ServerCommunicationUtilities.newDefaultParameterHashMap();
+            HashMap<String, String> parameter = ServerComUtil.newDefaultParameterHashMap();
             //METHOD SPECIFIC PARAMETERS
             parameter.put(BACKEND_METHOD_KEY, METHOD_VERIFY);
             parameter.put("AUTH_PROVIDER", Global.AuthProvider.GOOGLE.name());
-            parameter.put("EMAIL", params[1] );
             parameter.put("ID_TOKEN", params[0] /* idToken */);
+            parameter.put("EMAIL", params[1] /* email */);
 
             Log.d(LOG.JSON, "About to create JSONParser");
             JSONParser parser = new JSONParser();
@@ -259,22 +397,24 @@ public class LoginActivity extends AppCompatActivity implements
 
         @Override
         protected void onPostExecute(JSONObject result) {
-            new PostExecuteBehaviour() {
+            new PostExecuteTemplate() {
                 @Override
                 public void onSuccess(JSONObject result) {
                     Log.d(LOG.VERIFIED, "successful verified the user on backend");
-                    Toast.makeText(getApplicationContext(), "Verfied User", Toast.LENGTH_LONG ).show();
+                    Toast.makeText(getApplicationContext(), "Verfied User", Toast.LENGTH_LONG).show();
                 }
+
                 @Override
                 public void onFailure(JSONObject result) {
                     try {
                         String errorMsg = result.getString("ERROR");
                         Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
-                    } catch (JSONException e){
+                    } catch (JSONException e) {
                         Log.e(LOG.JSON, Log.getStackTraceString(e));
                     }
                 }
             }.onPostExec(result);
         }
     }
+
 }

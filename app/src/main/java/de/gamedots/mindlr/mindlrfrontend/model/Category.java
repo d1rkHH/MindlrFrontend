@@ -1,8 +1,8 @@
-package de.gamedots.mindlr.mindlrfrontend.models;
+package de.gamedots.mindlr.mindlrfrontend.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import static de.gamedots.mindlr.mindlrfrontend.Global.Categories.*;
+import static de.gamedots.mindlr.mindlrfrontend.util.Global.Categories.*;
 
 /**
  * Created by max on 27.09.15.
