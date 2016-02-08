@@ -1,10 +1,8 @@
 package de.gamedots.mindlr.mindlrfrontend.view.activity;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -19,33 +17,23 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-
-import de.gamedots.mindlr.mindlrfrontend.helper.PostLoader;
-import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
 import de.gamedots.mindlr.mindlrfrontend.R;
+import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
+import de.gamedots.mindlr.mindlrfrontend.job.SendIdTokenTask;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.LoginFragment;
-import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
-import de.gamedots.mindlr.mindlrfrontend.util.Global;
-import de.gamedots.mindlr.mindlrfrontend.helper.JSONParser;
-import de.gamedots.mindlr.mindlrfrontend.util.PostExecuteTemplate;
-import de.gamedots.mindlr.mindlrfrontend.util.ServerComUtil;
+import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
 
-import static de.gamedots.mindlr.mindlrfrontend.util.Global.BACKEND_METHOD_KEY;
-import static de.gamedots.mindlr.mindlrfrontend.util.Global.METHOD_POST;
-import static de.gamedots.mindlr.mindlrfrontend.util.Global.METHOD_VERIFY;
-import static de.gamedots.mindlr.mindlrfrontend.util.Global.SERVER_URL;
-
+/**
+ * "MAIN" activity in the app. When it launches, it checks if the user is (still)
+ * logged in. If not, show the LoginFragment to the user, otherwise initialize
+ * posts.
+ */
 public class MainActivity extends BaseActivity implements
         GoogleApiClient.OnConnectionFailedListener,
-        LoginFragment.OnSignInButtonClickedListener{
+        LoginFragment.OnSignInButtonClickedListener {
 
     @Override
     public void onSignInButtonClicked() {
@@ -55,53 +43,31 @@ public class MainActivity extends BaseActivity implements
     private enum FragTrans {ADD, REPLACE}
 
     private static final String TAG = "SignInActivity";
-
     /* constant defining the request code for get idToken */
     private static final int RC_GET_TOKEN = 9002;
-
-
-    private GoogleApiClient _mGoogleApiClient;
-
-
-    private ProgressDialog _mProgressDialog;
-
-
-    private boolean saveInstanceAvaibable;
-
-
+    private GoogleApiClient _googleApiClient;
+    private boolean _saveInstanceAvailable;
     private boolean _isUserSignedIn;
-
-
     private boolean _shouldReplace;
-
-
+    private SharedPreferences _prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        saveInstanceAvaibable = savedInstanceState != null;
-        Log.d(TAG, "bilde api client");
+        _saveInstanceAvailable = savedInstanceState != null;
+        _prefs = getSharedPreferences(getString(R.string.LoginStatePreference), Context.MODE_PRIVATE);
+        Log.d(TAG, "build api client");
         buildGoogleApiClient();
-
     }
-
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        SharedPreferences sharedPref =
-                getSharedPreferences(getString(R.string.LoginStatePreference), Context.MODE_PRIVATE);
-        _isUserSignedIn = sharedPref.getBoolean(getString(R.string.UserLoginState), false);
-
+        _isUserSignedIn = _prefs.getBoolean(getString(R.string.UserLoginState), false);
         Log.d(TAG, "user signed in : " + _isUserSignedIn);
         handleUserSignInResult(_isUserSignedIn);
-
-
-
-        /* Try GoogleSilentSignIn */
-        //googleSilentSignIn();
     }
 
     @Override
@@ -111,6 +77,25 @@ public class MainActivity extends BaseActivity implements
         // save any state that should be persistent upon user session
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // result returned from launching the intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_GET_TOKEN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            Log.d(TAG, "onActivityResult:GET_TOKEN:success:" + result.getStatus().isSuccess());
+
+            handleGoogleSignInFor(result);
+        }
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        // an unresolvable error has occurred and Google APIs (including Sign-In) will not
+        // be available.
+        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+    }
 
     private void handleUserSignInResult(boolean isUserSignedIn) {
 
@@ -129,7 +114,7 @@ public class MainActivity extends BaseActivity implements
                 handleFragmentTransaction(fragment, FragTrans.ADD);
             }
 
-            if (!saveInstanceAvaibable) {
+            if (!_saveInstanceAvailable) {
             }
 
         } else { /* user need to sign in -> launch login fragment */
@@ -153,22 +138,9 @@ public class MainActivity extends BaseActivity implements
         // consent screen will be shown here.
         //findViewById(R.id.sign_in_button).setVisibility(View.INVISIBLE);
         Log.d(TAG, "auth api is : " + (Auth.GoogleSignInApi == null));
-        Log.d(TAG, "api client is: " + (_mGoogleApiClient == null));
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(_mGoogleApiClient);
+        Log.d(TAG, "api client is: " + (_googleApiClient == null));
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(_googleApiClient);
         startActivityForResult(signInIntent, RC_GET_TOKEN);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_GET_TOKEN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            Log.d(TAG, "onActivityResult:GET_TOKEN:success:" + result.getStatus().isSuccess());
-
-            handleGoogleSignInFor(result);
-        }
     }
 
     private void handleGoogleSignInFor(GoogleSignInResult result) {
@@ -178,13 +150,12 @@ public class MainActivity extends BaseActivity implements
             /* when success GoogleAPIClient is connected as well*/
             GoogleSignInAccount acct = result.getSignInAccount();
             String idToken = acct.getIdToken();
-            Log.d(TAG, "API Client : isConnected = " + _mGoogleApiClient.isConnected());
+            Log.d(TAG, "API Client : isConnected = " + _googleApiClient.isConnected());
 
             _isUserSignedIn = true;
             _shouldReplace = true;
-            SharedPreferences sharedPref = getSharedPreferences(getString(R.string.LoginStatePreference), Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putBoolean(getString(R.string.UserLoginState), true);
+            SharedPreferences.Editor editor = _prefs.edit();
+            editor.putBoolean(getString(R.string.UserLoginState), _isUserSignedIn);
             editor.commit();
             handleUserSignInResult(_isUserSignedIn);
 
@@ -192,60 +163,28 @@ public class MainActivity extends BaseActivity implements
             Log.d(TAG, "idToken:" + idToken);
             Toast.makeText(this, "idToken: " + idToken, Toast.LENGTH_LONG).show();
 
-            // TODO(user): send token to server and validate server-side
             Log.d(TAG, "start idTokenTask");
-            new SendIdTokenTask().execute(idToken, acct.getEmail());
+            new SendIdTokenTask(getApplicationContext()).execute(idToken, acct.getEmail());
 
         } else {
             //signed out, show log in UI
         }
     }
 
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        // An unresolvable error has occurred and Google APIs (including Sign-In) will not
-        // be available.
-        Log.d(TAG, "onConnectionFailed:" + connectionResult);
-    }
-
     private void buildGoogleApiClient() {
 
-        // Request only the user's ID token, which can be used to identify the
-        // user securely to your backend. This will contain the user's basic
-        // profile (name, profile picture URL, etc) so you should not need to
-        // make an additional call to personalize your application.
+        // request the user's ID token and email; The ID token is used to
+        // identify the user securely to the backend.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.server_client_id))
                 .requestEmail()
                 .build();
 
-        // Build GoogleAPIClient with the Google Sign-In API and the above options.
-        _mGoogleApiClient = new GoogleApiClient.Builder(this)
+        // build GoogleAPIClient with the Google Sign-In API and the above options.
+        _googleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-    }
-
-    private void googleSilentSignIn() {
-        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(_mGoogleApiClient);
-        if (opr.isDone()) {
-            // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
-            // and the GoogleSignInResult will be available instantly.
-            Log.d(TAG, "Got cached sign-in");
-            GoogleSignInResult signInResult = opr.get();
-            handleGoogleSignInFor(signInResult);
-        } else {
-            // If the user has not previously signed in on this device or the sign-in has expired,
-            // this asynchronous branch will attempt to sign in the user silently.
-            showProgressDialog();
-            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-                @Override
-                public void onResult(GoogleSignInResult googleSignInResult) {
-                    hideProgressDialog();
-                    handleGoogleSignInFor(googleSignInResult);
-                }
-            });
-        }
     }
 
     //**********************[Sign Out or Revoke Access]***************
@@ -255,31 +194,31 @@ public class MainActivity extends BaseActivity implements
      * To sign in again, the user must choose their account again.
      */
     private void signOut() {
-        Auth.GoogleSignInApi.signOut(_mGoogleApiClient).setResultCallback(
+        Auth.GoogleSignInApi.signOut(_googleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
                         Log.d(TAG, "signOut:onResult:" + status);
                     }
                 });
-        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.LoginStatePreference), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
+        SharedPreferences.Editor editor = _prefs.edit();
         editor.putBoolean(getString(R.string.UserLoginState), false);
         editor.commit();
         _isUserSignedIn = false;
         handleUserSignInResult(_isUserSignedIn);
-        Log.d(TAG, "AFTER SIGN OUT API CLIENT Is: " + _mGoogleApiClient.isConnected());
+        Log.d(TAG, "AFTER SIGN OUT API CLIENT Is: " + _googleApiClient.isConnected());
         //findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
     }
 
     /**
      * [OPTIONAL]
+     * In settings choos disconnect client -> log out UI -> revoke access
      * Completely disconnect the user´s google account from Mindlr.
      * Delete all information obtained from Google API´s
      */
     private void revokeAccess() {
         // TODO: confirmation dialog if(confirm) -> revokeAccess else -> ...
-        Auth.GoogleSignInApi.revokeAccess(_mGoogleApiClient).setResultCallback(
+        Auth.GoogleSignInApi.revokeAccess(_googleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
@@ -289,25 +228,8 @@ public class MainActivity extends BaseActivity implements
                 });
     }
 
-    //**********************[Progress for user exp]*******************
 
-    private void showProgressDialog() {
-        if (_mProgressDialog == null) {
-            _mProgressDialog = new ProgressDialog(this);
-            _mProgressDialog.setMessage(getString(R.string.loading));
-            _mProgressDialog.setIndeterminate(true);
-        }
-
-        _mProgressDialog.show();
-    }
-
-    private void hideProgressDialog() {
-        if (_mProgressDialog != null && _mProgressDialog.isShowing()) {
-            _mProgressDialog.hide();
-        }
-    }
-
-    //****************************************************************************
+    //****************************************************************
     @Override
     protected int getLayoutResourceId() {
         return R.layout.activity_main;
@@ -315,7 +237,6 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -377,44 +298,4 @@ public class MainActivity extends BaseActivity implements
         }
         transaction.commit();
     }
-
-    private class SendIdTokenTask extends AsyncTask<String, Void, JSONObject> {
-
-        @Override
-        protected JSONObject doInBackground(String... params) {
-            HashMap<String, String> parameter = ServerComUtil.newDefaultParameterHashMap();
-            //METHOD SPECIFIC PARAMETERS
-            parameter.put(BACKEND_METHOD_KEY, METHOD_VERIFY);
-            parameter.put("AUTH_PROVIDER", Global.AuthProvider.GOOGLE.name());
-            parameter.put("ID_TOKEN", params[0] /* idToken */);
-            parameter.put("EMAIL", params[1] /* email */);
-
-            Log.d(LOG.JSON, "About to create JSONParser");
-            JSONParser parser = new JSONParser();
-            Log.d(LOG.CONNECTION, "About to make HTTPRequest");
-            return parser.makeHttpRequest(SERVER_URL, METHOD_POST, parameter);
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject result) {
-            new PostExecuteTemplate() {
-                @Override
-                public void onSuccess(JSONObject result) {
-                    Log.d(LOG.VERIFIED, "successful verified the user on backend");
-                    Toast.makeText(getApplicationContext(), "Verfied User", Toast.LENGTH_LONG).show();
-                }
-
-                @Override
-                public void onFailure(JSONObject result) {
-                    try {
-                        String errorMsg = result.getString("ERROR");
-                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
-                    } catch (JSONException e) {
-                        Log.e(LOG.JSON, Log.getStackTraceString(e));
-                    }
-                }
-            }.onPostExec(result);
-        }
-    }
-
 }

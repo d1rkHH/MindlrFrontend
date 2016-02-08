@@ -14,8 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
-import de.gamedots.mindlr.mindlrfrontend.helper.PostLoader;
-import de.gamedots.mindlr.mindlrfrontend.util.DebugUtil;
+import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 
 import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.*;
 
