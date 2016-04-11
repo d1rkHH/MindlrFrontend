@@ -1,40 +1,46 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".view.activity.WritePostActivity">
 
     <include
-        android:id="@+id/app_bar"
-        layout="@layout/app_bar"></include>
+        layout="@layout/toolbar" />
 
-    <EditText
-        android:id="@+id/postWriteArea"
-        android:layout_below="@+id/app_bar"
-        android:cursorVisible="true"
-        android:gravity="top|left"
-        android:hint="Was willst du schreiben?"
+    <RelativeLayout
+        android:layout_marginTop="50px"
         android:layout_width="match_parent"
-        android:inputType="text"
-        android:layout_height="200dp" />
+        android:layout_height="match_parent">
 
-    <Spinner
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/category_spinner"
-        android:layout_below="@+id/postWriteArea"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="72dp" />
+        <EditText
+            android:id="@+id/postWriteArea"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:cursorVisible="true"
+            android:gravity="top|start"
+            android:hint="Was willst du schreiben?"
+            android:inputType="text" />
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="80dp"
-        android:layout_height="wrap_content"
-        android:text="Post"
-        android:background="@color/green"
-        android:id="@+id/postSubmit"
-        android:onClick="writePost"
-        android:layout_below="@+id/category_spinner"
-        android:layout_marginTop="50dp"
-        android:layout_centerHorizontal="true" />
-</RelativeLayout>
+        <Spinner
+            android:id="@+id/category_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/postWriteArea"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="72dp" />
+
+        <Button
+            android:id="@+id/postSubmit"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/category_spinner"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            android:background="@color/green"
+            android:onClick="writePost"
+            android:text="Post" />
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

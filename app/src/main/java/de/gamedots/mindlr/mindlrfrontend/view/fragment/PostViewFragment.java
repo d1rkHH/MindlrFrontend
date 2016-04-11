@@ -55,7 +55,7 @@ public class PostViewFragment extends Fragment {
     private void fragmentTrans(int animStart, int animEnd) {
         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
         fragmentTransaction.setCustomAnimations(animStart, animEnd);
-        fragmentTransaction.replace(R.id.activity_content, new PostViewFragment());
+        fragmentTransaction.replace(R.id.main_content, new PostViewFragment());
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }

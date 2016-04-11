@@ -27,4 +27,8 @@
     <string name="loginInfoText">Willkommen \n zu \n Mindlr! \n Bitte logge dich ein</string>
     <string name="LoginStatePreference">LoginStatePref</string>
     <string name="UserLoginState">userLoginState</string>
+    <string name="title_activity_main2">Main2Activity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>

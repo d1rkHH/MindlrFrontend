@@ -24,13 +24,13 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
         /* toolbar setup and app icon */
-        toolbar = (Toolbar) findViewById(R.id.app_bar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setHomeButtonEnabled(true);
         //getSupportActionBar().setIcon(R.mipmap.ic_action_brain_);
-        getSupportActionBar().setLogo(R.mipmap.ic_action_brain_);
+        //getSupportActionBar().setLogo(R.mipmap.ic_action_brain_);
     }
 
     protected abstract int getLayoutResourceId();

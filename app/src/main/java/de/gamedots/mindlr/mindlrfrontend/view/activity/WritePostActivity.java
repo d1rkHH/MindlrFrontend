@@ -3,6 +3,8 @@ package de.gamedots.mindlr.mindlrfrontend.view.activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,20 +32,24 @@ import static de.gamedots.mindlr.mindlrfrontend.util.Global.BACKEND_METHOD_WRITE
 import static de.gamedots.mindlr.mindlrfrontend.util.Global.SERVER_URL;
 import static de.gamedots.mindlr.mindlrfrontend.util.Global.METHOD_POST;
 
-public class WritePostActivity extends BaseActivity {
+public class WritePostActivity extends AppCompatActivity {
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        getToolbar().setNavigationIcon(R.drawable.prev24);
-        getToolbar().setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        setContentView(getLayoutResourceId());
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //toolbar.setNavigationIcon(R.drawable.prev24);
+        if(toolbar != null)
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onBackPressed();
+                }
+            });
 
         Spinner spinner = (Spinner) findViewById(R.id.category_spinner);
 
@@ -57,7 +63,7 @@ public class WritePostActivity extends BaseActivity {
         spinner.setAdapter(categoryAdapter);
     }
 
-    @Override
+
     protected int getLayoutResourceId() {
         return R.layout.activity_write_post;
     }
@@ -114,9 +120,9 @@ public class WritePostActivity extends BaseActivity {
             parameter.put("CONTENT_TEXT", text);
             parameter.put("CATEGORY_ID", Integer.toString(categoryID));
 
-            Log.d(LOG.JSON, "About to create JSONParser");
+            Log.d(de.gamedots.mindlr.mindlrfrontend.logging.LOG.JSON, "About to create JSONParser");
             JSONParser parser = new JSONParser();
-            Log.d(LOG.CONNECTION, "About to make HTTPRequest");
+            Log.d(de.gamedots.mindlr.mindlrfrontend.logging.LOG.CONNECTION, "About to make HTTPRequest");
             return parser.makeHttpRequest(SERVER_URL, METHOD_POST, parameter);
         }
 
@@ -124,7 +130,7 @@ public class WritePostActivity extends BaseActivity {
             new PostExecuteTemplate() {
                 @Override
                 public void onSuccess(JSONObject result) {
-                    Log.d(LOG.POSTS, "Successfull posted.");
+                    Log.d(de.gamedots.mindlr.mindlrfrontend.logging.LOG.POSTS, "Successfull posted.");
                     Toast.makeText(getApplicationContext(), "Erfolgreich gepostet", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 }
@@ -134,7 +140,7 @@ public class WritePostActivity extends BaseActivity {
                         String text = result.getString("ERROR");
                         Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
                     } catch (JSONException e) {
-                        Log.e(LOG.JSON, Log.getStackTraceString(e));
+                        Log.e(de.gamedots.mindlr.mindlrfrontend.logging.LOG.JSON, Log.getStackTraceString(e));
                     }
                 }
             }.onPostExec(result);

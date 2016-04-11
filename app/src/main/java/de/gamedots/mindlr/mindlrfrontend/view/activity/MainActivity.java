@@ -31,7 +31,7 @@ import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
  * logged in. If not, show the LoginFragment to the user, otherwise initialize
  * posts.
  */
-public class MainActivity extends BaseActivity implements
+public class MainActivity extends BaseNavActivity implements
         GoogleApiClient.OnConnectionFailedListener,
         LoginFragment.OnSignInButtonClickedListener {
 
@@ -230,59 +230,9 @@ public class MainActivity extends BaseActivity implements
 
 
     //****************************************************************
-    @Override
+
     protected int getLayoutResourceId() {
         return R.layout.activity_main;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.overflowmenu) {
-            return true;
-        }
-        if (id == R.id.writePost) {
-            //TODO: start post write activity
-            startActivity(new Intent(this, WritePostActivity.class));
-            Toast.makeText(this, "Post Write clicked", Toast.LENGTH_SHORT).show();
-            return true;
-        }
-        if (id == R.id.share) {
-            //TODO: start share activity
-            Toast.makeText(this, "Share clicked", Toast.LENGTH_SHORT).show();
-            return true;
-        }
-        if (id == R.id.profil) {
-            //TODO: start profil activity
-            Toast.makeText(this, " Profil clicked", Toast.LENGTH_SHORT).show();
-            return true;
-        }
-        if (id == R.id.posts) {
-            //TODO: start posts activity
-            startActivity(new Intent(this, UserPostsActivity.class));
-            Toast.makeText(this, " Show Posts clicked", Toast.LENGTH_SHORT).show();
-            return true;
-        }
-        if (id == R.id.favorit) {
-            //TODO: start favorits acitivity
-            Toast.makeText(this, " Favorits clicked", Toast.LENGTH_SHORT).show();
-            return true;
-        }
-        if (id == R.id.settings) {
-            //TODO: start setting acitivity
-            signOut();
-            Toast.makeText(this, " Settings clicked", Toast.LENGTH_SHORT).show();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private void handleFragmentTransaction(Fragment fragment, FragTrans todo) {
@@ -290,10 +240,10 @@ public class MainActivity extends BaseActivity implements
 
         switch (todo) {
             case ADD:
-                transaction.add(R.id.activity_content, fragment);
+                transaction.add(R.id.main_content, fragment);
                 break;
             case REPLACE:
-                transaction.replace(R.id.activity_content, fragment);
+                transaction.replace(R.id.main_content, fragment);
                 break;
         }
         transaction.commit();
