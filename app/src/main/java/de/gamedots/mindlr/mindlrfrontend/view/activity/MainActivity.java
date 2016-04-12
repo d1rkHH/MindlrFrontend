@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +27,7 @@ import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.job.SendIdTokenTask;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.LoginFragment;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
+import de.gamedots.mindlr.mindlrfrontend.view.fragment.ProfileFragment;
 
 /**
  * "MAIN" activity in the app. When it launches, it checks if the user is (still)
@@ -66,6 +69,7 @@ public class MainActivity extends BaseNavActivity implements
         super.onStart();
 
         _isUserSignedIn = _prefs.getBoolean(getString(R.string.UserLoginState), false);
+        _isUserSignedIn = true;
         Log.d(TAG, "user signed in : " + _isUserSignedIn);
         handleUserSignInResult(_isUserSignedIn);
     }
@@ -95,6 +99,44 @@ public class MainActivity extends BaseNavActivity implements
         // an unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_home) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.main_content, new PostViewFragment());
+            transaction.commit();
+
+        } else if (id == R.id.nav_profile) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.main_content, new ProfileFragment());
+            transaction.commit();
+
+        } else if (id == R.id.nav_write_post) {
+            startActivity(new Intent(this, WritePostActivity.class));
+
+        } else if (id == R.id.nav_my_posts) {
+            startActivity(new Intent(this, UserPostsActivity.class));
+
+        } else if (id == R.id.nav_favorite) {
+
+        } else if (id == R.id.nav_setting) {
+
+        } else if (id == R.id.nav_logout) {
+
+        } else if (id == R.id.nav_help) {
+
+        }
+
+        getSupportActionBar().setTitle(item.getTitle());
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     private void handleUserSignInResult(boolean isUserSignedIn) {
