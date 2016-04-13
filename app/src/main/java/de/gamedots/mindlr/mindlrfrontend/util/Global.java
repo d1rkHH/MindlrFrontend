@@ -12,7 +12,7 @@ public final class Global {
     //public static final PostLoader postLoader = new PostLoader();
 
     //Server Connection
-    public static final String SERVER_URL = "http://backend.mindlr.com:8080/requesthandler";
+    public static final String SERVER_URL = "http://217.232.53.26:8080/requesthandler";
     //Methods
     public static final String BACKEND_METHOD_KEY = "BACKEND_METHOD";
     //Load Posts

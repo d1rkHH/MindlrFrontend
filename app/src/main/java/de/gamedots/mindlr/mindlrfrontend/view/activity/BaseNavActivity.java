@@ -35,6 +35,7 @@ public abstract class BaseNavActivity extends AppCompatActivity
                 @Override
                 public void onClick(View view) {
                     startActivity(new Intent(BaseNavActivity.this, WritePostActivity.class));
+                    overridePendingTransition( R.anim.slide_in_up, R.anim.slide_out_up );
                 }
             });
 

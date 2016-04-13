@@ -128,12 +128,13 @@ public class MainActivity extends BaseNavActivity implements
         } else if (id == R.id.nav_setting) {
 
         } else if (id == R.id.nav_logout) {
+            signOut();
 
         } else if (id == R.id.nav_help) {
 
         }
 
-        getSupportActionBar().setTitle(item.getTitle());
+        //getSupportActionBar().setTitle(item.getTitle());
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

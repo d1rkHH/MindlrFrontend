@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,14 +22,14 @@ import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.*;
 /**
  * This class displays a post to the user. Furthermore it handles the
  * swipe interaction and the fragment transaction together with the PostLoader class.
- *
  */
 public class PostViewFragment extends Fragment {
 
     private TextView _postView;
 
 
-    public PostViewFragment() {}
+    public PostViewFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -37,18 +38,21 @@ public class PostViewFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_post_view, container, false);
         _postView = (TextView) view.findViewById(R.id.postTextView);
 
-        if(PostLoader.getInstance().isInitialized()) {
+        if (PostLoader.getInstance().isInitialized()) {
             _postView.setText(PostLoader.getInstance().getCurrent().getContentText());
         }
 
-        if (_postView != null) {
-            _postView.setOnTouchListener(new OnSwipeTouchListener(getActivity()));
+        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.post_fragment_container);
+        if (linearLayout != null) {
+            linearLayout.setOnTouchListener(new OnSwipeTouchListener(getActivity()));
+        } else {
+            Toast.makeText(getActivity(), "was null", Toast.LENGTH_SHORT).show();
         }
 
         return view;
     }
 
-    public TextView getPostView(){
+    public TextView getPostView() {
         return _postView;
     }
 
@@ -64,7 +68,7 @@ public class PostViewFragment extends Fragment {
 
         private final GestureDetector gestureDetector;
 
-        public OnSwipeTouchListener (Context ctx){
+        public OnSwipeTouchListener(Context ctx) {
             gestureDetector = new GestureDetector(ctx, new GestureListener());
         }
 
@@ -93,8 +97,7 @@ public class PostViewFragment extends Fragment {
                             }
                         }
                         result = true;
-                    }
-                    else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                    } else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
                         if (diffY > 0) {
                             onSwipeBottom();
                         } else {
@@ -111,8 +114,10 @@ public class PostViewFragment extends Fragment {
         }
 
         public void onSwipeRight() {
+            Toast.makeText(getActivity(), "right", Toast.LENGTH_SHORT).show();
+
             // execute previous method and play animation if successful
-            if(PostLoader.getInstance().previous()) {
+            if (PostLoader.getInstance().previous()) {
                 fragmentTrans(R.anim.enter_from_left, R.anim.exit_to_right);
             } else {
                 Toast.makeText(getActivity(), "No older posts available", Toast.LENGTH_SHORT).show();
@@ -121,9 +126,9 @@ public class PostViewFragment extends Fragment {
 
         public void onSwipeLeft() {
             // execute next method and play animation if successful
-            if(PostLoader.getInstance().next()) {
+            if (PostLoader.getInstance().next()) {
                 fragmentTrans(R.anim.enter_from_right, R.anim.exit_to_left);
-            } else{
+            } else {
                 toast(getActivity(), "You reached the last post. Swipe again to load new posts.");
             }
         }
@@ -134,7 +139,7 @@ public class PostViewFragment extends Fragment {
         }
 
         public void onSwipeBottom() {
-            toast(getActivity(),"DOWN");
+            toast(getActivity(), "DOWN");
             PostLoader.getInstance().getCurrent().rateNegative();
         }
 
