@@ -6,18 +6,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
+import de.gamedots.mindlr.mindlrfrontend.model.UserPostCardItem;
 
 /**
  * Created by dirk on 14.04.2016.
  */
 public class RVAdapter extends RecyclerView.Adapter<RVAdapter.ItemViewHolder>{
 
-    private List<String> _items;
+    private List<UserPostCardItem> _items;
 
-    public RVAdapter(List<String> _items) {
+    public RVAdapter(List<UserPostCardItem> _items) {
         this._items = _items;
     }
 
@@ -39,7 +41,10 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.ItemViewHolder>{
     /* Get the view at position i to display */
     @Override
     public void onBindViewHolder(ItemViewHolder itemViewHolder, int i) {
-        itemViewHolder.mTextView.setText(_items.get(i));
+        itemViewHolder.mTextView.setText(_items.get(i).get_text());
+        // final UserPostCardItem model = _itemls.get(i);
+        // itemViewHolder.bind(model);
+        /* replace for custom bind method to set all views data */
     }
 
     /*
@@ -61,5 +66,11 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.ItemViewHolder>{
     @Override
     public int getItemCount() {
         return _items.size();
+    }
+
+    public void setFilter(List<UserPostCardItem> post) {
+        _items = new ArrayList<>();
+        _items.addAll(post);
+        notifyDataSetChanged();
     }
 }
