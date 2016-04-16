@@ -68,6 +68,9 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.ItemViewHolder>{
         return _items.size();
     }
 
+    /*
+     * Set filtered items to the new items and notify about change
+     */
     public void setFilter(List<UserPostCardItem> post) {
         _items = new ArrayList<>();
         _items.addAll(post);

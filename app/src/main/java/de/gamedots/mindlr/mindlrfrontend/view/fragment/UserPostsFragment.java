@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -25,7 +26,7 @@ import de.gamedots.mindlr.mindlrfrontend.model.UserPostCardItem;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class UserPostsFragment extends Fragment implements SearchView.OnQueryTextListener{
+public class UserPostsFragment extends Fragment implements SearchView.OnQueryTextListener {
 
     private RecyclerView _recyclerView;
     private RVAdapter _rvAdapter;
@@ -42,10 +43,11 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
 
         View view = inflater.inflate(R.layout.fragment_user_posts, container, false);
 
-        _recyclerView  = (RecyclerView) view.findViewById(R.id.recyclerview);
+        _recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
 
         // a RecyclerView needs a LayoutManager to manage the positioning of its items
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+            //GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(),2);
         _recyclerView.setLayoutManager(layoutManager);
 
         return view;
@@ -58,8 +60,8 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
     }
 
     /* Called when the fragment's activity has been created
-         * and this fragment's view hierarchy instantiated
-          */
+     * and this fragment's view hierarchy instantiated
+     */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -87,14 +89,12 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
                 new MenuItemCompat.OnActionExpandListener() {
                     @Override
                     public boolean onMenuItemActionCollapse(MenuItem item) {
-                        // Do something when collapsed
                         _rvAdapter.setFilter(_items);
                         return true; // Return true to collapse action view
                     }
 
                     @Override
                     public boolean onMenuItemActionExpand(MenuItem item) {
-                        // Do something when expanded
                         return true; // Return true to expand action view
                     }
                 });

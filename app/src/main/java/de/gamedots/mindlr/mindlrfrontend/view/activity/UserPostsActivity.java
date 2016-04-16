@@ -1,12 +1,16 @@
 package de.gamedots.mindlr.mindlrfrontend.view.activity;
 
 import android.os.Bundle;
+import android.support.design.widget.TabItem;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.adapter.ViewPagerAdapter;
@@ -19,9 +23,16 @@ public class UserPostsActivity extends AppCompatActivity {
     private TabLayout _tapLayout;
 
     private int[] tabIcons = {
-            R.drawable.ic_my_posts_archive_24dp,
-            R.drawable.ic_favor_star_24dp,
+            R.drawable.ic_my_posts_archive_white_24dp,
+            R.drawable.ic_favor_star_white_24dp,
     };
+
+    public void showPopup(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.menu_popup_action, popup.getMenu());
+        popup.show();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,8 +99,8 @@ public class UserPostsActivity extends AppCompatActivity {
 
     private void initViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new UserPostsFragment(), "Meine Posts");
-        adapter.addFragment(new FavoritePostsFragment(), "Meine Favoriten");
+        adapter.addFragment(new UserPostsFragment(), "Posts");
+        adapter.addFragment(new FavoritePostsFragment(), "Favor");
         viewPager.setAdapter(adapter);
     }
 
