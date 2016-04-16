@@ -22,6 +22,7 @@ import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.adapter.BaseRVAdapter;
 import de.gamedots.mindlr.mindlrfrontend.adapter.holder.FavorCardItemHolder;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
+import de.gamedots.mindlr.mindlrfrontend.helper.Filter;
 import de.gamedots.mindlr.mindlrfrontend.model.UserPostCardItem;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 
@@ -85,7 +86,7 @@ public class FavoritePostsFragment extends Fragment implements SearchView.OnQuer
         }
         _items = items;
 
-        _rvAdapter = new BaseRVAdapter<FavorCardItemHolder>(items, R.layout.user_post_card){
+        _rvAdapter = new BaseRVAdapter<FavorCardItemHolder>(items, R.layout.favor_post_card){
             @Override
             public FavorCardItemHolder getViewHolder(View view) {
                 return new FavorCardItemHolder(view);
@@ -120,7 +121,7 @@ public class FavoritePostsFragment extends Fragment implements SearchView.OnQuer
 
     @Override
     public boolean onQueryTextChange(String newSearchText) {
-        final List<UserPostCardItem> filteredPCL = filter(_items, newSearchText);
+        final List<UserPostCardItem> filteredPCL = Filter.filter(_items, newSearchText);
         _rvAdapter.setFilter(filteredPCL);
         return true;
     }
@@ -129,19 +130,4 @@ public class FavoritePostsFragment extends Fragment implements SearchView.OnQuer
     public boolean onQueryTextSubmit(String query) {
         return false;
     }
-
-
-    private List<UserPostCardItem> filter(List<UserPostCardItem> models, String query) {
-        query = query.toLowerCase();
-
-        final List<UserPostCardItem> filteredModelList = new ArrayList<>();
-        for (UserPostCardItem model : models) {
-            final String text = model.getCategoryText().toLowerCase();
-            if (text.contains(query)) {
-                filteredModelList.add(model);
-            }
-        }
-        return filteredModelList;
-    }
-
 }
