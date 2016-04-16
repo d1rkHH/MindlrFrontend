@@ -140,6 +140,9 @@ public class PostLoader {
         sendPosts = new ArrayList<>();
     }
 
+    public List<ViewPost> getPostList() {
+        return postList;
+    }
 
     private class LoadNewPostsTask extends AsyncTask<Void, Void, JSONObject> {
 

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -17,11 +16,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.adapter.RVAdapter;
+import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.model.UserPostCardItem;
+import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,7 +49,7 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
 
         // a RecyclerView needs a LayoutManager to manage the positioning of its items
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-            //GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(),2);
+        //GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(),2);
         _recyclerView.setLayoutManager(layoutManager);
 
         return view;
@@ -67,8 +69,15 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
         super.onActivityCreated(savedInstanceState);
 
         ArrayList<UserPostCardItem> items = new ArrayList<>();
-        for (int i = 0; i < 50; i++) {
-            items.add(new UserPostCardItem("TextView_" + i));
+        List<ViewPost> cardData = PostLoader.getInstance().getPostList();
+        for (int i = 0; i < cardData.size(); i++) {
+
+            ViewPost vp = cardData.get(i);
+
+            UserPostCardItem cardItem =
+                    new UserPostCardItem.Builder("Random", vp.getContentText(), "20.06.2015").build();
+            items.add(cardItem);
+
         }
         _items = items;
 
@@ -118,7 +127,7 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
 
         final List<UserPostCardItem> filteredModelList = new ArrayList<>();
         for (UserPostCardItem model : models) {
-            final String text = model.get_text().toLowerCase();
+            final String text = model.getCategoryText().toLowerCase();
             if (text.contains(query)) {
                 filteredModelList.add(model);
             }

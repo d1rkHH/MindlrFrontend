@@ -121,10 +121,14 @@ public class MainActivity extends BaseNavActivity implements
             startActivity(new Intent(this, WritePostActivity.class));
 
         } else if (id == R.id.nav_my_posts) {
-            startActivity(new Intent(this, UserPostsActivity.class));
+            Intent intent = new Intent(this, UserPostsActivity.class);
+            intent.putExtra("TabSelection", 0);
+            startActivity(intent);
 
         } else if (id == R.id.nav_favorite) {
-
+            Intent intent = new Intent(this, UserPostsActivity.class);
+            intent.putExtra("TabSelection", 1);
+            startActivity(intent);
         } else if (id == R.id.nav_setting) {
 
         } else if (id == R.id.nav_logout) {

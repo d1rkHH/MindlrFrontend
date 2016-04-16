@@ -16,7 +16,7 @@
         android:padding="10dp">
 
         <TextView
-            android:id="@+id/list_item"
+            android:id="@+id/post_category_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
@@ -24,9 +24,9 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
         <TextView
-            android:id="@+id/post_content_text"
+            android:id="@+id/post_preview_text"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/list_item"
+            android:layout_below="@+id/post_category_text"
             android:ellipsize="end"
             android:maxLines="3"
             android:text="hallo this is a previo of the main text really big thig 214 dad etwzh wg adafagha"
@@ -36,9 +36,9 @@
         <ImageView
             android:id="@+id/up_vote_arrow"
             android:layout_marginLeft="15dp"
-            android:layout_alignTop="@+id/post_content_text"
-            android:layout_toEndOf="@+id/post_content_text"
-            android:layout_toRightOf="@+id/post_content_text"
+            android:layout_alignTop="@+id/post_preview_text"
+            android:layout_toEndOf="@+id/post_preview_text"
+            android:layout_toRightOf="@+id/post_preview_text"
             app:srcCompat="@drawable/ic_upvote_arrow_24dp"
             android:layout_height="wrap_content"
             app:layout_widthPercent="10%" />
@@ -61,8 +61,8 @@
             android:layout_marginLeft="15dp"
             android:layout_below="@+id/up_vote_arrow"
             android:layout_marginTop="5dp"
-            android:layout_toEndOf="@+id/post_content_text"
-            android:layout_toRightOf="@+id/post_content_text"
+            android:layout_toEndOf="@+id/post_preview_text"
+            android:layout_toRightOf="@+id/post_preview_text"
             app:srcCompat="@drawable/ic_downvote_arrow_24dp"
             android:layout_height="wrap_content"
             app:layout_widthPercent="10%" />

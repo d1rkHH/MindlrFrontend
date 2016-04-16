@@ -1,5 +1,6 @@
 package de.gamedots.mindlr.mindlrfrontend.view.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabItem;
 import android.support.design.widget.TabLayout;
@@ -49,6 +50,11 @@ public class UserPostsActivity extends AppCompatActivity {
         _tapLayout = (TabLayout) findViewById(R.id.tablayout);
         _tapLayout.setupWithViewPager(_viewPager);
         initTapIcons();
+
+        if(getIntent().hasExtra("TabSelection")){
+            TabLayout.Tab tab = _tapLayout.getTabAt(getIntent().getIntExtra("TabSelection",0));
+            tab.select();
+        }
 
 
 
