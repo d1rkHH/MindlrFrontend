@@ -19,7 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
-import de.gamedots.mindlr.mindlrfrontend.adapter.RVAdapter;
+import de.gamedots.mindlr.mindlrfrontend.adapter.BaseRVAdapter;
+import de.gamedots.mindlr.mindlrfrontend.adapter.holder.FavorCardItemHolder;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.model.UserPostCardItem;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
@@ -30,7 +31,7 @@ import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 public class FavoritePostsFragment extends Fragment implements SearchView.OnQueryTextListener {
 
     private RecyclerView _recyclerView;
-    private RVAdapter _rvAdapter;
+    private BaseRVAdapter _rvAdapter;
     private List<UserPostCardItem> _items;
 
     public FavoritePostsFragment() {
@@ -44,7 +45,8 @@ public class FavoritePostsFragment extends Fragment implements SearchView.OnQuer
         View view = inflater.inflate(R.layout.fragment_favorite_posts, container, false);
         setHasOptionsMenu(true);
 
-        _recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
+        _recyclerView = (RecyclerView) view.findViewById(R.id.recyclerviewfavor);
+
         // a RecyclerView needs a LayoutManager to manage the positioning of its items
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         //GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(),2);
@@ -83,7 +85,12 @@ public class FavoritePostsFragment extends Fragment implements SearchView.OnQuer
         }
         _items = items;
 
-        _rvAdapter = new RVAdapter(items);
+        _rvAdapter = new BaseRVAdapter<FavorCardItemHolder>(items, R.layout.user_post_card){
+            @Override
+            public FavorCardItemHolder getViewHolder(View view) {
+                return new FavorCardItemHolder(view);
+            }
+        };
         _recyclerView.setAdapter(_rvAdapter);
 
     }

@@ -4,13 +4,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.model.UserPostCardItem;
 
 /**
  * Created by dirk on 16.04.2016.
  */
-public abstract class AbstractViewHolder extends RecyclerView.ViewHolder {
+public class BaseViewHolder extends RecyclerView.ViewHolder{
 
     /*
     *   A ViewHolder describes an item view and metadata about
@@ -23,7 +22,7 @@ public abstract class AbstractViewHolder extends RecyclerView.ViewHolder {
     protected TextView createDateText;
 
 
-    public AbstractViewHolder(View itemView) {
+    public BaseViewHolder(View itemView) {
         super(itemView);
         cacheViews();
     }
@@ -31,10 +30,13 @@ public abstract class AbstractViewHolder extends RecyclerView.ViewHolder {
     /*
      * Get view by id and cache them in the fields
      */
-    public abstract void cacheViews();
+    public void cacheViews() {
+    }
 
     /*
      * Set model data to the bound views
      */
-    public abstract void bind(UserPostCardItem model);
+    public void bind(UserPostCardItem model) {
+
+    }
 }

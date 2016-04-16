@@ -16,11 +16,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
-import de.gamedots.mindlr.mindlrfrontend.adapter.RVAdapter;
+import de.gamedots.mindlr.mindlrfrontend.adapter.BaseRVAdapter;
+import de.gamedots.mindlr.mindlrfrontend.adapter.holder.UserCardItemHolder;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.model.UserPostCardItem;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
@@ -31,7 +31,7 @@ import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 public class UserPostsFragment extends Fragment implements SearchView.OnQueryTextListener {
 
     private RecyclerView _recyclerView;
-    private RVAdapter _rvAdapter;
+    private BaseRVAdapter _rvAdapter;
     private List<UserPostCardItem> _items;
 
     public UserPostsFragment() {
@@ -81,7 +81,13 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
         }
         _items = items;
 
-        _rvAdapter = new RVAdapter(items);
+        _rvAdapter = new BaseRVAdapter<UserCardItemHolder>(items, R.layout.user_post_card){
+            @Override
+            public UserCardItemHolder getViewHolder(View view) {
+                return new UserCardItemHolder(view);
+            }
+        };
+
         _recyclerView.setAdapter(_rvAdapter);
 
     }

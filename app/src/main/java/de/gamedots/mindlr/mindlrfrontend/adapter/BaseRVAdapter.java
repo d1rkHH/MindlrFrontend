@@ -9,25 +9,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
-import de.gamedots.mindlr.mindlrfrontend.adapter.holder.UserCardItemHolder;
+import de.gamedots.mindlr.mindlrfrontend.adapter.holder.BaseViewHolder;
 import de.gamedots.mindlr.mindlrfrontend.model.UserPostCardItem;
 
 /**
  * Created by dirk on 14.04.2016.
  */
-public class RVAdapter extends RecyclerView.Adapter<UserCardItemHolder>{
+public abstract class BaseRVAdapter<T extends BaseViewHolder> extends RecyclerView.Adapter<T>{
 
     private List<UserPostCardItem> _items;
+    private int _itemResourceId;
 
-    public RVAdapter(List<UserPostCardItem> _items) {
+    public BaseRVAdapter(List<UserPostCardItem> _items, int itemResourceId) {
         this._items = _items;
+        this._itemResourceId = itemResourceId;
     }
-
 
 
     /* Get the view at position i to display */
     @Override
-    public void onBindViewHolder(UserCardItemHolder itemViewHolder, int i) {
+    public void onBindViewHolder(T itemViewHolder, int i) {
         final UserPostCardItem model = _items.get(i);
         itemViewHolder.bind(model);
     }
@@ -38,11 +39,14 @@ public class RVAdapter extends RecyclerView.Adapter<UserCardItemHolder>{
      * passing the output to the constructor of the custom ViewHolder.
      */
     @Override
-    public UserCardItemHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_row, viewGroup, false);
-        UserCardItemHolder itemViewHolder = new UserCardItemHolder(view);
+    public T onCreateViewHolder(ViewGroup viewGroup, int i) {
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(_itemResourceId, viewGroup, false);
+        T itemViewHolder = getViewHolder(view);
         return itemViewHolder;
     }
+
+    public abstract T getViewHolder(View view);
+
 
     /*
      * Return number of items present in the data
@@ -61,4 +65,6 @@ public class RVAdapter extends RecyclerView.Adapter<UserCardItemHolder>{
         _items.addAll(post);
         notifyDataSetChanged();
     }
+
+
 }
