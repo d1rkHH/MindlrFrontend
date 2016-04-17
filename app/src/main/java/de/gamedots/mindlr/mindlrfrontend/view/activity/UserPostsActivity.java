@@ -20,6 +20,13 @@ import de.gamedots.mindlr.mindlrfrontend.view.fragment.UserPostsFragment;
 
 public class UserPostsActivity extends AppCompatActivity {
 
+    public static final String EXTRA_LAYOUT = "de.gamedots.mindlr.mindlrfrontend.LAYOUT";
+    public static final String EXTRA_CATEGORY = "de.gamedots.mindlr.mindlrfrontend.CATEGORY";
+    public static final String EXTRA_PREVIEW  = "de.gamedots.mindlr.mindlrfrontend.PREVIEW";
+    public static final String EXTRA_UPPERCENT= "de.gamedots.mindlr.mindlrfrontend.UPVOTE";
+    public static final String EXTRA_DOWNPERCENT = "de.gamedots.mindlr.mindlrfrontend.DOWNVOTE";
+    public static final String EXTRA_CREATEDATE = "de.gamedots.mindlr.mindlrfrontend.CREATEDATE";
+
     private ViewPager _viewPager;
     private TabLayout _tapLayout;
 
