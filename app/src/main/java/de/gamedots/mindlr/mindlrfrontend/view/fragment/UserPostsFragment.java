@@ -85,7 +85,7 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
         _rvAdapter = new BaseRVAdapter<UserCardItemHolder>(items, R.layout.user_post_card){
             @Override
             public UserCardItemHolder getViewHolder(View view) {
-                return new UserCardItemHolder(view);
+                return new UserCardItemHolder(view, getActivity());
             }
         };
 

@@ -22,13 +22,10 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".view.activity.MainActivity"
             android:label="Mindlr"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".view.activity.WritePostActivity"
             android:label="@string/title_activity_write_post"
@@ -38,7 +35,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.gamedots.mindlr.mindlrfrontend.view.activity.MainActivity" />
         </activity>
-
         <activity
             android:name=".view.activity.UserPostsActivity"
             android:label="@string/title_activity_user_posts"
@@ -48,7 +44,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.gamedots.mindlr.mindlrfrontend.view.activity.MainActivity" />
         </activity>
-
         <activity
             android:name=".view.activity.SplashActivity"
             android:theme="@style/SplashTheme">
@@ -58,7 +53,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".view.activity.PostDetailActivity"
+            android:label="@string/title_activity_post_detail"
+            android:parentActivityName=".view.activity.UserPostsActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.gamedots.mindlr.mindlrfrontend.view.activity.UserPostsActivity" />
+        </activity>
     </application>
 
 </manifest>

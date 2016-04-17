@@ -51,7 +51,8 @@ public class UserPostsActivity extends AppCompatActivity {
         _tapLayout.setupWithViewPager(_viewPager);
         initTapIcons();
 
-        if(getIntent().hasExtra("TabSelection")){
+        Intent intent = getIntent();
+        if(intent != null && intent.hasExtra("TabSelection")){
             TabLayout.Tab tab = _tapLayout.getTabAt(getIntent().getIntExtra("TabSelection",0));
             tab.select();
         }
