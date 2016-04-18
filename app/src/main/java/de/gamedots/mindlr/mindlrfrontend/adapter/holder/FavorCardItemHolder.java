@@ -11,10 +11,8 @@ import de.gamedots.mindlr.mindlrfrontend.view.activity.PostDetailActivity;
 
 import static de.gamedots.mindlr.mindlrfrontend.view.activity.UserPostsActivity.EXTRA_CATEGORY;
 import static de.gamedots.mindlr.mindlrfrontend.view.activity.UserPostsActivity.EXTRA_CREATEDATE;
-import static de.gamedots.mindlr.mindlrfrontend.view.activity.UserPostsActivity.EXTRA_DOWNPERCENT;
 import static de.gamedots.mindlr.mindlrfrontend.view.activity.UserPostsActivity.EXTRA_LAYOUT;
 import static de.gamedots.mindlr.mindlrfrontend.view.activity.UserPostsActivity.EXTRA_PREVIEW;
-import static de.gamedots.mindlr.mindlrfrontend.view.activity.UserPostsActivity.EXTRA_UPPERCENT;
 
 /**
  * Created by dirk on 16.04.2016.

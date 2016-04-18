@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +26,7 @@ import com.google.android.gms.common.api.Status;
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.job.SendIdTokenTask;
+import de.gamedots.mindlr.mindlrfrontend.util.ShareUtil;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.LoginFragment;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.ProfileFragment;
@@ -37,6 +39,8 @@ import de.gamedots.mindlr.mindlrfrontend.view.fragment.ProfileFragment;
 public class MainActivity extends BaseNavActivity implements
         GoogleApiClient.OnConnectionFailedListener,
         LoginFragment.OnSignInButtonClickedListener {
+
+    private ShareActionProvider _shareActionProvider;
 
     @Override
     public void onSignInButtonClicked() {
@@ -101,7 +105,24 @@ public class MainActivity extends BaseNavActivity implements
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+       if(item.getItemId() == R.id.action_share){
+           //TODO: put in the current post text and category
+           ShareUtil.showShareIntent("Empty Test text", this);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
