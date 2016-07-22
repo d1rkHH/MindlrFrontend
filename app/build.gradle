@@ -4,7 +4,7 @@ apply plugin: 'com.google.gms.google-services'
 android {
 
     compileSdkVersion 23
-    buildToolsVersion '23.0.2'
+    buildToolsVersion '24.0.1'
     defaultConfig {
         applicationId "de.gamedots.mindlr.mindlrfrontend"
         vectorDrawables.useSupportLibrary = true
@@ -23,6 +23,12 @@ android {
             debuggable true
         }
     }
+
+}
+
+repositories {
+    jcenter()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 }
 
 dependencies {
@@ -38,4 +44,5 @@ dependencies {
     compile 'com.android.support:support-vector-drawable:23.2.1'
     compile 'com.android.support:animated-vector-drawable:23.2.1'
     compile 'me.grantland:autofittextview:0.2.1'
+    compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
 }
