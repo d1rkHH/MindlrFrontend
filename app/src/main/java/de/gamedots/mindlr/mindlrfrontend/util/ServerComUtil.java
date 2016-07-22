@@ -9,7 +9,7 @@ import java.util.HashMap;
  */
 public class ServerComUtil {
 
-    public static HashMap<String, String> newDefaultParameterHashMap(){
+    public static HashMap<String, String> getMetaDataHashMap(){
         HashMap<String, String> parameter = new HashMap<>();
         parameter.put("BRAND", android.os.Build.BRAND);
         parameter.put("MODEL", android.os.Build.MODEL);

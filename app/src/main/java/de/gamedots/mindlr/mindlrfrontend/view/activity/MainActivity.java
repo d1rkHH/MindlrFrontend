@@ -23,9 +23,12 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
+import java.util.HashMap;
+
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
-import de.gamedots.mindlr.mindlrfrontend.job.SendIdTokenTask;
+import de.gamedots.mindlr.mindlrfrontend.job.SignInTask;
+import de.gamedots.mindlr.mindlrfrontend.util.ServerComUtil;
 import de.gamedots.mindlr.mindlrfrontend.util.ShareUtil;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.LoginFragment;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
@@ -64,6 +67,9 @@ public class MainActivity extends BaseNavActivity implements
 
         _saveInstanceAvailable = savedInstanceState != null;
         _prefs = getSharedPreferences(getString(R.string.LoginStatePreference), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = _prefs.edit();
+        editor.putBoolean(getString(R.string.UserLoginState), false);
+        editor.commit();
         Log.d(TAG, "build api client");
         buildGoogleApiClient();
     }
@@ -73,7 +79,6 @@ public class MainActivity extends BaseNavActivity implements
         super.onStart();
 
         _isUserSignedIn = _prefs.getBoolean(getString(R.string.UserLoginState), false);
-        _isUserSignedIn = true;
         Log.d(TAG, "user signed in : " + _isUserSignedIn);
         handleUserSignInResult(_isUserSignedIn);
     }
@@ -172,7 +177,7 @@ public class MainActivity extends BaseNavActivity implements
 
             //Load the first bunch of posts in the list of posts
             if (!PostLoader.getInstance().isInitialized()) {
-                PostLoader.getInstance().initialize(fragment);
+                PostLoader.getInstance().initialize(this, fragment);
             }
 
             if (_shouldReplace) {
@@ -224,6 +229,8 @@ public class MainActivity extends BaseNavActivity implements
             _shouldReplace = true;
             SharedPreferences.Editor editor = _prefs.edit();
             editor.putBoolean(getString(R.string.UserLoginState), _isUserSignedIn);
+            editor.putString("authProvider", "google");
+            editor.putString("token", idToken);
             editor.commit();
             handleUserSignInResult(_isUserSignedIn);
 
@@ -232,7 +239,8 @@ public class MainActivity extends BaseNavActivity implements
             Toast.makeText(this, "idToken: " + idToken, Toast.LENGTH_LONG).show();
 
             Log.d(TAG, "start idTokenTask");
-            new SendIdTokenTask(getApplicationContext()).execute(idToken, acct.getEmail());
+            new SignInTask(getApplicationContext(), new HashMap<String, String>(),
+                    ServerComUtil.getMetaDataHashMap()).execute();
 
         } else {
             //signed out, show log in UI

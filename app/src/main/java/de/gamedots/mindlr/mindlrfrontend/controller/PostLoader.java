@@ -1,6 +1,6 @@
 package de.gamedots.mindlr.mindlrfrontend.controller;
 
-import android.os.AsyncTask;
+import android.content.Context;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -12,19 +12,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import de.gamedots.mindlr.mindlrfrontend.helper.JSONParser;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
-import de.gamedots.mindlr.mindlrfrontend.util.PostExecuteTemplate;
+import de.gamedots.mindlr.mindlrfrontend.util.BackendTask;
+import de.gamedots.mindlr.mindlrfrontend.util.Global;
 import de.gamedots.mindlr.mindlrfrontend.util.ServerComUtil;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
 
 import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.toast;
-import static de.gamedots.mindlr.mindlrfrontend.util.Global.BACKEND_METHOD_KEY;
-import static de.gamedots.mindlr.mindlrfrontend.util.Global.BACKEND_METHOD_LOAD_POSTS;
-import static de.gamedots.mindlr.mindlrfrontend.util.Global.BACKEND_METHOD_SEND_VOTES;
-import static de.gamedots.mindlr.mindlrfrontend.util.Global.METHOD_POST;
-import static de.gamedots.mindlr.mindlrfrontend.util.Global.SERVER_URL;
 
 /**
  * Created by max on 26.09.15.
@@ -35,7 +30,7 @@ public class PostLoader {
     private int indexCurrent = 0;
     private List<ViewPost> postList = new ArrayList<>();
     private List<ViewPost> sendPosts = new ArrayList<>();
-
+    private Context _context;
     private PostLoader() {
     }
 
@@ -51,9 +46,11 @@ public class PostLoader {
         return postList.size() > 0;
     }
 
-    public void initialize(PostViewFragment fragment) {
+    public void initialize(Context context, PostViewFragment fragment) {
+        _context = context;
         Log.d(LOG.POSTS, "Load posts from the server for the first time");
-        new LoadNewPostsTask(fragment).execute();
+        new LoadNewPostsTask(_context, new HashMap<String, String>(),
+                ServerComUtil.getMetaDataHashMap()).setFragment(fragment).execute();
     }
 
     /**
@@ -100,7 +97,8 @@ public class PostLoader {
 
     private void loadNewPosts() {
         Log.d(LOG.POSTS, "Load new Posts from Server");
-        new LoadNewPostsTask().execute();
+        new LoadNewPostsTask(_context, new HashMap<String, String>(),
+                ServerComUtil.getMetaDataHashMap()).execute();
     }
 
     private List<ViewPost> getOldestPosts() {
@@ -108,7 +106,12 @@ public class PostLoader {
     }
 
     private void sendVotes() {
-        new SendVotesTask().execute();
+        HashMap<String, String> content = new HashMap<>();
+        sendPosts = getOldestPosts();
+        for(ViewPost post : sendPosts){
+            content.put(Long.toString(post.getId()), Integer.toString(post.getVote()));
+        }
+        new SendVotesTask(_context, content, ServerComUtil.getMetaDataHashMap()).execute();
     }
 
     private void removeSendPosts(List<Long> failedPostIDs) {
@@ -144,117 +147,83 @@ public class PostLoader {
         return postList;
     }
 
-    private class LoadNewPostsTask extends AsyncTask<Void, Void, JSONObject> {
+    private class LoadNewPostsTask extends BackendTask {
 
-        PostViewFragment fragment;
+        private PostViewFragment _fragment;
 
-        public LoadNewPostsTask() {
+        public LoadNewPostsTask(Context context, HashMap<String, String> content, HashMap<String,
+                String> metadata){
+            super(context, content, metadata);
+            _apiMethod = Global.BACKEND_METHOD_LOAD_POSTS;
         }
 
-        public LoadNewPostsTask(PostViewFragment fragment) {
-            this.fragment = fragment;
+        public LoadNewPostsTask setFragment(PostViewFragment fragment){
+            _fragment = fragment;
+            return this;
         }
 
-        protected void onPreExecute() {
-        }
-
-        protected JSONObject doInBackground(Void... params) {
-            HashMap<String, String> parameter = ServerComUtil.newDefaultParameterHashMap();
-            parameter.put(BACKEND_METHOD_KEY, BACKEND_METHOD_LOAD_POSTS);
-            parameter.put("USER_ID", "TRIAL");
-
-            Log.d(LOG.JSON, "About to create JSONParser");
-            JSONParser parser = new JSONParser();
-            Log.d(LOG.CONNECTION, "About to make HTTPRequest");
-
-            return parser.makeHttpRequest(SERVER_URL, METHOD_POST, parameter);
-        }
-
-        protected void onPostExecute(JSONObject result) {
-            new PostExecuteTemplate() {
-                @Override
-                public void onSuccess(JSONObject result) {
-                    Iterator<?> keys = result.keys();
-                    while (keys.hasNext()) {
-                        String key = (String) keys.next();
-                        try {
-                            String text = result.getString(key);
-                            Log.d(LOG.JSON, "Key: " + key + " - Text: " + text);
-                            try {
-                                int id = Integer.parseInt(key);
-                                Log.d(LOG.POSTS, "Add post to postList");
-                                ViewPost post = new ViewPost(id, text);
-                                postList.add(post);
-
-                                if (fragment != null && postList.size() == 1) {
-                                    fragment.getPostView().setText(post.getContentText());
-                                }
-                            } catch (NumberFormatException e) {
-                                Log.d(LOG.JSON, "JSON key is NaN");
-                            }
-                        } catch (JSONException e) {
-                            Log.e(LOG.JSON, Log.getStackTraceString(e));
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailure(JSONObject result) {
+        @Override
+        public void onSuccess(JSONObject result) {
+            Iterator<?> keys = result.keys();
+            while (keys.hasNext()) {
+                String key = (String) keys.next();
+                try {
+                    String text = result.getString(key);
+                    Log.d(LOG.JSON, "Key: " + key + " - Text: " + text);
                     try {
-                        String text = result.getString("ERROR");
-                        toast(fragment.getActivity(), text);
-                    } catch (JSONException e) {
-                        Log.e(LOG.JSON, Log.getStackTraceString(e));
+                        int id = Integer.parseInt(key);
+                        Log.d(LOG.POSTS, "Add post to postList");
+                        ViewPost post = new ViewPost(id, text);
+                        postList.add(post);
+
+                        if (_fragment != null && postList.size() == 1) {
+                            _fragment.getPostView().setText(post.getContentText());
+                        }
+                    } catch (NumberFormatException e) {
+                        Log.d(LOG.JSON, "JSON key is NaN");
                     }
+                } catch (JSONException e) {
+                    Log.e(LOG.JSON, Log.getStackTraceString(e));
                 }
-            }.onPostExec(result);
+            }
+        }
+
+        @Override
+        public void onFailure(JSONObject result) {
+            try {
+                String text = result.getString("ERROR");
+                toast(_fragment.getActivity(), text);
+            } catch (JSONException e) {
+                Log.e(LOG.JSON, Log.getStackTraceString(e));
+            }
         }
     }
 
-    private class SendVotesTask extends AsyncTask<Void, Void, JSONObject> {
+    private class SendVotesTask extends BackendTask {
 
-        protected void onPreExecute() {
+        public SendVotesTask(Context context, HashMap<String, String> content, HashMap<String, String> metadata){
+            super(context, content, metadata);
+            _apiMethod = Global.BACKEND_METHOD_SEND_VOTES;
         }
 
-        protected JSONObject doInBackground(Void... params) {
-            //generate new HashMap with default values such as SDK etc.
-            HashMap<String, String> parameter = ServerComUtil.newDefaultParameterHashMap();
-            parameter.put(BACKEND_METHOD_KEY, BACKEND_METHOD_SEND_VOTES);
-            parameter.put("USER_ID", "1"); //should only work with real user, not TRIAL
+        @Override
+        public void onSuccess(JSONObject result) {
+            Log.d(LOG.POSTS, "successful posted.");
+            removeSendPosts(new ArrayList<Long>());
+        }
 
-            sendPosts = getOldestPosts();
-            for (ViewPost post : sendPosts) {
-                parameter.put(Long.toString(post.getId()), Integer.toString(post.getVote()));
+        @Override
+        public void onFailure(JSONObject result) {
+            try {
+                JSONArray failedPostIDs = result.getJSONArray("FAILED");
+                List<Long> postIDs = new ArrayList<>();
+                for (int i = 0; i < failedPostIDs.length(); i++) {
+                    postIDs.add(failedPostIDs.getLong(i));
+                }
+                removeSendPosts(postIDs);
+            } catch (JSONException e) {
+                Log.e(LOG.JSON, Log.getStackTraceString(e));
             }
-
-            Log.d(LOG.JSON, "About to create JSONParser");
-            JSONParser parser = new JSONParser();
-            Log.d(LOG.CONNECTION, "About to make HTTPRequest");
-            return parser.makeHttpRequest(SERVER_URL, METHOD_POST, parameter);
-        }
-
-        protected void onPostExecute(JSONObject result) {
-            new PostExecuteTemplate() {
-                @Override
-                public void onSuccess(JSONObject result) {
-                    Log.d(LOG.POSTS, "successful posted.");
-                    removeSendPosts(new ArrayList<Long>());
-                }
-
-                @Override
-                public void onFailure(JSONObject result) {
-                    try {
-                        JSONArray failedPostIDs = result.getJSONArray("FAILED");
-                        List<Long> postIDs = new ArrayList<>();
-                        for (int i = 0; i < failedPostIDs.length(); i++) {
-                            postIDs.add(failedPostIDs.getLong(i));
-                        }
-                        removeSendPosts(postIDs);
-                    } catch (JSONException e) {
-                        Log.e(LOG.JSON, Log.getStackTraceString(e));
-                    }
-                }
-            }.onPostExec(result);
         }
     }
 }
