@@ -1,7 +1,5 @@
 package de.gamedots.mindlr.mindlrfrontend.view.activity;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,22 +10,15 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.HashMap;
-
 import de.gamedots.mindlr.mindlrfrontend.R;
+import de.gamedots.mindlr.mindlrfrontend.jobs.WritePostTask;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.Category;
-import de.gamedots.mindlr.mindlrfrontend.util.BackendTask;
 import de.gamedots.mindlr.mindlrfrontend.util.Global;
-import de.gamedots.mindlr.mindlrfrontend.util.ServerComUtil;
 
 public class WritePostActivity extends AppCompatActivity {
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,34 +78,13 @@ public class WritePostActivity extends AppCompatActivity {
         EditText editText = (EditText) findViewById(R.id.postWriteArea);
         Spinner spinner = (Spinner) findViewById(R.id.category_spinner);
         String catString = spinner.getSelectedItem().toString();
-        HashMap<String, String> content = new HashMap<>();
-        content.put("content_text", editText.getText().toString());
-        content.put("category_id", Integer.toString(Category.getCategoryIDForName(catString)));
-        new WritePostTask(this, content, ServerComUtil.getMetaDataHashMap()).execute();
-    }
-
-    private class WritePostTask extends BackendTask {
-
-        public WritePostTask(Context context, HashMap<String, String> content, HashMap<String,
-                String> metadata){
-            super(context, content, metadata);
-            _apiMethod = Global.BACKEND_METHOD_WRITE_POST;
+        JSONObject content = new JSONObject();
+        try {
+            content.put("content_text", editText.getText().toString());
+            content.put("category_id", Integer.toString(Category.getCategoryIDForName(catString)));
+        } catch (JSONException e){
+            e.printStackTrace();
         }
-
-        @Override
-        public void onSuccess(JSONObject result) {
-            Log.d(de.gamedots.mindlr.mindlrfrontend.logging.LOG.POSTS, "Successfull posted.");
-            Toast.makeText(getApplicationContext(), "Erfolgreich gepostet", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(getApplicationContext(), MainActivity.class));
-        }
-        @Override
-        public void onFailure(JSONObject result) {
-            try {
-                String text = result.getString("ERROR");
-                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-            } catch (JSONException e) {
-                Log.e(de.gamedots.mindlr.mindlrfrontend.logging.LOG.JSON, Log.getStackTraceString(e));
-            }
-        }
+        new WritePostTask(this, content).execute();
     }
 }

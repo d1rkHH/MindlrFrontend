@@ -2,24 +2,15 @@ package de.gamedots.mindlr.mindlrfrontend.controller;
 
 import android.content.Context;
 import android.util.Log;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-
+import de.gamedots.mindlr.mindlrfrontend.jobs.LoadPostsTask;
+import de.gamedots.mindlr.mindlrfrontend.jobs.StoreVotesTask;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
-import de.gamedots.mindlr.mindlrfrontend.util.BackendTask;
-import de.gamedots.mindlr.mindlrfrontend.util.Global;
-import de.gamedots.mindlr.mindlrfrontend.util.ServerComUtil;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
-
-import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.toast;
 
 /**
  * Created by max on 26.09.15.
@@ -49,8 +40,7 @@ public class PostLoader {
     public void initialize(Context context, PostViewFragment fragment) {
         _context = context;
         Log.d(LOG.POSTS, "Load posts from the server for the first time");
-        new LoadNewPostsTask(_context, new HashMap<String, String>(),
-                ServerComUtil.getMetaDataHashMap()).setFragment(fragment).execute();
+        new LoadPostsTask(_context, new JSONObject(), postList).setFragment(fragment).execute();
     }
 
     /**
@@ -97,8 +87,7 @@ public class PostLoader {
 
     private void loadNewPosts() {
         Log.d(LOG.POSTS, "Load new Posts from Server");
-        new LoadNewPostsTask(_context, new HashMap<String, String>(),
-                ServerComUtil.getMetaDataHashMap()).execute();
+        new LoadPostsTask(_context, new JSONObject(), postList).execute();
     }
 
     private List<ViewPost> getOldestPosts() {
@@ -106,15 +95,19 @@ public class PostLoader {
     }
 
     private void sendVotes() {
-        HashMap<String, String> content = new HashMap<>();
+        JSONObject content = new JSONObject();
         sendPosts = getOldestPosts();
-        for(ViewPost post : sendPosts){
-            content.put(Long.toString(post.getId()), Integer.toString(post.getVote()));
+        try {
+            for (ViewPost post : sendPosts) {
+                content.put(Long.toString(post.getId()), Integer.toString(post.getVote()));
+            }
+        } catch (JSONException e){
+            e.printStackTrace();
         }
-        new SendVotesTask(_context, content, ServerComUtil.getMetaDataHashMap()).execute();
+        new StoreVotesTask(_context, content, this).execute();
     }
 
-    private void removeSendPosts(List<Long> failedPostIDs) {
+    public void removeSendPosts(List<Long> failedPostIDs) {
         Log.d(LOG.POSTS, "About to remove send posts from postList");
         ArrayList<ViewPost> sendPostsCopy = new ArrayList<>(sendPosts);
         ArrayList<ViewPost> postListCopy = new ArrayList<>(postList);
@@ -147,83 +140,4 @@ public class PostLoader {
         return postList;
     }
 
-    private class LoadNewPostsTask extends BackendTask {
-
-        private PostViewFragment _fragment;
-
-        public LoadNewPostsTask(Context context, HashMap<String, String> content, HashMap<String,
-                String> metadata){
-            super(context, content, metadata);
-            _apiMethod = Global.BACKEND_METHOD_LOAD_POSTS;
-        }
-
-        public LoadNewPostsTask setFragment(PostViewFragment fragment){
-            _fragment = fragment;
-            return this;
-        }
-
-        @Override
-        public void onSuccess(JSONObject result) {
-            Iterator<?> keys = result.keys();
-            while (keys.hasNext()) {
-                String key = (String) keys.next();
-                try {
-                    String text = result.getString(key);
-                    Log.d(LOG.JSON, "Key: " + key + " - Text: " + text);
-                    try {
-                        int id = Integer.parseInt(key);
-                        Log.d(LOG.POSTS, "Add post to postList");
-                        ViewPost post = new ViewPost(id, text);
-                        postList.add(post);
-
-                        if (_fragment != null && postList.size() == 1) {
-                            _fragment.getPostView().setText(post.getContentText());
-                        }
-                    } catch (NumberFormatException e) {
-                        Log.d(LOG.JSON, "JSON key is NaN");
-                    }
-                } catch (JSONException e) {
-                    Log.e(LOG.JSON, Log.getStackTraceString(e));
-                }
-            }
-        }
-
-        @Override
-        public void onFailure(JSONObject result) {
-            try {
-                String text = result.getString("ERROR");
-                toast(_fragment.getActivity(), text);
-            } catch (JSONException e) {
-                Log.e(LOG.JSON, Log.getStackTraceString(e));
-            }
-        }
-    }
-
-    private class SendVotesTask extends BackendTask {
-
-        public SendVotesTask(Context context, HashMap<String, String> content, HashMap<String, String> metadata){
-            super(context, content, metadata);
-            _apiMethod = Global.BACKEND_METHOD_SEND_VOTES;
-        }
-
-        @Override
-        public void onSuccess(JSONObject result) {
-            Log.d(LOG.POSTS, "successful posted.");
-            removeSendPosts(new ArrayList<Long>());
-        }
-
-        @Override
-        public void onFailure(JSONObject result) {
-            try {
-                JSONArray failedPostIDs = result.getJSONArray("FAILED");
-                List<Long> postIDs = new ArrayList<>();
-                for (int i = 0; i < failedPostIDs.length(); i++) {
-                    postIDs.add(failedPostIDs.getLong(i));
-                }
-                removeSendPosts(postIDs);
-            } catch (JSONException e) {
-                Log.e(LOG.JSON, Log.getStackTraceString(e));
-            }
-        }
-    }
 }

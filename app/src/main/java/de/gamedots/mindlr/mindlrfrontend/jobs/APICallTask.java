@@ -1,24 +1,19 @@
-package de.gamedots.mindlr.mindlrfrontend.util;
+package de.gamedots.mindlr.mindlrfrontend.jobs;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.HashMap;
-
 import de.gamedots.mindlr.mindlrfrontend.R;
-import de.gamedots.mindlr.mindlrfrontend.helper.JSONParser;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
+import de.gamedots.mindlr.mindlrfrontend.util.ServerComUtil;
 
-import static de.gamedots.mindlr.mindlrfrontend.util.Global.METHOD_POST;
 import static de.gamedots.mindlr.mindlrfrontend.util.Global.SERVER_URL;
 
 /**
- * Created by Max on 24.04.16.
+ * Created by Max Wiechmann on 24.04.16.
  *
  * JSON CONTRACT:
  * {
@@ -34,24 +29,34 @@ import static de.gamedots.mindlr.mindlrfrontend.util.Global.SERVER_URL;
  *          }
  * }
  */
-public abstract class BackendTask extends AsyncTask<Void, Void, JSONObject> {
-
+public abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
 
     protected Context _context;
     protected String _apiMethod;
     protected String _authProvider;
     protected String _token;
-    protected HashMap<String, String> _content;
-    protected HashMap<String, String> _metadata;
+    protected JSONObject _content;
+    protected JSONObject _metadata;
 
-    public BackendTask(Context context, HashMap<String, String> content, HashMap<String, String> metadata){
+    public APICallTask(Context context, JSONObject content){
         _context = context;
         Log.d(LOG.CONNECTION, _context.toString());
         SharedPreferences sharedPreferences = context.getSharedPreferences(context.getString(R.string.LoginStatePreference), Context.MODE_PRIVATE);
-        _authProvider = sharedPreferences.getString("authProvider", "google");
-        _token = sharedPreferences.getString("token", "TOKEMON");
+        _authProvider = sharedPreferences.getString("authProvider", "DEFAULT_AUTH_PROVIDER");
+        _token = sharedPreferences.getString("token", "DEFAULT_TOKEN");
         _content = content;
-        _metadata = metadata;
+        _metadata = ServerComUtil.getMetaDataJSON();
+    }
+
+    /**
+     * By default, the metadata is a JSONObject created by ServerComUtil.getMetaDataJSON
+     * You can override it manually with this method
+     * @param metaData
+     * @return this Task
+     */
+    public APICallTask setMetaData(JSONObject metaData){
+        _metadata = metaData;
+        return this;
     }
 
     @Override
@@ -60,22 +65,21 @@ public abstract class BackendTask extends AsyncTask<Void, Void, JSONObject> {
             //TODO: Try to connect to GoogleAPIClient and get new token, if successfull override token
             //If not successfull, log user out
         }
-        Log.e("ALOAH SNACKBAR", _apiMethod);
     }
 
     @Override
     protected JSONObject doInBackground(Void... params) {
-        //generate new HashMap with default values such as SDK etc.
-        HashMap<String, String> parameter = new HashMap<>();
-        parameter.put("token", _token);
-        parameter.put("auth_provider", _authProvider);
-        parameter.put("content",  new JSONObject(_content).toString());
-        parameter.put("metadata", new JSONObject(_metadata).toString());
-
-        Log.d(LOG.JSON, "About to create JSONParser");
-        JSONParser parser = new JSONParser();
-        Log.d(LOG.CONNECTION, "About to make HTTPRequest");
-        return parser.makeHttpRequest(SERVER_URL + _apiMethod, METHOD_POST, parameter);
+        JSONObject requestJSON = new JSONObject();
+        try {
+            requestJSON = new JSONObject();
+            requestJSON.put("content", _content);
+            requestJSON.put("metadata", _metadata);
+            requestJSON.put("token", _token);
+            requestJSON.put("auth_provider", _authProvider);
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+        return ServerComUtil.httpPostRequest(SERVER_URL + _apiMethod + "/", requestJSON);
     }
 
     /**

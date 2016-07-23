@@ -3,7 +3,7 @@ package de.gamedots.mindlr.mindlrfrontend.util;
 import de.gamedots.mindlr.mindlrfrontend.model.Category;
 
 /**
- * Created by max on 26.09.15.
+ * Created by Max Wiechmann on 26.09.15.
  */
 public final class Global {
 
@@ -12,9 +12,8 @@ public final class Global {
     //public static final PostLoader postLoader = new PostLoader();
 
     //Server Connection
-    public static final String SERVER_URL = "http://217.232.60.231:8080/requesthandler";
+    public static final String SERVER_URL = "http://192.168.178.50:8000/api/"; // TODO: Set URL here
     //Methods
-    public static final String BACKEND_METHOD_KEY = "BACKEND_METHOD";
     public static final String BACKEND_METHOD_LOAD_POSTS = "load_posts";
     public static final String BACKEND_METHOD_WRITE_POST = "write_post";
     public static final String BACKEND_METHOD_SEND_VOTES = "store_votes";
@@ -25,12 +24,6 @@ public final class Global {
     public static final String BACKEND_METHOD_GET_CATEGORIES = "get_categories";
     public static final String BACKEND_METHOD_GET_REPORT_OPTIONS = "get_report_options";
     public static final String BACKEND_METHOD_REPORT_POSTS = "report_post";
-
-    public static final String METHOD_POST = "POST";
-
-    public static final String METHOD_VERIFY = "VERIFY_TOKEN";
-
-    private static final String AUTH_PROVIDER = "AUTH_PROVIDER";
 
     public enum AuthProvider { GOOGLE }
 

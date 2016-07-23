@@ -1,19 +1,17 @@
-package de.gamedots.mindlr.mindlrfrontend.job;
+package de.gamedots.mindlr.mindlrfrontend.jobs;
 
 import android.content.Context;
 import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.util.HashMap;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
-import de.gamedots.mindlr.mindlrfrontend.util.BackendTask;
 import de.gamedots.mindlr.mindlrfrontend.util.Global;
 import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.toast;
 
-public class SignInTask extends BackendTask {
+public class SignInTask extends APICallTask {
 
-    public SignInTask(Context context, HashMap<String, String> content, HashMap<String, String> metadata){
-        super(context, content, metadata);
+    public SignInTask(Context context, JSONObject content){
+        super(context, content);
         _apiMethod = Global.BACKEND_METHOD_SIGN_IN;
     }
 

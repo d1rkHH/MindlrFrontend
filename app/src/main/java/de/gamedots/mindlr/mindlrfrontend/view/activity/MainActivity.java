@@ -23,12 +23,11 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
-import java.util.HashMap;
+import org.json.JSONObject;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
-import de.gamedots.mindlr.mindlrfrontend.job.SignInTask;
-import de.gamedots.mindlr.mindlrfrontend.util.ServerComUtil;
+import de.gamedots.mindlr.mindlrfrontend.jobs.SignInTask;
 import de.gamedots.mindlr.mindlrfrontend.util.ShareUtil;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.LoginFragment;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
@@ -79,6 +78,7 @@ public class MainActivity extends BaseNavActivity implements
         super.onStart();
 
         _isUserSignedIn = _prefs.getBoolean(getString(R.string.UserLoginState), false);
+        _isUserSignedIn = true;
         Log.d(TAG, "user signed in : " + _isUserSignedIn);
         handleUserSignInResult(_isUserSignedIn);
     }
@@ -239,8 +239,7 @@ public class MainActivity extends BaseNavActivity implements
             Toast.makeText(this, "idToken: " + idToken, Toast.LENGTH_LONG).show();
 
             Log.d(TAG, "start idTokenTask");
-            new SignInTask(getApplicationContext(), new HashMap<String, String>(),
-                    ServerComUtil.getMetaDataHashMap()).execute();
+            new SignInTask(getApplicationContext(), new JSONObject()).execute();
 
         } else {
             //signed out, show log in UI
