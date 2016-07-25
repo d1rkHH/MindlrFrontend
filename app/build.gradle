@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
 
 android {
 
@@ -46,3 +45,5 @@ dependencies {
     compile 'me.grantland:autofittextview:0.2.1'
     compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
 }
+
+apply plugin: 'com.google.gms.google-services'

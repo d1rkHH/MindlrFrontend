@@ -2,6 +2,8 @@ package de.gamedots.mindlr.mindlrfrontend.jobs;
 
 import android.content.Context;
 import android.util.Log;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.Iterator;
@@ -33,27 +35,18 @@ public class LoadPostsTask extends APICallTask {
 
     @Override
     public void onSuccess(JSONObject result) {
-        Iterator<?> keys = result.keys();
-        while (keys.hasNext()) {
-            String key = (String) keys.next();
-            try {
-                String text = result.getString(key);
-                Log.d(LOG.JSON, "Key: " + key + " - Text: " + text);
-                try {
-                    int id = Integer.parseInt(key);
-                    Log.d(LOG.POSTS, "Add post to postList");
-                    ViewPost post = new ViewPost(id, text);
-                    _postList.add(post);
-
-                    if (_fragment != null && _postList.size() == 1) {
-                        _fragment.getPostView().setText(post.getContentText());
-                    }
-                } catch (NumberFormatException e) {
-                    Log.d(LOG.JSON, "JSON key is NaN");
+        try {
+            JSONArray posts = result.getJSONArray("posts");
+            for(int i = 0; i < posts.length(); i++){
+                JSONObject post = posts.getJSONObject(i);
+                ViewPost viewPost = new ViewPost(post.getInt("id"), post.getString("content_text"));
+                _postList.add(viewPost);
+                if (_fragment != null && _postList.size() == 1) {
+                    _fragment.getPostView().setText(viewPost.getContentText());
                 }
-            } catch (JSONException e) {
-                Log.e(LOG.JSON, Log.getStackTraceString(e));
             }
+        } catch (JSONException e){
+            e.printStackTrace();
         }
     }
 

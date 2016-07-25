@@ -39,6 +39,7 @@ public class ServerComUtil {
 
     public static JSONObject httpPostRequest(String url, JSONObject parameter) {
         StringBuilder result = null;
+        int status = -1;
         HttpURLConnection connection = null;
         try {
             //Setup connection
@@ -65,7 +66,7 @@ public class ServerComUtil {
                 Log.d(LOG.JSON, header.getKey() + "=" + header.getValue());
             }
 
-            int status = connection.getResponseCode();
+            status = connection.getResponseCode();
             Log.d(LOG.CONNECTION, "Status Code: " + status);
 
             InputStream input;
@@ -105,6 +106,10 @@ public class ServerComUtil {
         if(result != null) {
             try {
                 JSONObject jsonObject = new JSONObject(result.toString());
+                boolean hasStatus = jsonObject.has("STATUS");
+                if(!hasStatus && status != -1){
+                    jsonObject.put("STATUS", status);
+                }
                 Log.d(LOG.JSON, "JSONObject Response: " + jsonObject.toString());
                 return jsonObject;
             } catch (JSONException e) {

@@ -108,7 +108,7 @@ public abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
                 } else {
                     try {
                         int status = result.getInt("STATUS");
-                        if (status == 401 /*UNAUTHORIZED*/){
+                        if (status == 401 /*UNAUTHORIZED*/) {
                             //TODO: Try to get new access token, if not successfull, log out
                             //If successfull, call backend task again
                         }

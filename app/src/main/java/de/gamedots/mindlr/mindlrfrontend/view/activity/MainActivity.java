@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.jobs.SignInTask;
+import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.util.ShareUtil;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.LoginFragment;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
@@ -78,7 +79,6 @@ public class MainActivity extends BaseNavActivity implements
         super.onStart();
 
         _isUserSignedIn = _prefs.getBoolean(getString(R.string.UserLoginState), false);
-        _isUserSignedIn = true;
         Log.d(TAG, "user signed in : " + _isUserSignedIn);
         handleUserSignInResult(_isUserSignedIn);
     }
@@ -242,6 +242,9 @@ public class MainActivity extends BaseNavActivity implements
             new SignInTask(getApplicationContext(), new JSONObject()).execute();
 
         } else {
+            //Log.e(LOG.CONNECTION, result.getSignInAccount().toString());
+            Log.e(LOG.CONNECTION, result.getStatus().toString());
+
             //signed out, show log in UI
         }
     }

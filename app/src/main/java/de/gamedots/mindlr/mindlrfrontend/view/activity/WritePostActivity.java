@@ -10,8 +10,14 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.jobs.WritePostTask;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
@@ -80,8 +86,11 @@ public class WritePostActivity extends AppCompatActivity {
         String catString = spinner.getSelectedItem().toString();
         JSONObject content = new JSONObject();
         try {
+            JSONArray categories = new JSONArray();
+            categories.put(Category.getCategoryIDForName(catString));
             content.put("content_text", editText.getText().toString());
-            content.put("category_id", Integer.toString(Category.getCategoryIDForName(catString)));
+            content.put("content_url", ""); // TODO
+            content.put("categories", categories);
         } catch (JSONException e){
             e.printStackTrace();
         }
