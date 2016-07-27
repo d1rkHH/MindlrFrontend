@@ -7,7 +7,7 @@
     android:orientation="vertical"
     card_view:cardElevation="1dp"
     android:layout_margin="5dp"
-    app:cardBackgroundColor="#FFFFFF">
+    app:cardBackgroundColor="@color/white">
 
 
     <android.support.percent.PercentRelativeLayout

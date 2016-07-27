@@ -99,9 +99,9 @@ public class PostViewFragment extends Fragment {
                         result = true;
                     } else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
                         if (diffY > 0) {
-                            onSwipeBottom();
+                            //onSwipeBottom();
                         } else {
-                            onSwipeTop();
+                            //onSwipeTop();
                         }
                     }
                     result = true;
@@ -114,18 +114,8 @@ public class PostViewFragment extends Fragment {
         }
 
         public void onSwipeRight() {
-            Toast.makeText(getActivity(), "right", Toast.LENGTH_SHORT).show();
-
-            // execute previous method and play animation if successful
-            if (PostLoader.getInstance().previous()) {
-                fragmentTrans(R.anim.enter_from_left, R.anim.exit_to_right);
-            } else {
-                Toast.makeText(getActivity(), "No older posts available", Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        public void onSwipeLeft() {
-            // execute next method and play animation if successful
+            toast(getActivity(), "Upvote");
+            PostLoader.getInstance().getCurrent().ratePositive();
             if (PostLoader.getInstance().next()) {
                 fragmentTrans(R.anim.enter_from_right, R.anim.exit_to_left);
             } else {
@@ -133,14 +123,14 @@ public class PostViewFragment extends Fragment {
             }
         }
 
-        public void onSwipeTop() {
-            toast(getActivity(), "UP");
-            PostLoader.getInstance().getCurrent().ratePositive();
-        }
-
-        public void onSwipeBottom() {
-            toast(getActivity(), "DOWN");
+        public void onSwipeLeft() {
+            toast(getActivity(), "Downvote");
             PostLoader.getInstance().getCurrent().rateNegative();
+            if (PostLoader.getInstance().next()) {
+                fragmentTrans(R.anim.enter_from_right, R.anim.exit_to_left);
+            } else {
+                toast(getActivity(), "You reached the last post. Swipe again to load new posts.");
+            }
         }
 
         public boolean onTouch(View v, MotionEvent event) {

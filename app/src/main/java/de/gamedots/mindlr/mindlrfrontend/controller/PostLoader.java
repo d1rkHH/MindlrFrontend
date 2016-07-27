@@ -72,19 +72,6 @@ public class PostLoader {
         }
     }
 
-    /**
-     * @return TRUE if previous post available, FALSE if not
-     */
-    public boolean previous() {
-        Log.d(LOG.POSTS, "Previous Post: " + indexCurrent);
-        if (indexCurrent > 0) {
-            indexCurrent--;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     private void loadNewPosts() {
         Log.d(LOG.POSTS, "Load new Posts from Server");
         new LoadPostsTask(_context, new JSONObject(), postList).execute();
