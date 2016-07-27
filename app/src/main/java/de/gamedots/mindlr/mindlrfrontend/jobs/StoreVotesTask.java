@@ -28,6 +28,7 @@ public class StoreVotesTask extends APICallTask {
     public void onSuccess(JSONObject result) {
         Log.d(LOG.POSTS, "successful posted.");
         _loader.removeSendPosts(new ArrayList<Long>());
+        _loader.setSending(false);
     }
 
     @Override
@@ -41,6 +42,8 @@ public class StoreVotesTask extends APICallTask {
             _loader.removeSendPosts(postIDs);
         } catch (JSONException e) {
             Log.e(LOG.JSON, Log.getStackTraceString(e));
+        } finally {
+            _loader.setSending(false);
         }
     }
 }

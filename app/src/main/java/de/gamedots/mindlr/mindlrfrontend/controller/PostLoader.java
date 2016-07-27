@@ -22,6 +22,7 @@ public class PostLoader {
     private List<ViewPost> postList = new ArrayList<>();
     private List<ViewPost> sendPosts = new ArrayList<>();
     private Context _context;
+    private boolean sending = false;
     private PostLoader() {
     }
 
@@ -43,29 +44,27 @@ public class PostLoader {
         new LoadPostsTask(_context, new JSONObject(), postList).setFragment(fragment).execute();
     }
 
+    public void setSending(boolean sending){
+        this.sending = sending;
+    }
+
     /**
      * Sets the index to the next post in post
      *
      * @return TRUE if next post available, FALSE if not
      */
     public boolean next() {
-        //if only 15 posts are in the pipeline or less than 15 in the whole list,
-        //load new posts from the DB
-        if (postList.size() - indexCurrent == 15 || postList.size() < 15) {
-            Log.d(LOG.POSTS, "Condition for loading new posts true (Only 15 Posts remaining)");
+        if (postList.size() - indexCurrent < 10) {
             loadNewPosts();
         }
 
-        if (indexCurrent >= 60 && indexCurrent % 10 == 0) {
-            //normally, this way the indexCurrent should never be higher than 60, but if the post-
-            //sending fails somehow, it will still try to send it after another 10 posts
+        if (!sending && indexCurrent >= 20) {
             sendVotes();
         }
 
         //if there is at least 1 post remaining, set current post the the next one
         if (indexCurrent < postList.size() - 1) {
             indexCurrent++;
-            Log.d(LOG.POSTS, "Next Post: " + indexCurrent);
             return true;
         } else {
             return false;
@@ -77,25 +76,22 @@ public class PostLoader {
         new LoadPostsTask(_context, new JSONObject(), postList).execute();
     }
 
-    private List<ViewPost> getOldestPosts() {
-        return postList.subList(0, indexCurrent - 30); // only 30 posts remain
-    }
-
     private void sendVotes() {
         JSONObject content = new JSONObject();
-        sendPosts = getOldestPosts();
-        try {
-            for (ViewPost post : sendPosts) {
+        sendPosts = postList.subList(0, indexCurrent);
+        for (ViewPost post : sendPosts) {
+            try {
                 content.put(Long.toString(post.getId()), Integer.toString(post.getVote()));
+            } catch (JSONException e){
+                e.printStackTrace();
             }
-        } catch (JSONException e){
-            e.printStackTrace();
         }
+        this.sending = true;
+        Log.d(LOG.POSTS, "Sending votes to server");
         new StoreVotesTask(_context, content, this).execute();
     }
 
     public void removeSendPosts(List<Long> failedPostIDs) {
-        Log.d(LOG.POSTS, "About to remove send posts from postList");
         ArrayList<ViewPost> sendPostsCopy = new ArrayList<>(sendPosts);
         ArrayList<ViewPost> postListCopy = new ArrayList<>(postList);
 
