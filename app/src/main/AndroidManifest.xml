@@ -16,21 +16,24 @@
 
     <!-- android:debuggable="true" -->
     <application
-        android:allowBackup="true"
         android:name=".MindlrApplication"
+        android:allowBackup="true"
         android:debuggable="true"
         android:icon="@mipmap/ic_mask"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/MindlrTheme">
-
-        <meta-data android:name="AA_DB_NAME" android:value="mindlr.db" />
-        <meta-data android:name="AA_DB_VERSION" android:value="1" />
+        <meta-data
+            android:name="AA_DB_NAME"
+            android:value="mindlr.db" />
+        <meta-data
+            android:name="AA_DB_VERSION"
+            android:value="1" />
 
         <activity
             android:name=".view.activity.MainActivity"
             android:label="Mindlr"
-            android:theme="@style/MindlrTheme"/>
+            android:theme="@style/MindlrTheme" />
         <activity
             android:name=".view.activity.WritePostActivity"
             android:label="@string/title_activity_write_post"
@@ -54,6 +57,7 @@
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -65,6 +69,16 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.gamedots.mindlr.mindlrfrontend.view.activity.UserPostsActivity" />
+        </activity>
+        <activity
+            android:name=".view.activity.DraftsActivity"
+            android:label="@string/drafts"
+            android:parentActivityName=".view.activity.DraftsActivity"
+            android:theme="@style/MindlrTheme">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.gamedots.mindlr.mindlrfrontend.view.activity.MainActivity" />
         </activity>
     </application>
 
