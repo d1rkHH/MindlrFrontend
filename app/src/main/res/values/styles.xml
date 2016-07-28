@@ -19,8 +19,7 @@
         <item name="android:actionMenuTextColor">@color/primary</item>
     </style>
 
-    <style name="MindlrTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
-    </style>
+    <style name="MindlrTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"></style>
 
     <style name="MindlrTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 

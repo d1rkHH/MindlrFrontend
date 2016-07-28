@@ -75,7 +75,15 @@
             android:label="@string/drafts"
             android:parentActivityName=".view.activity.DraftsActivity"
             android:theme="@style/MindlrTheme">
-
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.gamedots.mindlr.mindlrfrontend.view.activity.MainActivity" />
+        </activity>
+        <activity
+            android:name=".view.activity.ProfileActivity"
+            android:label="@string/title_activity_profile_actvitiy"
+            android:parentActivityName=".view.activity.MainActivity"
+            android:theme="@style/MindlrTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.gamedots.mindlr.mindlrfrontend.view.activity.MainActivity" />

@@ -133,7 +133,7 @@ public class MainActivity extends BaseNavActivity implements
 
 
         if (id == R.id.nav_profile) {
-           /*startActivity(new Intent(this, ProfileActivity.class));*/
+           startActivity(new Intent(this, ProfileActivity.class));
         } else if (id == R.id.nav_drafts) {
             startActivity(new Intent(this, DraftsActivity.class));
         } else if (id == R.id.nav_setting) {
