@@ -35,4 +35,9 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_post_detail">PostDetailActivity</string>
+    <string name="profil">Profil</string>
+    <string name="drafts">Entwürfe</string>
+    <string name="settings">Einstellungen</string>
+    <string name="logout">Abmelden</string>
+    <string name="help">Hilfe</string>
 </resources>

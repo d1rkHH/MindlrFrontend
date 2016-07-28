@@ -32,7 +32,6 @@ import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.util.ShareUtil;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.LoginFragment;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
-import de.gamedots.mindlr.mindlrfrontend.view.fragment.ProfileFragment;
 
 /**
  * "MAIN" activity in the app. When it launches, it checks if the user is (still)
@@ -117,13 +116,12 @@ public class MainActivity extends BaseNavActivity implements
     }
 
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-       if(item.getItemId() == R.id.action_share){
-           //TODO: put in the current post text and category
-           ShareUtil.showShareIntent("Empty Test text", this);
+        if (item.getItemId() == R.id.action_share) {
+            //TODO: put in the current post text and category
+            ShareUtil.showShareIntent("Empty Test text", this);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -133,28 +131,11 @@ public class MainActivity extends BaseNavActivity implements
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_home) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.main_content, new PostViewFragment());
-            transaction.commit();
 
-        } else if (id == R.id.nav_profile) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.main_content, new ProfileFragment());
-            transaction.commit();
-
-        } else if (id == R.id.nav_write_post) {
-            startActivity(new Intent(this, WritePostActivity.class));
-
-        } else if (id == R.id.nav_my_posts) {
-            Intent intent = new Intent(this, UserPostsActivity.class);
-            intent.putExtra("TabSelection", 0);
-            startActivity(intent);
-
-        } else if (id == R.id.nav_favorite) {
-            Intent intent = new Intent(this, UserPostsActivity.class);
-            intent.putExtra("TabSelection", 1);
-            startActivity(intent);
+        if (id == R.id.nav_profile) {
+           /*startActivity(new Intent(this, ProfileActivity.class));*/
+        } else if (id == R.id.nav_drafts) {
+            /*startActivity(new Intent(this, DraftsActivity.class));*/
         } else if (id == R.id.nav_setting) {
 
         } else if (id == R.id.nav_logout) {
@@ -166,7 +147,7 @@ public class MainActivity extends BaseNavActivity implements
 
         //getSupportActionBar().setTitle(item.getTitle());
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        if (drawer != null) drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 

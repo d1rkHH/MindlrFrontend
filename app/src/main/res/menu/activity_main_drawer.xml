@@ -1,50 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group
-        android:id="@+id/grp1"
-        android:checkableBehavior="single">
-        <item android:id="@+id/nav_home"
-            android:icon="@drawable/ic_home_black_24dp"
-            android:title="Home"/>
+    <group android:id="@+id/grp1">
         <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_person_black_24dp"
-            android:title="Profil" />
-        <item android:title="Posts">
-            <menu>
-                <item
-                    android:id="@+id/nav_write_post"
-                    android:icon="@drawable/ic_write_24dp"
-                    android:title="Post schreiben" />
-                <item
-                    android:id="@+id/nav_my_posts"
-                    android:icon="@drawable/ic_my_posts_archive_24dp"
-                    android:title="Meine Posts" />
-                <item
-                    android:id="@+id/nav_favorite"
-                    android:icon="@drawable/ic_favor_star_24dp"
-                    android:title="Meine Favoriten" />
-            </menu>
+            android:title="@string/profil" />
 
-        </item>
-
+        <item
+            android:id="@+id/nav_drafts"
+            android:icon="@drawable/ic_drafts_black_24dp"
+            android:title="@string/drafts" />
     </group>
 
     <group android:id="@+id/grp2">
         <item
             android:id="@+id/nav_setting"
             android:icon="@drawable/ic_settings_black_24dp"
-            android:title="Einstellungen" />
+            android:title="@string/settings" />
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_logout_black_24dp"
-            android:title="Abmelden" />
+            android:title="@string/logout" />
 
         <item
             android:id="@+id/nav_help"
             android:icon="@drawable/ic_help_black_24dp"
-            android:title="Hilfe" />
+            android:title="@string/help" />
 
     </group>
 </menu>
