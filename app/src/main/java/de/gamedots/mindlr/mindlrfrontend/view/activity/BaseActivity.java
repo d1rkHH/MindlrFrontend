@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
-
 /**
  * Created by Dirk on 24.09.15.
  */

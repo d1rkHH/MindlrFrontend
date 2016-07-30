@@ -23,6 +23,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <!-- FRAGMENTS -->
-    <include layout="@layout/content_profile_activity" />
+    <include layout="@layout/content_profile_activity"
+        />
 
 </android.support.design.widget.CoordinatorLayout>
