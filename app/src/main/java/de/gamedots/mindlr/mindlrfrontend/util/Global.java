@@ -12,7 +12,7 @@ public final class Global {
     //public static final PostLoader postLoader = new PostLoader();
 
     //Server Connection
-    public static final String SERVER_URL = "http://192.168.178.50:8000/api/"; // TODO: Set URL here
+    public static final String SERVER_URL = "http://mindlr.com/api/";
     //Methods
     public static final String BACKEND_METHOD_LOAD_POSTS = "load_posts";
     public static final String BACKEND_METHOD_WRITE_POST = "write_post";
