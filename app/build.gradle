@@ -44,6 +44,7 @@ dependencies {
     compile 'com.android.support:animated-vector-drawable:23.2.1'
     compile 'me.grantland:autofittextview:0.2.1'
     compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
+    compile 'com.google.code.gson:gson:2.4'
 }
 
 
