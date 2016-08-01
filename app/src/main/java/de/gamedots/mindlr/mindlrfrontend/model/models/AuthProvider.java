@@ -5,6 +5,9 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.google.gson.annotations.Expose;
 
+/**
+ * Auth provider selection.
+ */
 @Table(name = "auth_providers")
 public class AuthProvider extends Model {
 

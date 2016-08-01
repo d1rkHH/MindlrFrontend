@@ -8,12 +8,12 @@ import com.activeandroid.Configuration;
 
 import de.gamedots.mindlr.mindlrfrontend.model.models.AuthProvider;
 import de.gamedots.mindlr.mindlrfrontend.model.models.Post;
+import de.gamedots.mindlr.mindlrfrontend.model.models.Profile;
 import de.gamedots.mindlr.mindlrfrontend.model.models.User;
+import de.gamedots.mindlr.mindlrfrontend.model.models.UserCreatedPost;
 import de.gamedots.mindlr.mindlrfrontend.model.models.UserPost;
 
-/**
- * Created by Dirk on 24.04.16.
- */
+
 public class MindlrApplication extends Application {
 
     private static User _user = null;
@@ -24,7 +24,8 @@ public class MindlrApplication extends Application {
         //this.deleteDatabase("mindlr.db");
 
         Configuration.Builder config = new Configuration.Builder(this);
-        config.addModelClasses(Post.class, User.class, AuthProvider.class, UserPost.class);
+        //noinspection unchecked
+        config.addModelClasses(Post.class, User.class, AuthProvider.class, UserPost.class, UserCreatedPost.class, Profile.class);
         ActiveAndroid.initialize(config.create());
     }
 
