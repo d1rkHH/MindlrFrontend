@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,8 +39,9 @@ import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
  * logged in. If not, show the LoginFragment to the user, otherwise initialize
  * posts.
  */
-public class MainActivity extends BaseNavActivity implements
+public class MainActivity extends BaseActivity implements
         GoogleApiClient.OnConnectionFailedListener,
+        NavigationView.OnNavigationItemSelectedListener,
         LoginFragment.OnSignInButtonClickedListener {
 
     @Override
@@ -61,6 +64,7 @@ public class MainActivity extends BaseNavActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        initializeUI();
         _saveInstanceAvailable = savedInstanceState != null;
         _prefs = getSharedPreferences(getString(R.string.LoginStatePreference), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = _prefs.edit();
@@ -69,6 +73,7 @@ public class MainActivity extends BaseNavActivity implements
         Log.d(TAG, "build api client");
         buildGoogleApiClient();
     }
+
 
     @Override
     protected void onStart() {
@@ -121,6 +126,16 @@ public class MainActivity extends BaseNavActivity implements
             ShareUtil.showShareIntent("Empty Test text", this);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -289,6 +304,22 @@ public class MainActivity extends BaseNavActivity implements
 
     protected int getLayoutResourceId() {
         return R.layout.activity_main;
+    }
+
+    @Override
+    protected boolean isFABenabled() {
+        return true;
+    }
+
+    private void initializeUI() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, getToolbar(), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        if (drawer != null) drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        if (navigationView != null) navigationView.setNavigationItemSelectedListener(this);
     }
 
     private void handleFragmentTransaction(Fragment fragment, FragTrans todo) {
