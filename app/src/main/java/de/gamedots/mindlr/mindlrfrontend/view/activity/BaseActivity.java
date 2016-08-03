@@ -15,16 +15,20 @@ import de.gamedots.mindlr.mindlrfrontend.R;
  */
 public abstract class BaseActivity extends AppCompatActivity {
     private Toolbar toolbar;
+    public static final int NO_LAYOUT = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getLayoutResourceId());
+        if (getLayoutResourceId() != NO_LAYOUT) setContentView(getLayoutResourceId());
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        // back arrow navigation
-        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (isToolbarEnabled()) {
+            toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            // back arrow navigation
+            if (getSupportActionBar() != null)
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         // Hide fake shadow view if sdk version (>=21) is reached
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -47,6 +51,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected abstract int getLayoutResourceId();
+
+    protected boolean isToolbarEnabled() {
+        return true;
+    }
 
     protected boolean isFABenabled() {
         return false;

@@ -15,13 +15,9 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
-import org.json.JSONObject;
-
-import de.gamedots.mindlr.mindlrfrontend.jobs.SignInTask;
 import de.gamedots.mindlr.mindlrfrontend.util.DebugUtil;
 import de.gamedots.mindlr.mindlrfrontend.view.activity.BaseActivity;
 import de.gamedots.mindlr.mindlrfrontend.view.activity.LoginActivity;
-
 
 public abstract class AuthHandlerActivity extends BaseActivity
         implements GoogleApiClient.OnConnectionFailedListener,
@@ -34,6 +30,7 @@ public abstract class AuthHandlerActivity extends BaseActivity
     // need to be refreshed with every APICallTask
     protected String _idToken;
 
+    public abstract void onSignInSuccess();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,13 +47,6 @@ public abstract class AuthHandlerActivity extends BaseActivity
                 .build();
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        googleSilentSignIn();
-    }
-
     // Main Handler for GoogleSignInResults
     private void handleGoogleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "handleGoogleSignIn:" + (result == null ? "null" : result.getStatus()));
@@ -65,9 +55,7 @@ public abstract class AuthHandlerActivity extends BaseActivity
         if (isSignedIn) {
             GoogleSignInAccount acct = result.getSignInAccount();
             _idToken = acct.getIdToken();
-
-            // send token to backend server
-            new SignInTask(getApplicationContext(), new JSONObject()).execute();
+            onSignInSuccess();
 
         } else {
             startActivity(new Intent(this, LoginActivity.class));

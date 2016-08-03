@@ -88,6 +88,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.gamedots.mindlr.mindlrfrontend.view.activity.MainActivity" />
         </activity>
+
+        <activity
+            android:name=".view.activity.LoginActivity"
+            android:theme="@style/MindlrTheme.NoActionBar"/>
     </application>
 
 </manifest>

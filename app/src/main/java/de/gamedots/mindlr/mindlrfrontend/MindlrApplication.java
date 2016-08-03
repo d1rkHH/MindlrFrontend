@@ -2,6 +2,7 @@ package de.gamedots.mindlr.mindlrfrontend;
 
 
 import android.app.Application;
+import android.util.Log;
 
 import com.activeandroid.ActiveAndroid;
 import com.activeandroid.Configuration;
@@ -17,11 +18,15 @@ import de.gamedots.mindlr.mindlrfrontend.model.models.UserPost;
 public class MindlrApplication extends Application {
 
     private static User _user = null;
+    private static MindlrApplication _instance;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d("Application", "MindlrApplication will be created!");
         //this.deleteDatabase("mindlr.db");
+
+        _instance = this;
 
         Configuration.Builder config = new Configuration.Builder(this);
         //noinspection unchecked
@@ -31,6 +36,10 @@ public class MindlrApplication extends Application {
 
     public static void setUser(int id) {
         _user = User.load(User.class, id);
+    }
+
+    public static MindlrApplication getInstance() {
+        return _instance;
     }
 
     public static User userInstance() {
