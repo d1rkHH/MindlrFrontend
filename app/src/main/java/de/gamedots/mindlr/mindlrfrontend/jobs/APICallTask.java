@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import de.gamedots.mindlr.mindlrfrontend.AuthHandlerHelper;
 import de.gamedots.mindlr.mindlrfrontend.R;
+import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.util.ServerComUtil;
 import de.gamedots.mindlr.mindlrfrontend.view.activity.LoginActivity;
@@ -91,6 +92,8 @@ public abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
             //TODO: Try to connect to GoogleAPIClient and get new token, if successfull override token
             //If not successfull, log user out
         }
+        Log.d(LOG.AUTH, "onPreExecute: APICallTask (" + _apiMethod + ") about to start from: " + _context.toString());
+        Log.d(LOG.AUTH, "onPreExecute: PostLoader has: " + PostLoader.getInstance().getPostList().size() + " posts POSITION: " + PostLoader.getInstance().getPostList().indexOf(PostLoader.getInstance().getCurrent()));
     }
 
     @Override
@@ -104,14 +107,16 @@ public abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
                 GoogleSignInResult gsr = Auth.GoogleSignInApi.silentSignIn(gac).await();
                 if (gsr != null && gsr.isSuccess()) {
                     _token = gsr.getSignInAccount().getIdToken();
+                    Log.d(LOG.AUTH, "doInBackground: GoogleApiClient connected: " + gac.isConnected());
+                    Log.d(LOG.AUTH, "doInBackground: idToken retrieved: " + _token);
                 } else {
-                    Log.d(LOG.CONNECTION, "doInBackground: FAILURE did not get idToken");
+                    Log.d(LOG.AUTH, "doInBackground: FAILURE did not get idToken");
                     signInFailed = true;
                     return null; // break execution
                 }
             }
         } catch (Exception ex) {
-            Log.d(LOG.CONNECTION, "doInBackground: ERROR idToken retrieve");
+            Log.d(LOG.AUTH, "doInBackground: ERROR idToken retrieve");
             signInFailed = true;
             return null; // break execution
         } finally {

@@ -12,6 +12,7 @@ import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.jobs.APICallTask;
 import de.gamedots.mindlr.mindlrfrontend.jobs.SignInTask;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
+import de.gamedots.mindlr.mindlrfrontend.util.DebugUtil;
 
 @SuppressWarnings("ConstantConditions")
 public class LoginActivity extends AuthHandlerActivity implements APICallTask.OnProcessSuccessListener {
@@ -19,11 +20,11 @@ public class LoginActivity extends AuthHandlerActivity implements APICallTask.On
     protected int getLayoutResourceId() {
         return R.layout.activity_login;
     }
+
     @Override
     protected boolean isToolbarEnabled() {
         return false;
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +41,21 @@ public class LoginActivity extends AuthHandlerActivity implements APICallTask.On
 
     @Override
     public void onSignInSuccess() {
-        //create user account on backend server
-        new SignInTask(this, new JSONObject()).execute();
+        Log.d(LOG.AUTH, "onSignInSuccess: SignIn was successful start TASK");
+        //create user account on backend server if not existing
+        new SignInTask(this, new JSONObject(), this).execute();
     }
 
     @Override
+    public void onSignInFailure() {
+        DebugUtil.toast(this, "Anmeldeung fehlgeschlagen");
+    }
+
+    // APICallTask callback
+    @Override
     public void onProcessSuccess() {
+        Log.d(LOG.AUTH, "onProcessSuccess: User verified start MAIN");
+
         // user was successfully verified and account was created
         startActivity(new Intent(this, MainActivity.class));
     }

@@ -91,7 +91,7 @@
 
         <activity
             android:name=".view.activity.LoginActivity"
-            android:theme="@style/MindlrTheme.NoActionBar"/>
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
     </application>
 
 </manifest>

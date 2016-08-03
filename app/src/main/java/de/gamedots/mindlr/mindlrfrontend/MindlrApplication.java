@@ -34,8 +34,8 @@ public class MindlrApplication extends Application {
         ActiveAndroid.initialize(config.create());
     }
 
-    public static void setUser(int id) {
-        _user = User.load(User.class, id);
+    public static void setUser(User user) {
+        _user = user;
     }
 
     public static MindlrApplication getInstance() {

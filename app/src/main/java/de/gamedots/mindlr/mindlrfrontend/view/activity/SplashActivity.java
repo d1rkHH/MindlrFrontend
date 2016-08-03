@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.model.models.User;
 
 import static de.gamedots.mindlr.mindlrfrontend.model.models.AuthProvider.Auth_Provider.GOOGLE;
@@ -23,6 +24,7 @@ public class SplashActivity extends AppCompatActivity {
             finishAndRedirect(LoginActivity.class);
         } else if (user.provider.name.equals(GOOGLE)) {
             // a user (latest) already signed up earlier with google
+            MindlrApplication.setUser(user);
             finishAndRedirect(MainActivity.class);
         }
     }

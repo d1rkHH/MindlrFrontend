@@ -45,4 +45,16 @@ public class User extends Model {
     public static User getLastUserIfAny() {
         return new Select().from(User.class).where("isActive = ?", true).executeSingle();
     }
+
+    public static void activateUser(User user){
+        user.isActive = true;
+        user.save();
+    }
+
+    public static void clearUser(User user) {
+        if (user != null) {
+            user.isActive = false;
+            user.save();
+        }
+    }
 }
