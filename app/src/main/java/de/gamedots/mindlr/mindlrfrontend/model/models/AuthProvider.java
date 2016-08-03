@@ -17,7 +17,7 @@ public class AuthProvider extends Model {
 
     @Expose
     @Column(name = "name")
-    Auth_Provider name;
+    public Auth_Provider name;
 
     public AuthProvider() {
         super();

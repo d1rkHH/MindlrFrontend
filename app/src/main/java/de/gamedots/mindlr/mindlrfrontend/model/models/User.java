@@ -3,6 +3,7 @@ package de.gamedots.mindlr.mindlrfrontend.model.models;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Select;
 import com.google.gson.annotations.Expose;
 
 /**
@@ -20,13 +21,17 @@ public class User extends Model {
      * and user related data is used without creating a new user.
      */
     @Column(name = "email", unique = true)
-    String email;
+    public String email;
 
     /* A User only have one auth provider at a time. That will be used to
     * authenticate the user in further session (silently) unless he logs out, so the provider
     * will be cleared and he needs to choose provider again */
     @Column(name = "auth_provider_id", notNull = true)
-    AuthProvider provider;
+    public AuthProvider provider;
+
+    /* Flag indicating the current activated user */
+    @Column(name = "isActive")
+    public boolean isActive = false;
 
     public User() {
         super();
@@ -35,5 +40,9 @@ public class User extends Model {
     public User(long server_id, String email) {
         this.server_id = server_id;
         this.email = email;
+    }
+
+    public static User getLastUserIfAny() {
+        return new Select().from(User.class).where("isActive = ?", true).executeSingle();
     }
 }

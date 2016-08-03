@@ -18,11 +18,11 @@ public class Post extends Model {
 
     @Expose
     @Column(name = "content_url")
-    String content_url;
+    public String content_url;
 
     @Expose
     @Column(name = "content_text", length = 1000)
-    String content_text;
+    public String content_text;
 
     public Post() {
         super();

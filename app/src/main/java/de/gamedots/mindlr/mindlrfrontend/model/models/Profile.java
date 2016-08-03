@@ -11,13 +11,13 @@ import com.activeandroid.annotation.Table;
 public class Profile extends Model {
 
     @Column(name = "user_id", notNull = true)
-    User user;
+    public User user;
 
     //global sync fields
 
     @Column(name = "uppercent")
-    int upPercent = -1;
+    public int upPercent = -1;
 
     @Column(name = "downpercent")
-    int downPercent = -1;
+    public int downPercent = -1;
 }

@@ -17,26 +17,26 @@ public class UserCreatedPost extends Model {
 
     @Expose
     @Column(name = "post_id", notNull = true)
-    Post post;
+    public Post post;
 
     @Expose
     @Column(name = "creator_id", notNull = true, onDelete = Column.ForeignKeyAction.RESTRICT)
-    User creator;
+    public User creator;
 
     @Expose
     @Column(name = "submit_date")
-    Date submit_date;
+    public Date submit_date;
 
     /* Set to true when the WritePostTask fails or the user wants to store a draft */
     @Column(name = "isdraft")
-    boolean isDraft = false;
+    public boolean isDraft = false;
 
     //global sync fields
     @Column(name = "upvotes")
-    int upvotes = 0;
+    public int upvotes = 0;
 
     @Column(name = "downvotes")
-    int downvotes = 0;
+    public int downvotes = 0;
 
 
     public UserCreatedPost() {

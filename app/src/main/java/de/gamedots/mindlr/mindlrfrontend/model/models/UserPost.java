@@ -28,17 +28,17 @@ public class UserPost extends Model {
     }
 
     @Column(name = "user_id", notNull = true)
-    User user;
+    public User user;
 
     @Column(name = "post_id", notNull = true)
-    Post post;
+    public Post post;
 
     @Column(name = "vote")
-    VoteType vote = NOT_VOTED_YET;
+    public VoteType vote = NOT_VOTED_YET;
 
     /* Field to differ between liked posts and favored posts */
     @Column(name = "favored")
-    boolean favored = false;
+    public boolean favored = false;
 
     /* Every record that has been synced (needSync=true) and VoteType == DOWNVOTE will be deleted
      * UPVOTED (and NOT favored!) posts get stored to a limit of 100 and then replaced with newer ones.
@@ -46,7 +46,7 @@ public class UserPost extends Model {
 
     /* Was post synchronized (successful send to server)?*/
     @Column(name = "needsync")
-    boolean needSync = false;
+    public boolean needSync = false;
 
 
     public UserPost() {
