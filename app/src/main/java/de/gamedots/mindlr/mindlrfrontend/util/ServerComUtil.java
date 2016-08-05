@@ -62,9 +62,11 @@ public class ServerComUtil {
 
             //Read response
             Log.d(LOG.JSON, "Response Header:");
-            for (Map.Entry<String, List<String>> header : connection.getHeaderFields().entrySet()) {
-                Log.d(LOG.JSON, header.getKey() + "=" + header.getValue());
-            }
+            try {
+                for (Map.Entry<String, List<String>> header : connection.getHeaderFields().entrySet()) {
+                    Log.d(LOG.JSON, header.getKey() + "=" + header.getValue());
+                }
+            }catch (Exception ex){}
 
             status = connection.getResponseCode();
             Log.d(LOG.CONNECTION, "Status Code: " + status);

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -16,8 +17,9 @@ import android.widget.Toast;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
+import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 
-import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.*;
+import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.toast;
 
 /**
  * This class displays a post to the user. Furthermore it handles the
@@ -35,6 +37,8 @@ public class PostViewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        Log.d(LOG.AUTH, "onCreateView: postviewfragment recreated with " + (savedInstanceState != null));
+
         View view = inflater.inflate(R.layout.fragment_post_view, container, false);
         _postView = (TextView) view.findViewById(R.id.postTextView);
 
@@ -51,7 +55,7 @@ public class PostViewFragment extends Fragment {
 
         return view;
     }
-
+    
     public TextView getPostView() {
         return _postView;
     }

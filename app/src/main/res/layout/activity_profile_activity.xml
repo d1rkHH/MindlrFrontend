@@ -24,6 +24,7 @@
 
     <!-- FRAGMENTS -->
     <include layout="@layout/content_profile_activity"
+
         />
 
 </android.support.design.widget.CoordinatorLayout>

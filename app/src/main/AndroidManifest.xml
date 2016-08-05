@@ -33,6 +33,7 @@
         <activity
             android:name=".view.activity.MainActivity"
             android:label="Mindlr"
+            android:launchMode="singleTop"
             android:theme="@style/MindlrTheme" />
         <activity
             android:name=".view.activity.WritePostActivity"
@@ -73,7 +74,7 @@
         <activity
             android:name=".view.activity.DraftsActivity"
             android:label="@string/drafts"
-            android:parentActivityName=".view.activity.DraftsActivity"
+            android:parentActivityName=".view.activity.MainActivity"
             android:theme="@style/MindlrTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

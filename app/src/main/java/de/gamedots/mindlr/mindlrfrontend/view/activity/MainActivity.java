@@ -8,12 +8,14 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import de.gamedots.mindlr.mindlrfrontend.AuthHandlerActivity;
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
+import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.util.ShareUtil;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
 
@@ -37,8 +39,11 @@ public class MainActivity extends AuthHandlerActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        initializeUI();
+        Log.d(LOG.AUTH, "onCreate: MainActivity");
+        if(savedInstanceState == null) {
+            Log.d(LOG.AUTH, "onCreate: initialize UI");
+            initializeUI();
+        }
     }
 
     @Override
@@ -108,6 +113,7 @@ public class MainActivity extends AuthHandlerActivity implements
             PostLoader.getInstance().initialize(this, fragment);
         }
         //add PostViewFragment dynamically
+        Log.d(LOG.AUTH, "initializeUI: postviewfragment added");
         getSupportFragmentManager().beginTransaction().add(R.id.main_content,fragment).commit();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

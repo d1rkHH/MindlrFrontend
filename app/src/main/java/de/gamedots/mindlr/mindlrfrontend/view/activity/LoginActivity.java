@@ -48,7 +48,7 @@ public class LoginActivity extends AuthHandlerActivity implements APICallTask.On
 
     @Override
     public void onSignInFailure() {
-        DebugUtil.toast(this, "Anmeldeung fehlgeschlagen");
+        DebugUtil.toast(this, "Anmeldung fehlgeschlagen");
     }
 
     // APICallTask callback

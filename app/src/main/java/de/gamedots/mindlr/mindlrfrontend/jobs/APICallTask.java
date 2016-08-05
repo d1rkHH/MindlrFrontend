@@ -16,7 +16,6 @@ import org.json.JSONObject;
 
 import de.gamedots.mindlr.mindlrfrontend.AuthHandlerHelper;
 import de.gamedots.mindlr.mindlrfrontend.R;
-import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.util.ServerComUtil;
 import de.gamedots.mindlr.mindlrfrontend.view.activity.LoginActivity;
@@ -93,7 +92,7 @@ public abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
             //If not successfull, log user out
         }
         Log.d(LOG.AUTH, "onPreExecute: APICallTask (" + _apiMethod + ") about to start from: " + _context.toString());
-        Log.d(LOG.AUTH, "onPreExecute: PostLoader has: " + PostLoader.getInstance().getPostList().size() + " posts POSITION: " + PostLoader.getInstance().getPostList().indexOf(PostLoader.getInstance().getCurrent()));
+       // Log.d(LOG.AUTH, "onPreExecute: PostLoader has: " + PostLoader.getInstance().getPostList().size() + " posts POSITION: " + PostLoader.getInstance().getPostList().indexOf(PostLoader.getInstance().getCurrent()));
     }
 
     @Override
@@ -122,7 +121,7 @@ public abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
         } finally {
             gac.disconnect();
         }
-
+        _authProvider = "google";
         JSONObject requestJSON = new JSONObject();
         try {
             requestJSON = new JSONObject();
