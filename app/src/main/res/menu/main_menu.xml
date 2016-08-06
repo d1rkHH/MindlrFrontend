@@ -2,10 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/action_share"
-        android:title="Share"
+    <item
+        android:id="@+id/action_share"
         android:checkable="true"
         android:icon="@drawable/ic_share_white_24dp"
-        app:showAsAction="always"/>
+        android:title="Share"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_report"
+        android:checkable="true"
+        android:icon="@drawable/ic_report_black_24dp"
+        android:title="Report"
+        app:showAsAction="ifRoom" />
 
 </menu>

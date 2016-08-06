@@ -2,7 +2,6 @@ package de.gamedots.mindlr.mindlrfrontend.view.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.TabItem;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -33,6 +32,7 @@ public class UserPostsActivity extends AppCompatActivity {
     private int[] tabIcons = {
             R.drawable.ic_my_posts_archive_white_24dp,
             R.drawable.ic_favor_star_white_24dp,
+            R.drawable.ic_favorite_black_24dp
     };
 
     public void showPopup(View v) {
@@ -115,11 +115,13 @@ public class UserPostsActivity extends AppCompatActivity {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new UserPostsFragment(), "Posts");
         adapter.addFragment(new FavoritePostsFragment(), "Favor");
+        adapter.addFragment(new FavoritePostsFragment(), "Liked");
         viewPager.setAdapter(adapter);
     }
 
     private void initTapIcons() {
         _tapLayout.getTabAt(0).setIcon(tabIcons[0]);
         _tapLayout.getTabAt(1).setIcon(tabIcons[1]);
+        _tapLayout.getTabAt(2).setIcon(tabIcons[2]);
     }
 }

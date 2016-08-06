@@ -55,7 +55,7 @@ public class PostViewFragment extends Fragment {
 
         return view;
     }
-    
+
     public TextView getPostView() {
         return _postView;
     }

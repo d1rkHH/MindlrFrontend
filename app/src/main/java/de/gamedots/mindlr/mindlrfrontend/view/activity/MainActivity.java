@@ -3,7 +3,9 @@ package de.gamedots.mindlr.mindlrfrontend.view.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -16,14 +18,10 @@ import de.gamedots.mindlr.mindlrfrontend.AuthHandlerActivity;
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
+import de.gamedots.mindlr.mindlrfrontend.util.DebugUtil;
 import de.gamedots.mindlr.mindlrfrontend.util.ShareUtil;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
 
-/**
- * "MAIN" activity in the app. When it launches, it checks if the user is (still)
- * logged in. If not, show the LoginFragment to the user, otherwise initialize
- * posts.
- */
 public class MainActivity extends AuthHandlerActivity implements
         NavigationView.OnNavigationItemSelectedListener {
 
@@ -34,16 +32,25 @@ public class MainActivity extends AuthHandlerActivity implements
     /*R.string.LoginStatePreference, R.string.UserLoginState)*/
     private static final String PREF_NAME = "";
     private SharedPreferences _prefs;
+    private ActionBarDrawerToggle _drawerToggle;
+    private DrawerLayout _drawerLayout;
+    private NavigationView _navigationView;
+    private boolean _saveInstanceStateAvailable;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(LOG.AUTH, "onCreate: MainActivity");
-        if(savedInstanceState == null) {
-            Log.d(LOG.AUTH, "onCreate: initialize UI");
-            initializeUI();
-        }
+        _saveInstanceStateAvailable = (savedInstanceState != null);
+
+        Log.d(LOG.LIFECYCLE, "onCreate: MainActivity");
+        initializeUI();
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        if (_drawerToggle != null) _drawerToggle.syncState();
     }
 
     @Override
@@ -52,13 +59,20 @@ public class MainActivity extends AuthHandlerActivity implements
         // save any state that should be persistent upon user session
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        _drawerToggle.onConfigurationChanged(newConfig);
+    }
 
     // Authentication callbacks
     @Override
-    public void onSignInSuccess() {}
+    public void onSignInSuccess() {
+    }
 
     @Override
-    public void onSignInFailure() {}
+    public void onSignInFailure() {
+    }
 
     // menu items and actions
     @Override
@@ -69,19 +83,21 @@ public class MainActivity extends AuthHandlerActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-        if (item.getItemId() == R.id.action_share) {
-            //TODO: put in the current post text and category
-            ShareUtil.showShareIntent("Empty Test text", this);
+        if (_drawerToggle.onOptionsItemSelected(item)) {
+            return true;
         }
+        switch (item.getItemId()) {
+            case R.id.action_share: ShareUtil.showShareIntent("Empty Test text", this); break;
+            case R.id.action_report: DebugUtil.toast(this, "Reported"); break;
+        }
+        //TODO: put in the current post text and category
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (_drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            _drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -93,37 +109,40 @@ public class MainActivity extends AuthHandlerActivity implements
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        switch (id){
+        switch (id) {
             case R.id.nav_profile: startActivity(new Intent(this, ProfileActivity.class)); break;
             case R.id.nav_drafts:  startActivity(new Intent(this, DraftsActivity.class)); break;
-            case R.id.nav_setting: break;
+            case R.id.nav_setting: startActivity(new Intent(this, UserPostsActivity.class));break;
             case R.id.nav_logout:  signOut();
             case R.id.nav_help:    break;
         }
 
         //getSupportActionBar().setTitle(item.getTitle());
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer != null) drawer.closeDrawer(GravityCompat.START);
+        if (_drawerLayout != null) _drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
     private void initializeUI() {
-        PostViewFragment fragment = new PostViewFragment();
+        PostViewFragment fragment = (_saveInstanceStateAvailable)
+                ? (PostViewFragment)getSupportFragmentManager().findFragmentByTag("PostView")
+                : new PostViewFragment();
+
         if (!PostLoader.getInstance().isInitialized()) {
             PostLoader.getInstance().initialize(this, fragment);
         }
         //add PostViewFragment dynamically
         Log.d(LOG.AUTH, "initializeUI: postviewfragment added");
-        getSupportFragmentManager().beginTransaction().add(R.id.main_content,fragment).commit();
+        if(!_saveInstanceStateAvailable)
+            getSupportFragmentManager().beginTransaction().add(R.id.main_content, fragment, "PostView").commit();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, getToolbar(), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        if (drawer != null) drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        _drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        _drawerToggle = new ActionBarDrawerToggle(
+                this, _drawerLayout, getToolbar(), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        if (_drawerLayout != null) _drawerLayout.addDrawerListener(_drawerToggle);
+        _drawerToggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        if (navigationView != null) navigationView.setNavigationItemSelectedListener(this);
+        _navigationView = (NavigationView) findViewById(R.id.nav_view);
+        if (_navigationView != null) _navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override

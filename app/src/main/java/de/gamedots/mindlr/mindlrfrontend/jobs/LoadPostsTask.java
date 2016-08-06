@@ -6,12 +6,14 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.util.Iterator;
+
 import java.util.List;
+
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 import de.gamedots.mindlr.mindlrfrontend.util.Global;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
+
 import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.toast;
 
 /**
@@ -42,7 +44,9 @@ public class LoadPostsTask extends APICallTask {
                 ViewPost viewPost = new ViewPost(post.getInt("id"), post.getString("content_text"));
                 _postList.add(viewPost);
                 if (_fragment != null && _postList.size() == 1) {
-                    _fragment.getPostView().setText(viewPost.getContentText());
+                    Log.d(LOG.LIFECYCLE, "onSuccess: postview null:" + (_fragment.getPostView() == null));
+                    if(_fragment.getPostView() != null)
+                        _fragment.getPostView().setText(viewPost.getContentText());
                 }
             }
         } catch (JSONException e){

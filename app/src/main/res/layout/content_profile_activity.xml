@@ -1,64 +1,69 @@
-<android.support.v4.widget.SwipeRefreshLayout android:id="@+id/swipe_layout"
-    android:layout_height="match_parent"
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipe_layout"
     android:layout_width="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <ScrollView
+        android:id="@+id/profile_scroll"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:clickable="true"
-        tools:context=".view.activity.ProfileActivity"
-        tools:showIn="@layout/activity_profile_activity">
+        android:layout_height="match_parent">
 
-
-        <ImageView
-            android:id="@+id/user_pic"
-            android:layout_width="110dp"
-            android:layout_height="110dp"
-            android:layout_gravity="center_horizontal|top"
-            android:layout_marginTop="32dp"
-            android:src="@drawable/mindlr_user" />
-
-        <ImageView
-            android:id="@+id/plus_points"
-            android:layout_width="wrap_content"
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"
-            android:src="@android:drawable/ic_input_add" />
+            android:clickable="true"
+            android:orientation="vertical"
+            tools:context=".view.activity.ProfileActivity"
+            tools:showIn="@layout/activity_profile_activity">
 
-        <TextView
-            android:id="@+id/textview_plus_points"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"
-            android:text="180.000"
-            android:textSize="24sp" />
 
-        <ImageView
-            android:id="@+id/minus_points"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"
-            android:src="@android:drawable/ic_delete" />
+            <ImageView
+                android:id="@+id/user_pic"
+                android:layout_width="110dp"
+                android:layout_height="110dp"
+                android:layout_gravity="center_horizontal|top"
+                android:layout_marginTop="32dp"
+                android:src="@drawable/mindlr_user" />
 
-        <TextView
-            android:id="@+id/textview_minus_points"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"
-            android:text="35.769"
-            android:textSize="24sp" />
+            <ImageView
+                android:id="@+id/plus_points"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:src="@android:drawable/ic_input_add" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/textview_plus_points"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:text="180.000"
+                android:textSize="24sp" />
+
+            <ImageView
+                android:id="@+id/minus_points"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:src="@android:drawable/ic_delete" />
+
+            <TextView
+                android:id="@+id/textview_minus_points"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:text="35.769"
+                android:textSize="24sp" />
+
+        </LinearLayout>
+    </ScrollView>
 </android.support.v4.widget.SwipeRefreshLayout>
 
