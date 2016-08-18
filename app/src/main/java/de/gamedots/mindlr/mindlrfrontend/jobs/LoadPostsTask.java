@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import java.util.List;
 
+import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 import de.gamedots.mindlr.mindlrfrontend.util.Global;
@@ -22,12 +23,10 @@ import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.toast;
 public class LoadPostsTask extends APICallTask {
 
     private PostViewFragment _fragment;
-    private List<ViewPost> _postList;
 
-    public LoadPostsTask(Context context, JSONObject content, List<ViewPost> postList){
+    public LoadPostsTask(Context context, JSONObject content){
         super(context, content);
         _apiMethod = Global.BACKEND_METHOD_LOAD_POSTS;
-        _postList = postList;
     }
 
     public LoadPostsTask setFragment(PostViewFragment fragment){
@@ -38,16 +37,22 @@ public class LoadPostsTask extends APICallTask {
     @Override
     public void onSuccess(JSONObject result) {
         try {
-            JSONArray posts = result.getJSONArray("posts");
-            for(int i = 0; i < posts.length(); i++){
-                JSONObject post = posts.getJSONObject(i);
-                ViewPost viewPost = new ViewPost(post.getInt("id"), post.getString("content_text"));
-                _postList.add(viewPost);
-                if (_fragment != null && _postList.size() == 1) {
-                    Log.d(LOG.LIFECYCLE, "onSuccess: postview null:" + (_fragment.getPostView() == null));
-                    if(_fragment.getPostView() != null)
-                        _fragment.getPostView().setText(viewPost.getContentText());
+            if(result.has("posts")) {
+                JSONArray posts = result.getJSONArray("posts");
+                for (int i = 0; i < posts.length(); i++) {
+                    JSONObject post = posts.getJSONObject(i);
+                    if (post.has("id") && post.has("content_text")) {
+                        ViewPost viewPost = new ViewPost(post.getInt("id"), post.getString("content_text"));
+                        PostLoader.getInstance().addPost(viewPost);
+                        if (_fragment != null && _fragment.getPostView() != null && PostLoader.getInstance().getPostList().size() == 1) {
+                            _fragment.getPostView().setText(viewPost.getContentText());
+                        }
+                    } else {
+                        Log.e(LOG.POSTS, "Post JSON invalid");
+                    }
                 }
+            } else {
+                Log.e(LOG.POSTS, "Posts JSON invalid");
             }
         } catch (JSONException e){
             e.printStackTrace();

@@ -27,7 +27,7 @@ public class MindlrApplication extends Application implements Application.Activi
     public void onCreate() {
         super.onCreate();
         Log.d("Application", "MindlrApplication will be created!");
-        //this.deleteDatabase("mindlr.db");
+        this.deleteDatabase("mindlr.db");
 
         _instance = this;
 
