@@ -28,30 +28,13 @@ public class StoreVotesTask extends APICallTask {
 
     @Override
     public void onSuccess(JSONObject result) {
-        Log.d(LOG.POSTS, "successful posted.");
-        StoreVotesHandler.getInstance().removeAll();
+        Log.d(LOG.POSTS, "Success storing votes");
+        StoreVotesHandler.getInstance().sendingSuccess();
     }
 
     @Override
     public void onFailure(JSONObject result) {
-        try {
-            JSONArray failedPostIDs = result.getJSONArray("failedPostIDs");
-            List<Long> postIDs = new ArrayList<>();
-            for (int i = 0; i < failedPostIDs.length(); i++) {
-                postIDs.add(failedPostIDs.getLong(i));
-            }
-
-            Set<ViewPost> sendPosts = StoreVotesHandler.getInstance().getInSending();
-            Set<ViewPost> failedPosts = new HashSet<>();
-            for(ViewPost post : sendPosts){
-                if(postIDs.contains(post.getId())){
-                    failedPosts.add(post);
-                }
-            }
-            StoreVotesHandler.getInstance().removeExcept(failedPosts);
-        } catch (JSONException e) {
-            Log.e(LOG.JSON, Log.getStackTraceString(e));
-            StoreVotesHandler.getInstance().sendingFailed();
-        }
+        Log.e(LOG.POSTS, "ERROR storing votes");
+        StoreVotesHandler.getInstance().sendingFailed();
     }
 }

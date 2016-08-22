@@ -2,6 +2,7 @@ package de.gamedots.mindlr.mindlrfrontend.controller;
 
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,17 +32,12 @@ public class StoreVotesHandler {
         triggerSending();
     }
 
-    public void removeAll(){
-        _postsInSending.clear();
-    }
-
-    public void removeExcept(Set<ViewPost> failedPosts){
-        _posts.addAll(failedPosts);
-        _postsInSending.clear();
-    }
-
     public Set<ViewPost> getInSending(){
         return Collections.unmodifiableSet(_postsInSending);
+    }
+
+    public void sendingSuccess(){
+        _postsInSending.clear();
     }
 
     public void sendingFailed(){
@@ -55,15 +51,23 @@ public class StoreVotesHandler {
             _posts.clear();
 
             JSONObject content = new JSONObject();
+            JSONArray upvotes = new JSONArray();
+            JSONArray downvotes = new JSONArray();
             for (ViewPost post : _postsInSending) {
-                try {
-                    content.put(Long.toString(post.getId()), Integer.toString(post.getVote()));
-                } catch (JSONException e){
-                    e.printStackTrace();
+                if(post.getVote() == ViewPost.VOTE_POSITIVE){
+                    upvotes.put(Long.toString(post.getId()));
+                } else {
+                    downvotes.put(Long.toString(post.getId()));
                 }
             }
-            Log.d(LOG.POSTS, "Sending votes to server");
-            new StoreVotesTask(MindlrApplication.getInstance(), content).execute();
+            try {
+                content.put("upvotes", upvotes);
+                content.put("downvotes", downvotes);
+                Log.d(LOG.POSTS, "Sending votes to server");
+                new StoreVotesTask(MindlrApplication.getInstance(), content).execute();
+            } catch (JSONException e){
+                Log.e(LOG.JSON, "Could not send votes to server!");
+            }
         }
     }
 }
