@@ -1,44 +1,60 @@
 <resources>
     <string name="app_name">Mindlr</string>
-    <string name="title_activity_main">MainActivity</string>
-
-    <string name="profil_string">Profil</string>
-    <string name="post_string">Posts</string>
-    <string name="fav_string">Favoriten</string>
-    <string name="setting_string">Settings</string>
-    <string name="default_string">default</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="postTextContent"></string>
-    <string name="title_activity_write_post">WritePostActivity</string>
-
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-
-    <string-array name="categories">
-        <item>Sport</item>
-        <item>Spiele</item>
-        <item>Wissenschaft</item>
-        <item>Mode</item>
-    </string-array>
-    <string name="title_activity_user_posts">Posts</string>
     <string name="server_client_id">319486160725-gksup5cr2bgric18al3q6h47h3p23dia.apps.googleusercontent.com</string>
-    <string name="loading">Loading....</string>
-    <string name="loginInfoText">Willkommen \n zu \n Mindlr! \n Bitte logge dich ein</string>
-    <string name="LoginStatePreference">LoginStatePref</string>
-    <string name="UserLoginState">userLoginState</string>
-    <string name="title_activity_main2">Main2Activity</string>
 
+    <!-- Activity labels -->
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_write_post">WritePostActivity</string>
+    <string name="title_activity_user_posts">Posts</string>
+    <string name="title_activity_post_detail">PostDetailActivity</string>
+    <string name="title_activity_profile_actvitiy">Profil</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- menu action string -->
+    <string name="action_settings">Settings</string>
+    <string name="action_share">Share</string>
+    <string name="action_search">Search</string>
+    <string name="action_report">Report</string>
+
+    <string name="activity_login_welcome_message">Willkommen \n zu \n Mindlr! \n Bitte logge dich ein</string>
+
+    <!-- Navigation Drawer items -->
+    <string name="profile">Profil</string>
+    <string name="drafts">Entwürfe</string>
+    <string name="settings">Einstellungen</string>
+    <string name="help">Hilfe</string>
+
+    <!-- Settings strings -->
+    <string name="pref_notification_key" translatable="false">notification</string>
+    <string name="pref_notification_true">Enabled</string>
+    <string name="pref_notification_false">Not Enabled</string>
+    <string name="pref_notification_default" translatable="false">true</string>
+    <string name="pref_notification_label">Post Notifications</string>
+
+    <string name="pref_post_storage_key" translatable="false">store_post</string>
+    <string name="pref_post_storage_default" translatable="false">true</string>
+    <string name="pref_post_storage_true">Allowed</string>
+    <string name="pref_post_storage_false">Not Allowed</string>
+    <string name="pref_post_storage_label">Store Posts on Device</string>
+
+    <string name="pref_authentication_key" translatable="false">authentication</string>
+    <string name="pref_authentication_true" translatable="false">true</string>
+    <string name="pref_authentication_false" translatable="false">false</string>
+    <string name="pref_authentication_default" translatable="false">@string/pref_authentication_false</string>
+    <string name="pref_authentication_setting_label">Sign Out</string>
+
+    <!-- Setting groups-->
+    <string name="pref_group_notification_storage">Notification and Storage</string>
+    <string name="pref_group_account">Account</string>
+
+    <!--Confirm Dialog -->
+    <string name="alert_warning">Warning</string>
+    <string name="alert_cancel">Cancel</string>
+    <string name="alert_ok">Ok</string>
+    <string name="alert_message">Disabling this setting will remove all local data from the device. This operation cannot be undone!</string>
+
+    <!-- NavDrawer string for accessibility -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_post_detail">PostDetailActivity</string>
-    <string name="profil">Profil</string>
-    <string name="drafts">Entwürfe</string>
-    <string name="settings">Einstellungen</string>
-    <string name="logout">Abmelden</string>
-    <string name="help">Hilfe</string>
-    <string name="title_activity_profile_actvitiy">Profil</string>
 </resources>

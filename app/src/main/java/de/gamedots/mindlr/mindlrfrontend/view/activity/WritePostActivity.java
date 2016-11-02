@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -14,9 +12,6 @@ import android.widget.Spinner;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.jobs.WritePostTask;
@@ -33,7 +28,7 @@ public class WritePostActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //toolbar.setNavigationIcon(R.drawable.prev24);
+        //appbar_toolbar.setNavigationIcon(R.drawable.prev24);
         if(toolbar != null)
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
@@ -59,25 +54,6 @@ public class WritePostActivity extends AppCompatActivity {
         return R.layout.activity_write_post;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_write_post, menu);
-        return true;
-    }
-
-    
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return id == android.R.id.home || super.onOptionsItemSelected(item);
-
-    }
 
     public void writePost(View view){
         Log.d(LOG.WRITE, "About to create WritePostTask");

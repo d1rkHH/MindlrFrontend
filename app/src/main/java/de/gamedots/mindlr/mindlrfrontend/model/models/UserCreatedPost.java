@@ -3,7 +3,6 @@ package de.gamedots.mindlr.mindlrfrontend.model.models;
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
-import com.google.gson.annotations.Expose;
 
 import java.util.Date;
 
@@ -15,15 +14,12 @@ import java.util.Date;
 @Table(name = "usercreatedposts")
 public class UserCreatedPost extends Model {
 
-    @Expose
     @Column(name = "post_id", notNull = true)
     public Post post;
 
-    @Expose
     @Column(name = "creator_id", notNull = true, onDelete = Column.ForeignKeyAction.RESTRICT)
     public User creator;
 
-    @Expose
     @Column(name = "submit_date")
     public Date submit_date;
 

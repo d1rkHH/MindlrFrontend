@@ -121,7 +121,7 @@ public class PostViewFragment extends Fragment {
             toast(getActivity(), "Upvote");
             PostLoader.getInstance().getCurrent().ratePositive();
             if (PostLoader.getInstance().next()) {
-                fragmentTrans(R.anim.enter_from_right, R.anim.exit_to_left);
+                fragmentTrans(android.R.anim.fade_in, R.anim.exit_to_right);
             } else {
                 toast(getActivity(), "You reached the last post. Swipe again to load new posts.");
             }
@@ -131,7 +131,7 @@ public class PostViewFragment extends Fragment {
             toast(getActivity(), "Downvote");
             PostLoader.getInstance().getCurrent().rateNegative();
             if (PostLoader.getInstance().next()) {
-                fragmentTrans(R.anim.enter_from_right, R.anim.exit_to_left);
+                fragmentTrans(android.R.anim.fade_in, R.anim.exit_to_left);
             } else {
                 toast(getActivity(), "You reached the last post. Swipe again to load new posts.");
             }

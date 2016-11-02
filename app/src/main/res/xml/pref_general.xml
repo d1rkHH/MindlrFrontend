@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/pref_group_notification_storage">
+        <CheckBoxPreference
+            android:defaultValue="@string/pref_notification_default"
+            android:key="@string/pref_notification_key"
+            android:summaryOff="@string/pref_notification_false"
+            android:summaryOn="@string/pref_notification_true"
+            android:title="@string/pref_notification_label"/>
+
+        <de.gamedots.mindlr.mindlrfrontend.ConfirmCheckBoxPreference
+            android:defaultValue="@string/pref_post_storage_default"
+            android:key="@string/pref_post_storage_key"
+            android:summaryOff="@string/pref_post_storage_false"
+            android:summaryOn="@string/pref_post_storage_true"
+            android:title="@string/pref_post_storage_label"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:layout="@layout/preference_divider"
+        android:title="@string/pref_group_account">
+        <Preference
+            android:defaultValue="@string/pref_authentication_default"
+            android:key="@string/pref_authentication_key"
+            android:title="@string/pref_authentication_setting_label"/>
+    </PreferenceCategory>
+</PreferenceScreen>
+

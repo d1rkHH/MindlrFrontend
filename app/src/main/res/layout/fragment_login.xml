@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/needToLoginText"
-        android:text="@string/loginInfoText"
+        android:text="@string/activity_login_welcome_message"
         android:textSize="30sp"
         android:textColor="@color/white"
         android:lineSpacingExtra="3dp"

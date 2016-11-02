@@ -16,6 +16,9 @@ import de.gamedots.mindlr.mindlrfrontend.util.DebugUtil;
 
 @SuppressWarnings("ConstantConditions")
 public class LoginActivity extends AuthHandlerActivity implements APICallTask.OnProcessSuccessListener {
+
+    public static final String SIGNOUT_EXTRA = "signout";
+
     @Override
     protected int getLayoutResourceId() {
         return R.layout.activity_login;
@@ -40,6 +43,19 @@ public class LoginActivity extends AuthHandlerActivity implements APICallTask.On
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        // at this point GoogleApiClient is connected
+        if (getIntent() != null) {
+            Intent launchIntent = getIntent();
+            boolean signout = launchIntent.getBooleanExtra(SIGNOUT_EXTRA, false);
+            if (signout) {
+                //signOut();
+            }
+        }
+    }
+
+    @Override
     public void onSignInSuccess() {
         Log.d(LOG.AUTH, "onSignInSuccess: SignIn was successful start TASK");
         //create user account on backend server if not existing
@@ -57,6 +73,8 @@ public class LoginActivity extends AuthHandlerActivity implements APICallTask.On
         Log.d(LOG.AUTH, "onProcessSuccess: User verified start MAIN");
 
         // user was successfully verified and account was created
-        startActivity(new Intent(this, MainActivity.class));
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 }

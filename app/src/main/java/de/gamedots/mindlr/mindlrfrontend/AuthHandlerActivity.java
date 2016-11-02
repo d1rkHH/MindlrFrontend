@@ -18,7 +18,6 @@ import com.google.android.gms.common.api.Status;
 import de.gamedots.mindlr.mindlrfrontend.model.models.User;
 import de.gamedots.mindlr.mindlrfrontend.util.DebugUtil;
 import de.gamedots.mindlr.mindlrfrontend.view.activity.BaseActivity;
-import de.gamedots.mindlr.mindlrfrontend.view.activity.LoginActivity;
 
 public abstract class AuthHandlerActivity extends BaseActivity
         implements GoogleApiClient.OnConnectionFailedListener,
@@ -32,6 +31,7 @@ public abstract class AuthHandlerActivity extends BaseActivity
     protected String _idToken;
 
     public abstract void onSignInSuccess();
+
     public abstract void onSignInFailure();
 
     @Override
@@ -93,7 +93,8 @@ public abstract class AuthHandlerActivity extends BaseActivity
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_GET_TOKEN) {
-            handleGoogleSignInResult(/*GoogleSignInResult*/Auth.GoogleSignInApi.getSignInResultFromIntent(data));
+            handleGoogleSignInResult(/*GoogleSignInResult*/Auth.GoogleSignInApi.getSignInResultFromIntent
+                    (data));
         }
     }
 
@@ -105,8 +106,6 @@ public abstract class AuthHandlerActivity extends BaseActivity
                 setResultCallback(new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
-                        startActivity(new Intent(AuthHandlerActivity.this, LoginActivity.class));
-                        AuthHandlerActivity.this.finish();
                     }
                 });
     }

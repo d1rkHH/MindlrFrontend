@@ -1,106 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    card_view:cardElevation="1dp"
-    android:layout_margin="5dp"
-    app:cardBackgroundColor="#FFFFFF">
+    app:cardElevation="0dp"
+    app:cardPreventCornerOverlap="false"
+    app:contentPadding="8dp">
 
-
-    <android.support.percent.PercentRelativeLayout
+    <android.support.v7.widget.GridLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/card_grid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp">
+        app:orientation="horizontal"
+        app:columnCount="1">
 
         <TextView
             android:id="@+id/post_category_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:text="hallo"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
-
-        <TextView
-            android:id="@+id/post_preview_text"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/post_category_text"
-            android:ellipsize="end"
-            android:maxLines="3"
-            android:text="hallo this is a previo of the main text really big thig 214 dad etwzh wg adafagha"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-            app:layout_widthPercent="50%"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            tools:text="hallo"/>
 
         <ImageView
             android:id="@+id/up_vote_arrow"
-            android:layout_marginLeft="15dp"
-            android:layout_alignTop="@+id/post_preview_text"
-            android:layout_toEndOf="@+id/post_preview_text"
-            android:layout_toRightOf="@+id/post_preview_text"
-            app:srcCompat="@drawable/ic_upvote_arrow_24dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_widthPercent="10%" />
+            app:srcCompat="@drawable/ic_upvote_arrow_24dp"/>
 
-        <!--  app:layout_widthPercent="50%"
-              app:layout_heightPercent="50%" -->
         <TextView
             android:id="@+id/upvote_percent_text"
-            android:paddingTop="5dp"
-            android:layout_alignTop="@+id/up_vote_arrow"
-            android:layout_toEndOf="@+id/up_vote_arrow"
-            android:layout_toRightOf="@+id/up_vote_arrow"
-            android:text="69%"
-            app:layout_widthPercent="10%"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
-
-        <ImageView
-            android:id="@+id/down_vote_arrow"
-            android:layout_marginLeft="15dp"
-            android:layout_below="@+id/up_vote_arrow"
-            android:layout_marginTop="5dp"
-            android:layout_toEndOf="@+id/post_preview_text"
-            android:layout_toRightOf="@+id/post_preview_text"
-            app:srcCompat="@drawable/ic_downvote_arrow_24dp"
-            android:layout_height="wrap_content"
-            app:layout_widthPercent="10%" />
-
-        <TextView
-            android:id="@+id/down_vote_percent_text"
-            android:layout_toEndOf="@+id/down_vote_arrow"
-            android:layout_toRightOf="@+id/down_vote_arrow"
-            android:layout_below="@id/upvote_percent_text"
-            android:layout_marginTop="10dp"
-            android:text="69%"
-            app:layout_widthPercent="10%"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            tools:text="69%"/>
 
         <ImageButton
             android:id="@+id/delete_popup_button"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:background="?android:attr/selectableItemBackground"
             android:onClick="showPopup"
-            app:srcCompat="@drawable/ic_overflow_button_24dp" />
+            app:srcCompat="@drawable/ic_overflow_button_24dp"/>
+
+
+        <TextView
+            android:id="@+id/post_preview_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            tools:text="hallo this is a previo of the main text really big thig 214 dad etwzh wg adafagha"/>
+
+
+        <ImageView
+            android:id="@+id/down_vote_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_downvote_arrow_24dp"/>
+
+        <TextView
+            android:id="@+id/down_vote_percent_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            tools:text="69%"
+            />
 
         <TextView
             android:id="@+id/post_create_date_text"
-            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignBottom="@id/down_vote_arrow"
-            android:text="20.06.2015"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            tools:text="20.06.2015"/>
 
-
-
-
-    </android.support.percent.PercentRelativeLayout>
+    </android.support.v7.widget.GridLayout>
 
 </android.support.v7.widget.CardView>

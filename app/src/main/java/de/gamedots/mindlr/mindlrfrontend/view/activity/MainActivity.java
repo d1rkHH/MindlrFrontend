@@ -1,8 +1,6 @@
 package de.gamedots.mindlr.mindlrfrontend.view.activity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -23,7 +21,7 @@ import de.gamedots.mindlr.mindlrfrontend.util.ShareUtil;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
 
 public class MainActivity extends AuthHandlerActivity implements
-        NavigationView.OnNavigationItemSelectedListener {
+        NavigationView.OnNavigationItemSelectedListener{
 
     protected int getLayoutResourceId() {
         return R.layout.activity_main;
@@ -31,7 +29,6 @@ public class MainActivity extends AuthHandlerActivity implements
 
     /*R.string.LoginStatePreference, R.string.UserLoginState)*/
     private static final String PREF_NAME = "";
-    private SharedPreferences _prefs;
     private ActionBarDrawerToggle _drawerToggle;
     private DrawerLayout _drawerLayout;
     private NavigationView _navigationView;
@@ -51,12 +48,6 @@ public class MainActivity extends AuthHandlerActivity implements
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         if (_drawerToggle != null) _drawerToggle.syncState();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        // save any state that should be persistent upon user session
     }
 
     @Override
@@ -87,8 +78,12 @@ public class MainActivity extends AuthHandlerActivity implements
             return true;
         }
         switch (item.getItemId()) {
-            case R.id.action_share: ShareUtil.showShareIntent("Empty Test text", this); break;
-            case R.id.action_report: DebugUtil.toast(this, "Reported"); break;
+            case R.id.action_share:
+                ShareUtil.showShareIntent("Empty Test text", this);
+                break;
+            case R.id.action_report:
+                DebugUtil.toast(this, "Reported");
+                break;
         }
         //TODO: put in the current post text and category
         return super.onOptionsItemSelected(item);
@@ -110,11 +105,16 @@ public class MainActivity extends AuthHandlerActivity implements
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.nav_profile: startActivity(new Intent(this, ProfileActivity.class)); break;
-            case R.id.nav_drafts:  startActivity(new Intent(this, DraftsActivity.class)); break;
-            case R.id.nav_setting: startActivity(new Intent(this, UserPostsActivity.class));break;
-            case R.id.nav_logout:  signOut();
-            case R.id.nav_help:    break;
+            case R.id.nav_profile:
+                startActivity(new Intent(this, ProfileActivity.class));
+                break;
+            case R.id.nav_drafts:
+                startActivity(new Intent(this, DraftsActivity.class));
+                break;
+            case R.id.nav_setting:
+                startActivity(new Intent(this, SettingsActivity.class));
+                break;
+            case R.id.nav_help:
         }
 
         //getSupportActionBar().setTitle(item.getTitle());
@@ -124,7 +124,7 @@ public class MainActivity extends AuthHandlerActivity implements
 
     private void initializeUI() {
         PostViewFragment fragment = (_saveInstanceStateAvailable)
-                ? (PostViewFragment)getSupportFragmentManager().findFragmentByTag("PostView")
+                ? (PostViewFragment) getSupportFragmentManager().findFragmentByTag("PostView")
                 : new PostViewFragment();
 
         if (!PostLoader.getInstance().isInitialized()) {
@@ -132,12 +132,14 @@ public class MainActivity extends AuthHandlerActivity implements
         }
         //add PostViewFragment dynamically
         Log.d(LOG.AUTH, "initializeUI: postviewfragment added");
-        if(!_saveInstanceStateAvailable)
-            getSupportFragmentManager().beginTransaction().add(R.id.main_content, fragment, "PostView").commit();
+        if (!_saveInstanceStateAvailable)
+            getSupportFragmentManager().beginTransaction().add(R.id.main_content, fragment, "PostView")
+                    .commit();
 
         _drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         _drawerToggle = new ActionBarDrawerToggle(
-                this, _drawerLayout, getToolbar(), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, _drawerLayout, getToolbar(), R.string.navigation_drawer_open, R.string
+                .navigation_drawer_close);
         if (_drawerLayout != null) _drawerLayout.addDrawerListener(_drawerToggle);
         _drawerToggle.syncState();
 
@@ -150,10 +152,5 @@ public class MainActivity extends AuthHandlerActivity implements
         return true;
     }
 
-    private SharedPreferences getPref() {
-        if (_prefs == null) {
-            _prefs = this.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        }
-        return _prefs;
-    }
+
 }

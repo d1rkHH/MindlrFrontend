@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:lineSpacingExtra="3dp"
-        android:text="@string/loginInfoText"
+        android:text="@string/activity_login_welcome_message"
         android:textColor="@color/white"
         android:textSize="30sp" />
 

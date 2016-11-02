@@ -1,7 +1,6 @@
 package de.gamedots.mindlr.mindlrfrontend.view.activity;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -28,13 +27,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             // back arrow navigation
             if (getSupportActionBar() != null)
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-
-        // Hide fake shadow view if sdk version (>=21) is reached
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            View v = findViewById(R.id.toolbar_shadow);
-            if (v != null)
-                v.setVisibility(View.GONE);
         }
 
         if (isFABenabled()) {

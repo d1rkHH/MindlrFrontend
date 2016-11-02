@@ -86,7 +86,7 @@ public class FavoritePostsFragment extends Fragment implements SearchView.OnQuer
         }
         _items = items;
 
-        _rvAdapter = new BaseRVAdapter<FavorCardItemHolder>(items, R.layout.favor_post_card){
+        _rvAdapter = new BaseRVAdapter<FavorCardItemHolder>(items, R.layout.recyclerview_item_fav_post){
             @Override
             public FavorCardItemHolder getViewHolder(View view) {
                 return new FavorCardItemHolder(view, getActivity());

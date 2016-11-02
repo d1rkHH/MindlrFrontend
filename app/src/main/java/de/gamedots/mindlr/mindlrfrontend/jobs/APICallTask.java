@@ -2,7 +2,6 @@ package de.gamedots.mindlr.mindlrfrontend.jobs;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -15,7 +14,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.gamedots.mindlr.mindlrfrontend.AuthHandlerHelper;
-import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.util.ServerComUtil;
 import de.gamedots.mindlr.mindlrfrontend.view.activity.LoginActivity;
@@ -61,9 +59,9 @@ public abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
         _context = context;
         _authHandlerHelper = new AuthHandlerHelper(_context);
         Log.d(LOG.CONNECTION, _context.toString());
-        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getString(R.string.LoginStatePreference), Context.MODE_PRIVATE);
-        _authProvider = sharedPreferences.getString("authProvider", "DEFAULT_AUTH_PROVIDER");
-        _token = sharedPreferences.getString("token", "DEFAULT_TOKEN");
+        // TODO: retrieve current auth provider from User-AuthProvider table, token retrieved in doInBackground
+        _authProvider = "DEFAULT_AUTH_PROVIDER";
+        _token = "DEFAULT_TOKEN";
         _content = content;
         _metadata = ServerComUtil.getMetaDataJSON();
     }
