@@ -23,7 +23,8 @@
             android:value="mindlr.db"/>
         <meta-data
             android:name="AA_DB_VERSION"
-            android:value="1"/>
+            android:value="2"/>
+
 
         <activity
             android:name=".view.activity.MainActivity"
@@ -44,7 +45,8 @@
             android:name=".view.activity.WritePostActivity"
             android:label="@string/title_activity_write_post"
             android:parentActivityName=".view.activity.MainActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.gamedots.mindlr.mindlrfrontend.view.activity.MainActivity"/>

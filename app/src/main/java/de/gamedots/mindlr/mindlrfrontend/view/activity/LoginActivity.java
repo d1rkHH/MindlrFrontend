@@ -40,17 +40,31 @@ public class LoginActivity extends AuthHandlerActivity implements APICallTask.On
                 startGoogleSignIn();
             }
         });
+
+        googleSilentSignIn();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        _googleApiClient.registerConnectionCallbacks(this);
+        _googleApiClient.connect();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // at this point GoogleApiClient is connected
-        if (getIntent() != null) {
+        _googleApiClient.unregisterConnectionCallbacks(this);
+        _googleApiClient.disconnect();
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        if (getIntent() != null && getIntent().hasExtra(SIGNOUT_EXTRA)) {
             Intent launchIntent = getIntent();
             boolean signout = launchIntent.getBooleanExtra(SIGNOUT_EXTRA, false);
             if (signout) {
-                //signOut();
+                signOut();
             }
         }
     }

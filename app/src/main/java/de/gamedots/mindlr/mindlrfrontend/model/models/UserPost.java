@@ -4,7 +4,7 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 
-import static de.gamedots.mindlr.mindlrfrontend.model.models.UserPost.VoteType.*;
+import static de.gamedots.mindlr.mindlrfrontend.model.models.UserPost.VoteType.NOT_VOTED_YET;
 
 /**
  * Through table for user and posts. A record will be inserted if a user

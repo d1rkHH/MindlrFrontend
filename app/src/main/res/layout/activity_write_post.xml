@@ -1,41 +1,139 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical"
-    android:gravity="center_horizontal"
-    tools:context=".view.activity.WritePostActivity">
+    android:background="@color/white"
+    android:orientation="vertical">
 
-    <!-- main toolbar -->
-    <include layout="@layout/toolbar"/>
-
-
-    <EditText
-        android:id="@+id/postWriteArea"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:cursorVisible="true"
-        android:gravity="top|start"
-        android:hint="Was willst du schreiben?"
-        android:inputType="text"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        tools:context=".view.activity.WritePostActivity">
 
-    <Spinner
-        android:id="@+id/category_spinner"
-        android:layout_width="wrap_content"
+        <android.support.v4.widget.NestedScrollView
+            android:id="@+id/wp_scrollview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/material_horizontal_margin"
+                android:layout_marginRight="@dimen/material_horizontal_margin"
+                android:layout_marginTop="?attr/actionBarSize"
+                android:background="@android:color/transparent"
+                android:orientation="vertical"
+                >
+
+                <EditText
+                    android:id="@+id/postWriteArea"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:cursorVisible="true"
+                    android:gravity="top|start"
+                    android:hint="Was willst du schreiben?"
+                    android:inputType="textMultiLine"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/wp_post_imageview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone"/>
+
+                    <android.support.v7.widget.AppCompatImageButton
+                        android:id="@+id/wp_image_close"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_margin="8dp"
+                        android:background="@drawable/roundcorner"
+                        android:clickable="true"
+                        android:visibility="gone"
+                        app:srcCompat="@drawable/ic_close_white_24dp"/>
+                </RelativeLayout>
+            </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
+
+        <!-- main toolbar -->
+        <android.support.v7.widget.Toolbar
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/white"
+            >
+
+            <TextView
+                android:id="@+id/wp_char_counter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:paddingRight="16dp"
+                />
+        </android.support.v7.widget.Toolbar>
+
+    </FrameLayout>
+
+    <!-- divider view -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray_light"/>
+
+    <!-- Bottom Row that flows with the soft keyboard -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"/>
+        android:layout_marginLeft="@dimen/material_horizontal_margin"
+        android:layout_marginRight="@dimen/material_horizontal_margin"
+        android:gravity="right"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp">
 
-    <Button
-        android:id="@+id/postSubmit"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="80dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:background="@color/green"
-        android:onClick="writePost"
-        android:text="Post"/>
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/category_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:spinnerMode="dialog"
+            app:backgroundTint="@color/accent"
+            />
 
+        <android.support.v7.widget.AppCompatImageButton
+            android:id="@+id/wp_imageselect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:padding="4dp"
+            android:src="@android:drawable/ic_menu_camera"
+            android:text="change"/>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/postSubmit"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="Post it"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:backgroundTint="@color/accent"/>
+    </LinearLayout>
 </LinearLayout>

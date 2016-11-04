@@ -21,7 +21,7 @@ import de.gamedots.mindlr.mindlrfrontend.util.ShareUtil;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
 
 public class MainActivity extends AuthHandlerActivity implements
-        NavigationView.OnNavigationItemSelectedListener{
+        NavigationView.OnNavigationItemSelectedListener {
 
     protected int getLayoutResourceId() {
         return R.layout.activity_main;
@@ -33,7 +33,7 @@ public class MainActivity extends AuthHandlerActivity implements
     private DrawerLayout _drawerLayout;
     private NavigationView _navigationView;
     private boolean _saveInstanceStateAvailable;
-
+    long[] ids = new long[3];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +42,7 @@ public class MainActivity extends AuthHandlerActivity implements
 
         Log.d(LOG.LIFECYCLE, "onCreate: MainActivity");
         initializeUI();
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
     @Override
@@ -49,6 +50,7 @@ public class MainActivity extends AuthHandlerActivity implements
         super.onPostCreate(savedInstanceState);
         if (_drawerToggle != null) _drawerToggle.syncState();
     }
+
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -151,6 +153,4 @@ public class MainActivity extends AuthHandlerActivity implements
     protected boolean isFABenabled() {
         return true;
     }
-
-
 }

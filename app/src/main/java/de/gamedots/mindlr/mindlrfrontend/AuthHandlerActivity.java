@@ -15,6 +15,7 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
+import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.models.User;
 import de.gamedots.mindlr.mindlrfrontend.util.DebugUtil;
 import de.gamedots.mindlr.mindlrfrontend.view.activity.BaseActivity;
@@ -25,7 +26,7 @@ public abstract class AuthHandlerActivity extends BaseActivity
 
     private static final String TAG = "AuthHandlerActivity";
     private static final int RC_GET_TOKEN = 9000;
-    protected GoogleApiClient _googleApiClient;
+    protected static GoogleApiClient _googleApiClient;
 
     // need to be refreshed with every APICallTask
     protected String _idToken;
@@ -57,6 +58,8 @@ public abstract class AuthHandlerActivity extends BaseActivity
         if (isSignedIn) {
             GoogleSignInAccount acct = result.getSignInAccount();
             _idToken = acct.getIdToken();
+            Log.v(LOG.AUTH, "Authandler activity API CLIENT (call siginsuccess) is connected: " + _googleApiClient.isConnected() + acct.getDisplayName());
+
             onSignInSuccess();
 
         } else {
@@ -106,6 +109,9 @@ public abstract class AuthHandlerActivity extends BaseActivity
                 setResultCallback(new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
+                        if(status.isSuccess()){
+                            Log.v(LOG.AUTH, "signout success " + _googleApiClient);
+                        }
                     }
                 });
     }
