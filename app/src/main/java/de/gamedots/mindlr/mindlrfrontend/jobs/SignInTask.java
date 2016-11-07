@@ -13,21 +13,27 @@ import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.toast;
 
 public class SignInTask extends APICallTask {
 
-    public SignInTask(Context context, JSONObject content) {
-        super(context, content);
-        _apiMethod = Global.BACKEND_METHOD_SIGN_IN;
+    public interface OnSignInProcessSuccessListener {
+        void onSignInProcessSuccess();
     }
 
-    public SignInTask(Context _context, JSONObject _content, OnProcessSuccessListener _callback) {
-        super(_context, _content, _callback);
+    private OnSignInProcessSuccessListener _callback;
+
+    public SignInTask(Context context, JSONObject content, String provider, OnSignInProcessSuccessListener
+            callback) {
+        super(context, content);
         _apiMethod = Global.BACKEND_METHOD_SIGN_IN;
+        _authProvider = provider;
+        _callback = callback;
     }
 
     @Override
     public void onSuccess(JSONObject result) {
         Log.d(LOG.VERIFIED, "successful verified the user on backend");
         toast(_context, "Verified User");
-        if (_callback != null) _callback.onProcessSuccess();
+        if (_callback != null) {
+            _callback.onSignInProcessSuccess();
+        }
     }
 
     @Override

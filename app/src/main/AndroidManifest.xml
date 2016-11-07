@@ -18,19 +18,10 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <meta-data
-            android:name="AA_DB_NAME"
-            android:value="mindlr.db"/>
-        <meta-data
-            android:name="AA_DB_VERSION"
-            android:value="2"/>
-
-
         <activity
             android:name=".view.activity.MainActivity"
             android:label="Mindlr"
             android:theme="@style/AppTheme"/>
-
         <activity
             android:name=".view.activity.SettingsActivity"
             android:label="Settings"
@@ -40,7 +31,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.gamedots.mindlr.mindlrfrontend.view.activity.MainActivity"/>
         </activity>
-
         <activity
             android:name=".view.activity.WritePostActivity"
             android:label="@string/title_activity_write_post"
@@ -81,6 +71,17 @@
         <activity
             android:name=".view.activity.LoginActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"/>
+
+        <provider
+            android:name=".data.MindlrProvider"
+            android:authorities="de.gamedots.mindlr.mindlrfrontend"
+            android:enabled="true"
+            android:exported="false"/>
+
+        <service
+            android:name=".data.DatabaseIntentService"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

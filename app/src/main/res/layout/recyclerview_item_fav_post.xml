@@ -7,62 +7,36 @@
     android:layout_height="wrap_content"
     app:cardElevation="0dp"
     app:contentPadding="8dp"
+    app:cardCornerRadius="0dp"
+    android:layout_margin="2dp"
     app:cardPreventCornerOverlap="false"
     tools:backgroundTint="@android:color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:padding="8dp"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="5"
             android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/post_category_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                tools:text="hallo"/>
 
             <TextView
                 android:id="@+id/post_preview_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:maxLines="2"
-                android:minLines="2"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 tools:text="hallo this is a previo of the main text really big thig 214 dad etwzh wg adafagha"/>
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <ImageButton
-                android:id="@+id/delete_popup_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:background="?android:attr/selectableItemBackground"
-                android:onClick="showPopup"
-                app:srcCompat="@drawable/ic_overflow_button_24dp"/>
-
-            <TextView
-                android:id="@+id/post_create_date_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="8dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                tools:text="20.06.2015"/>
-        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:paddingTop="8dp"
+            android:text="Liked 2 Days ago"
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 

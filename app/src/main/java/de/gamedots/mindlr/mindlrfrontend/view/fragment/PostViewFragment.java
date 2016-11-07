@@ -17,7 +17,9 @@ import android.widget.Toast;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
+import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 
 import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.toast;
 
@@ -61,7 +63,8 @@ public class PostViewFragment extends Fragment {
     }
 
     private void fragmentTrans(int animStart, int animEnd) {
-        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager()
+                .beginTransaction();
         fragmentTransaction.setCustomAnimations(animStart, animEnd);
         fragmentTransaction.replace(R.id.main_content, new PostViewFragment());
         fragmentTransaction.addToBackStack(null);
@@ -93,7 +96,8 @@ public class PostViewFragment extends Fragment {
                     float diffY = e2.getY() - e1.getY();
                     float diffX = e2.getX() - e1.getX();
                     if (Math.abs(diffX) > Math.abs(diffY)) {
-                        if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                        if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) >
+                                SWIPE_VELOCITY_THRESHOLD) {
                             if (diffX > 0) {
                                 onSwipeRight();
                             } else {
@@ -101,7 +105,8 @@ public class PostViewFragment extends Fragment {
                             }
                         }
                         result = true;
-                    } else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+                    } else if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) >
+                            SWIPE_VELOCITY_THRESHOLD) {
                         if (diffY > 0) {
                             //onSwipeBottom();
                         } else {
@@ -118,8 +123,12 @@ public class PostViewFragment extends Fragment {
         }
 
         public void onSwipeRight() {
-            toast(getActivity(), "Upvote");
+            //toast(getActivity(), "Upvote");
             PostLoader.getInstance().getCurrent().ratePositive();
+            Utility.updatePostVoteType(getActivity(),
+                    PostLoader.getInstance().getCurrent().getId(),
+                    MindlrContract.UserPostEntry.VOTE_LIKED);
+
             if (PostLoader.getInstance().next()) {
                 fragmentTrans(android.R.anim.fade_in, R.anim.exit_to_right);
             } else {
@@ -128,8 +137,12 @@ public class PostViewFragment extends Fragment {
         }
 
         public void onSwipeLeft() {
-            toast(getActivity(), "Downvote");
+            // toast(getActivity(), "Downvote");
             PostLoader.getInstance().getCurrent().rateNegative();
+            Utility.updatePostVoteType(getActivity(),
+                    PostLoader.getInstance().getCurrent().getId(),
+                    MindlrContract.UserPostEntry.VOTE_DISLIKED);
+
             if (PostLoader.getInstance().next()) {
                 fragmentTrans(android.R.anim.fade_in, R.anim.exit_to_left);
             } else {

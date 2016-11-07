@@ -16,7 +16,6 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
-import de.gamedots.mindlr.mindlrfrontend.model.models.User;
 import de.gamedots.mindlr.mindlrfrontend.util.DebugUtil;
 import de.gamedots.mindlr.mindlrfrontend.view.activity.BaseActivity;
 
@@ -30,6 +29,9 @@ public abstract class AuthHandlerActivity extends BaseActivity
 
     // need to be refreshed with every APICallTask
     protected String _idToken;
+    protected String _email;
+    protected String _authProvider;
+    protected boolean _isSilentTry = false;
 
     public abstract void onSignInSuccess();
 
@@ -58,6 +60,7 @@ public abstract class AuthHandlerActivity extends BaseActivity
         if (isSignedIn) {
             GoogleSignInAccount acct = result.getSignInAccount();
             _idToken = acct.getIdToken();
+            _email = acct.getEmail();
             Log.v(LOG.AUTH, "Authandler activity API CLIENT (call siginsuccess) is connected: " + _googleApiClient.isConnected() + acct.getDisplayName());
 
             onSignInSuccess();
@@ -65,10 +68,12 @@ public abstract class AuthHandlerActivity extends BaseActivity
         } else {
             onSignInFailure();
         }
+        _isSilentTry = false;
     }
 
     // Try to sign the user in silently using cached credentials
     protected void googleSilentSignIn() {
+        _isSilentTry = true;
         OptionalPendingResult<GoogleSignInResult> opr =
                 Auth.GoogleSignInApi.silentSignIn(_googleApiClient);
 
@@ -103,14 +108,13 @@ public abstract class AuthHandlerActivity extends BaseActivity
 
     // SignOut/Revoke
     protected void signOut() {
-        User.clearUser(MindlrApplication.userInstance());
-
+        // TODO: cleare app user
         Auth.GoogleSignInApi.signOut(_googleApiClient).
                 setResultCallback(new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
                         if(status.isSuccess()){
-                            Log.v(LOG.AUTH, "signout success " + _googleApiClient);
+                            Log.v(LOG.AUTH, "---------+++++++ signout success " + _googleApiClient);
                         }
                     }
                 });
@@ -131,6 +135,7 @@ public abstract class AuthHandlerActivity extends BaseActivity
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
+        _isSilentTry = false;
         DebugUtil.toast(this, "Ein Fehler trat auf.");
     }
 

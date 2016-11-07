@@ -9,13 +9,13 @@ import org.json.JSONObject;
 
 import de.gamedots.mindlr.mindlrfrontend.AuthHandlerActivity;
 import de.gamedots.mindlr.mindlrfrontend.R;
-import de.gamedots.mindlr.mindlrfrontend.jobs.APICallTask;
 import de.gamedots.mindlr.mindlrfrontend.jobs.SignInTask;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.util.DebugUtil;
+import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 
 @SuppressWarnings("ConstantConditions")
-public class LoginActivity extends AuthHandlerActivity implements APICallTask.OnProcessSuccessListener {
+public class LoginActivity extends AuthHandlerActivity implements SignInTask.OnSignInProcessSuccessListener {
 
     public static final String SIGNOUT_EXTRA = "signout";
 
@@ -37,11 +37,15 @@ public class LoginActivity extends AuthHandlerActivity implements APICallTask.On
             @Override
             public void onClick(View v) {
                 Log.d(LOG.AUTH, "Start GoogleSignIn");
+                _authProvider = getString(R.string.google_provider);
                 startGoogleSignIn();
             }
         });
 
-        googleSilentSignIn();
+        if (!(getIntent() != null && getIntent().hasExtra(SIGNOUT_EXTRA))) {
+            _authProvider = getString(R.string.google_provider);
+            googleSilentSignIn();
+        }
     }
 
     @Override
@@ -69,22 +73,35 @@ public class LoginActivity extends AuthHandlerActivity implements APICallTask.On
         }
     }
 
+    // Callback for the google sign in success event
     @Override
     public void onSignInSuccess() {
         Log.d(LOG.AUTH, "onSignInSuccess: SignIn was successful start TASK");
         //create user account on backend server if not existing
-        new SignInTask(this, new JSONObject(), this).execute();
+        if(Utility.isNetworkAvailable(this)){
+            new SignInTask(this, new JSONObject(), _authProvider, this).execute();
+        } else {
+            DebugUtil.toast(this, getString(R.string.auth_error_network_unavailable));
+        }
     }
 
     @Override
     public void onSignInFailure() {
-        DebugUtil.toast(this, "Anmeldung fehlgeschlagen");
+        if (!_isSilentTry) {
+            DebugUtil.toast(this, getString(R.string.auth_error_unknown));
+        }
     }
 
-    // APICallTask callback
+    // SignInTask callback when google account synced with backend
     @Override
-    public void onProcessSuccess() {
-        Log.d(LOG.AUTH, "onProcessSuccess: User verified start MAIN");
+    public void onSignInProcessSuccess() {
+        Log.d(LOG.AUTH, "onSignInSuccess: User verified start MAIN");
+
+        // user was verified on backend so set authstate accordingly
+        Utility.addAuthStateToPreference(this, true);
+
+        // Create new user if not already exists
+        Utility.createUserEntryIfNotExists(this, _email, _authProvider);
 
         // user was successfully verified and account was created
         Intent intent = new Intent(this, MainActivity.class);

@@ -20,16 +20,12 @@ public class FavorCardItemHolder extends BaseViewHolder implements View.OnClickL
 
     @Override
     public void cacheViews() {
-        postCategoryText = (TextView) itemView.findViewById(R.id.post_category_text);
         postPreviewText = (TextView) itemView.findViewById(R.id.post_preview_text);
-        createDateText = (TextView) itemView.findViewById(R.id.post_create_date_text);
     }
 
     @Override
     public void bind(UserPostCardItem model) {
-        postCategoryText.setText(model.getCategoryText());
         postPreviewText.setText(model.getPreviewText());
-        createDateText.setText(model.getCreateDateText());
     }
 
     @Override

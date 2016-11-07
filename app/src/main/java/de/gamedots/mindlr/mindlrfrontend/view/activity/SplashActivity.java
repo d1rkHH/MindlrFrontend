@@ -3,29 +3,29 @@ package de.gamedots.mindlr.mindlrfrontend.view.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
-import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
-import de.gamedots.mindlr.mindlrfrontend.model.models.User;
+import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
+import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 
-import static de.gamedots.mindlr.mindlrfrontend.model.models.AuthProvider.Auth_Provider.GOOGLE;
 
-/**
- * Created by dirk on 12.04.2016.
- */
 public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        User user = User.getLastUserIfAny();
-        // no user signedIn earlier, so launch LoginActivity and try to authenticate him
-        if (user == null) {
-            finishAndRedirect(LoginActivity.class);
-        } else if (user.provider.name.equals(GOOGLE)) {
-            // a user (latest) already signed up earlier with google
-            MindlrApplication.setUser(user);
+        boolean firstStart = Utility.isFirstStart(this);
+
+        boolean authenticated = Utility.getAuthStateFromPreference(this);
+        Log.v(LOG.AUTH, "user is authenticated " + authenticated);
+
+        if (authenticated) {
+            Utility.loadUserFromDB(this);
             finishAndRedirect(MainActivity.class);
+        } else {
+            // no user signedIn earlier, so launch LoginActivity and try to authenticate him
+            finishAndRedirect(LoginActivity.class);
         }
     }
 

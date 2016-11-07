@@ -43,6 +43,10 @@
     <string name="pref_authentication_default" translatable="false">@string/pref_authentication_false</string>
     <string name="pref_authentication_setting_label">Sign Out</string>
 
+    <string name="pref_first_start_key" translatable="false">startup</string>
+    <string name="pref_first_start_true" translatable="false">true</string>
+    <string name="pref_first_start_false" translatable="false">true</string>
+
     <!-- Setting groups-->
     <string name="pref_group_notification_storage">Notification and Storage</string>
     <string name="pref_group_account">Account</string>
@@ -56,5 +60,12 @@
     <!-- NavDrawer string for accessibility -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- Auth Provider related strings -->
+    <string name="google_provider">google</string>
+
+    <!-- error messages -->
+    <string name="auth_error_network_unavailable">Anmeldung fehlgeschlagen. Netzwerk nicht erreichbar</string>
+    <string name="auth_error_unknown">Anmeldung fehlgeschlagen</string>
 
 </resources>

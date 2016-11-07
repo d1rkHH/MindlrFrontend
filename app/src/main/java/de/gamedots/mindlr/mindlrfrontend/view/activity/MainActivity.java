@@ -8,14 +8,12 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import de.gamedots.mindlr.mindlrfrontend.AuthHandlerActivity;
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
-import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.util.DebugUtil;
 import de.gamedots.mindlr.mindlrfrontend.util.ShareUtil;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
@@ -33,16 +31,13 @@ public class MainActivity extends AuthHandlerActivity implements
     private DrawerLayout _drawerLayout;
     private NavigationView _navigationView;
     private boolean _saveInstanceStateAvailable;
-    long[] ids = new long[3];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         _saveInstanceStateAvailable = (savedInstanceState != null);
-
-        Log.d(LOG.LIFECYCLE, "onCreate: MainActivity");
-        initializeUI();
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        initializeUI();
     }
 
     @Override
@@ -117,6 +112,7 @@ public class MainActivity extends AuthHandlerActivity implements
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
             case R.id.nav_help:
+                break;
         }
 
         //getSupportActionBar().setTitle(item.getTitle());
@@ -132,21 +128,33 @@ public class MainActivity extends AuthHandlerActivity implements
         if (!PostLoader.getInstance().isInitialized()) {
             PostLoader.getInstance().initialize(this, fragment);
         }
+
         //add PostViewFragment dynamically
-        Log.d(LOG.AUTH, "initializeUI: postviewfragment added");
         if (!_saveInstanceStateAvailable)
-            getSupportFragmentManager().beginTransaction().add(R.id.main_content, fragment, "PostView")
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.main_content, fragment, "PostView")
                     .commit();
 
+        // navigation drawer setup
         _drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         _drawerToggle = new ActionBarDrawerToggle(
-                this, _drawerLayout, getToolbar(), R.string.navigation_drawer_open, R.string
-                .navigation_drawer_close);
-        if (_drawerLayout != null) _drawerLayout.addDrawerListener(_drawerToggle);
+                this,
+                _drawerLayout,
+                getToolbar(),
+                R.string.navigation_drawer_open,
+                R.string
+                .navigation_drawer_close
+        );
+
+        if (_drawerLayout != null) {
+            _drawerLayout.addDrawerListener(_drawerToggle);
+        }
         _drawerToggle.syncState();
 
         _navigationView = (NavigationView) findViewById(R.id.nav_view);
-        if (_navigationView != null) _navigationView.setNavigationItemSelectedListener(this);
+        if (_navigationView != null) {
+            _navigationView.setNavigationItemSelectedListener(this);
+        }
     }
 
     @Override

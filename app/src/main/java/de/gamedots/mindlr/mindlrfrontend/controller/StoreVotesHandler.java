@@ -64,7 +64,7 @@ public class StoreVotesHandler {
                 content.put("upvotes", upvotes);
                 content.put("downvotes", downvotes);
                 Log.d(LOG.POSTS, "Sending votes to server");
-                new StoreVotesTask(MindlrApplication.getInstance(), content).execute();
+                new StoreVotesTask(MindlrApplication.getInstance().getApplicationContext(), content).execute();
             } catch (JSONException e){
                 Log.e(LOG.JSON, "Could not send votes to server!");
             }

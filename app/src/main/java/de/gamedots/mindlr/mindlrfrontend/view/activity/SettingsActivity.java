@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
+import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 
 /**
  * Created by dirk on 01.11.2016.
@@ -56,11 +57,10 @@ public class SettingsActivity extends AppCompatActivity {
             signoutPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.putBoolean(getString(R.string.pref_authentication_key),
-                            Boolean.parseBoolean(getString(R.string.pref_authentication_false)));
-                    editor.apply();
+
+                    // set auth state to false
+                    Utility.addAuthStateToPreference(getActivity(), false);
+                    Utility.deactivateCurrentUser(getActivity());
 
                     // Launch LoginActivity and clear back stack
                     Intent signoutIntent = new Intent(getActivity(), LoginActivity.class);
