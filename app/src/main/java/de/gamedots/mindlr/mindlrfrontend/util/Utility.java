@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import java.util.LinkedList;
@@ -26,10 +25,12 @@ import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserPostEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrDBHelper;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
+
 public class Utility {
 
     public static void addAuthStateToPreference(Context context, boolean authenticated) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences prefs = getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
 
         int newState = (authenticated) ?
@@ -42,7 +43,7 @@ public class Utility {
     }
 
     public static boolean getAuthStateFromPreference(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
+        return getDefaultSharedPreferences(context)
                 .getBoolean(context.getString(R.string.pref_authentication_key),
                         Boolean.parseBoolean(context.getString(R.string.pref_notification_false)));
     }
@@ -128,17 +129,17 @@ public class Utility {
     }
 
     public static boolean isFirstStart(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
+        return getDefaultSharedPreferences(context)
                 .getBoolean(context.getString(R.string.pref_first_start_key),
                         Boolean.parseBoolean(context.getString(R.string.pref_first_start_true)));
     }
 
     public static void invalidateFirstStart(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences prefs = getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean(context.getString(R.string.pref_first_start_key),
-                Boolean.parseBoolean(context.getString(R.string.pref_first_start_true)));
-        editor.apply();
+                Boolean.parseBoolean(context.getString(R.string.pref_first_start_false)));
+        editor.commit();
     }
 
     public static void deactivateCurrentUser(Context context) {

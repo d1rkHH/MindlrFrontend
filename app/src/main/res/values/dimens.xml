@@ -9,4 +9,11 @@
     <dimen name="fab_margin">24dp</dimen>
 
     <dimen name="appbar_elevation">4dp</dimen>
+
+    <dimen name="dots_height">30dp</dimen>
+    <dimen name="dots_margin_bottom">20dp</dimen>
+    <dimen name="tutorial_fixed_image_width">120dp</dimen>
+    <dimen name="tutorial_title_size">30sp</dimen>
+    <dimen name="tutorial_desc_size">16sp</dimen>
+    <dimen name="tutorial_desc_padding">40dp</dimen>
 </resources>

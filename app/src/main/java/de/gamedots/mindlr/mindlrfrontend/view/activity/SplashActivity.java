@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import de.gamedots.mindlr.mindlrfrontend.data.DatabaseIntentService;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 
@@ -16,24 +17,27 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         boolean firstStart = Utility.isFirstStart(this);
+        Log.v(LOG.AUTH, "firststart " + firstStart);
+
 
         boolean authenticated = Utility.getAuthStateFromPreference(this);
         Log.v(LOG.AUTH, "user is authenticated " + authenticated);
 
-        if (firstStart){
+        if (firstStart) {
             // fill categories
-           /* Intent intent = new Intent(this, DatabaseIntentService.class);
+            Intent intent = new Intent(this, DatabaseIntentService.class);
             intent.setAction(DatabaseIntentService.INSERT_CATEGORIES_ACTION);
             startService(intent);
-            Utility.invalidateFirstStart(this);*/
-        }
-
-        if (authenticated) {
-            Utility.loadUserFromDB(this);
-            finishAndRedirect(MainActivity.class);
+            Utility.invalidateFirstStart(this);
+            finishAndRedirect(TutorialActivity.class);
         } else {
-            // no user signedIn earlier, so launch LoginActivity and try to authenticate him
-            finishAndRedirect(LoginActivity.class);
+            if (authenticated) {
+                Utility.loadUserFromDB(this);
+                finishAndRedirect(MainActivity.class);
+            } else {
+                // no user signedIn earlier, so launch LoginActivity and try to authenticate him
+                finishAndRedirect(LoginActivity.class);
+            }
         }
     }
 

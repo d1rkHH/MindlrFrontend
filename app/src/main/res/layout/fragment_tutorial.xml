@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tutorial_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@android:color/transparent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/tutorial_imageview"
+            android:layout_width="@dimen/tutorial_fixed_image_width"
+            android:layout_height="@dimen/tutorial_fixed_image_width"
+            android:src="@drawable/ic_logo"/>
+
+        <TextView
+            android:id="@+id/tutorial_title_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/tutorial_title_size"
+            android:textStyle="bold"
+            tools:text="@string/slide_0_title"/>
+
+        <TextView
+            android:id="@+id/tutorial_subhead_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:paddingLeft="@dimen/tutorial_desc_padding"
+            android:paddingRight="@dimen/tutorial_desc_padding"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/tutorial_desc_size"
+            tools:text="@string/slide_0_desc"/>
+    </LinearLayout>
+</RelativeLayout>

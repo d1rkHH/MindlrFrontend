@@ -83,6 +83,10 @@
             android:name=".data.DatabaseIntentService"
             android:exported="false">
         </service>
+
+        <activity android:name=".view.activity.TutorialActivity"
+            android:theme="@style/TutorialTheme">
+        </activity>
     </application>
 
 </manifest>
