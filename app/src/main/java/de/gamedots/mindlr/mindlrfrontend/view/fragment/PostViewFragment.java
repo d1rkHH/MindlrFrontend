@@ -45,7 +45,9 @@ public class PostViewFragment extends Fragment {
         _postView = (TextView) view.findViewById(R.id.postTextView);
 
         if (PostLoader.getInstance().isInitialized()) {
-            _postView.setText(PostLoader.getInstance().getCurrent().getContentText());
+            String text = PostLoader.getInstance().getCurrent().getContentText();
+            text = text.replaceAll(System.getProperty("line.separator"), "");
+            _postView.setText(text);
         }
 
         LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.post_fragment_container);

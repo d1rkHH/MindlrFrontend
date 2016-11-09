@@ -10,13 +10,17 @@ import java.util.Vector;
 
 import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.CategoryEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserPostEntry;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
+import de.gamedots.mindlr.mindlrfrontend.util.Global;
 
 
 public class DatabaseIntentService extends IntentService {
 
     public static final String INSERT_POST_ACTION = "insertposts";
+    public static final String INSERT_CATEGORIES_ACTION = "insertcategories";
+
 
     public DatabaseIntentService() {
         super("MindlrDbService");
@@ -26,8 +30,11 @@ public class DatabaseIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         if (intent.getAction().equals(INSERT_POST_ACTION)) {
             storePostsToLocalDb();
+        } else if (intent.getAction().equals(INSERT_CATEGORIES_ACTION)) {
+            storeCategories();
         }
     }
+
 
     private void storePostsToLocalDb() {
         List<ViewPost> posts = PostLoader.getInstance().getPostList();
@@ -64,5 +71,15 @@ public class DatabaseIntentService extends IntentService {
         }
         getContentResolver().notifyChange(MindlrContract.PostEntry.CONTENT_URI, null);
         getContentResolver().notifyChange(UserPostEntry.CONTENT_URI, null);
+    }
+
+    private void storeCategories() {
+        ContentValues[] categories = new ContentValues[Global.Categories.CATEGORIES.length];
+        for (int i = 0; i < Global.Categories.CATEGORIES.length; i++) {
+            ContentValues cv = new ContentValues();
+            cv.put(CategoryEntry.COLUMN_NAME, Global.Categories.CATEGORIES[i]);
+            categories[i] = cv;
+        }
+        getContentResolver().bulkInsert(CategoryEntry.CONTENT_URI, categories);
     }
 }

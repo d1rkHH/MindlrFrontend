@@ -27,6 +27,9 @@
             android:isScrollContainer="false"
             android:textColorLink="@color/accent"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textSize="18sp"
+            android:lineSpacingMultiplier="1.16"
+            android:fontFamily="sans-serif-light"
             android:textIsSelectable="false"
             tools:text="my simple text that display"/>
 

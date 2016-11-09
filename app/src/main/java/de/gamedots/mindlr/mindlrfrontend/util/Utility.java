@@ -119,9 +119,9 @@ public class Utility {
 
 
         Cursor c = context.getContentResolver().query(MindlrContract.UserPostEntry.CONTENT_URI,
-                null,null,null,null);
-        if(c != null && c.moveToFirst()){
-            Toast.makeText(context, "USerPosts: " +c.getCount() + " first id="+
+                null, null, null, null);
+        if (c != null && c.moveToFirst()) {
+            Toast.makeText(context, "USerPosts: " + c.getCount() + " first id=" +
                     c.getLong(c.getColumnIndex(UserPostEntry._ID)), Toast.LENGTH_SHORT).show();
             c.close();
         }
@@ -131,6 +131,14 @@ public class Utility {
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getBoolean(context.getString(R.string.pref_first_start_key),
                         Boolean.parseBoolean(context.getString(R.string.pref_first_start_true)));
+    }
+
+    public static void invalidateFirstStart(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(context.getString(R.string.pref_first_start_key),
+                Boolean.parseBoolean(context.getString(R.string.pref_first_start_true)));
+        editor.apply();
     }
 
     public static void deactivateCurrentUser(Context context) {
@@ -179,7 +187,7 @@ public class Utility {
         final int server_id_index = 0;
         final int text_index = 1;
         final int uri_index = 2;
-        Toast.makeText(context, "Cursor count: "+cursor.getCount(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "Cursor count: " + cursor.getCount(), Toast.LENGTH_SHORT).show();
         List<ViewPost> toInsertPosts = new LinkedList<>();
         if (cursor != null && cursor.moveToFirst()) {
             postLoaded = cursor.getCount();

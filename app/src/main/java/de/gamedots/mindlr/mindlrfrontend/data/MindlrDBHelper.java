@@ -48,7 +48,7 @@ public class MindlrDBHelper extends SQLiteOpenHelper {
                 PostEntry.COLUMN_CONTENT_URI + " TEXT NOT NULL, " +
                 PostEntry.COLUMN_CONTENT_TEXT + " TEXT NOT NULL, " +
 
-                " UNIQUE (" + PostEntry.COLUMN_SERVER_ID + ") ON CONFLICT REPLACE);";
+                " UNIQUE (" + PostEntry.COLUMN_SERVER_ID + ") ON CONFLICT IGNORE);";
 
 
         final String SQL_CREATE_CATEGORY_TABLE = "CREATE TABLE " + CategoryEntry.TABLE_NAME +
@@ -86,7 +86,8 @@ public class MindlrDBHelper extends SQLiteOpenHelper {
                 " (" + UserCreatePostEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
 
                 UserCreatePostEntry.COLUMN_USER_KEY + " INTEGER NOT NULL, " +
-                UserCreatePostEntry.COLUMN_POST_KEY + " INTEGER NOT NULL, " +
+                UserCreatePostEntry.COLUMN_CONTENT_URI + " TEXT NOT NULL, " +
+                UserCreatePostEntry.COLUMN_CONTENT_TEXT + " TEXT NOT NULL, " +
                 UserCreatePostEntry.COLUMN_CATEGORY_KEY + " INTEGER NOT NULL, " +
                 UserCreatePostEntry.COLUMN_SUBMIT_DATE + " INTEGER NOT NULL, " +
                 UserCreatePostEntry.COLUMN_IS_DRAFT + " INTEGER DEFAULT 0, " +
@@ -94,20 +95,7 @@ public class MindlrDBHelper extends SQLiteOpenHelper {
                 UserCreatePostEntry.COLUMN_DOWNVOTES + " INTEGER DEFAULT 0, " +
 
                 " FOREIGN KEY (" + UserCreatePostEntry.COLUMN_USER_KEY + ") REFERENCES " +
-                UserEntry.TABLE_NAME + " (" + UserEntry._ID + "), " +
-
-                " UNIQUE (" + UserCreatePostEntry.COLUMN_USER_KEY + ") ON CONFLICT REPLACE, " +
-
-                " FOREIGN KEY (" + UserCreatePostEntry.COLUMN_POST_KEY + ") REFERENCES " +
-                PostEntry.TABLE_NAME + " (" + PostEntry._ID + "), " +
-
-                " UNIQUE (" + UserCreatePostEntry.COLUMN_POST_KEY + ") ON CONFLICT REPLACE, " +
-
-                " FOREIGN KEY (" + UserCreatePostEntry.COLUMN_CATEGORY_KEY + ") REFERENCES " +
-                PostEntry.TABLE_NAME + " (" + PostEntry._ID + "), " +
-
-                " UNIQUE (" + UserCreatePostEntry.COLUMN_CATEGORY_KEY + ") ON CONFLICT REPLACE);";
-
+                UserEntry.TABLE_NAME + " (" + UserEntry._ID + ")); ";
 
         final String SQL_CREATE_USER_CATEGORY_TABLE = "CREATE TABLE " + UserCategoryEntry.TABLE_NAME +
                 " (" + UserCategoryEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +

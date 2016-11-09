@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context="de.gamedots.mindlr.mindlrfrontend.view.activity.DraftsActivity">
+
+    <include
+        layout="@layout/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"/>
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/drafts_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </android.support.v7.widget.RecyclerView>
+
+
+    <!-- empty recycler view -->
+    <TextView
+        android:id="@+id/recyclerview_draft_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:paddingTop="?attr/actionBarSize"
+        app:layout_anchor="@+id/drafts_recyclerview"
+        app:layout_anchorGravity="fill"/>
+</LinearLayout>

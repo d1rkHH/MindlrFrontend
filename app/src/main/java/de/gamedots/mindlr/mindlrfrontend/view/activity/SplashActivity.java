@@ -20,6 +20,14 @@ public class SplashActivity extends AppCompatActivity {
         boolean authenticated = Utility.getAuthStateFromPreference(this);
         Log.v(LOG.AUTH, "user is authenticated " + authenticated);
 
+        if (firstStart){
+            // fill categories
+           /* Intent intent = new Intent(this, DatabaseIntentService.class);
+            intent.setAction(DatabaseIntentService.INSERT_CATEGORIES_ACTION);
+            startService(intent);
+            Utility.invalidateFirstStart(this);*/
+        }
+
         if (authenticated) {
             Utility.loadUserFromDB(this);
             finishAndRedirect(MainActivity.class);

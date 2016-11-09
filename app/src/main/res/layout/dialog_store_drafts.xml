@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dialog_draft_container"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.GridLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        app:columnCount="2"
+        app:rowCount="2">
+
+        <TextView
+            android:id="@+id/dialog_draft_textview"
+            android:gravity="center"
+            android:padding="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            app:layout_columnSpan="2"
+            app:layout_gravity="center"
+            app:layout_row="0"
+            tools:text="Save Drafts?"/>
+
+        <TextView
+            android:id="@+id/dialog_draft_delete"
+            android:layout_marginRight="16dp"
+            android:clickable="true"
+            android:fontFamily="sans-serif-medium"
+            android:padding="8dp"
+            android:text="Delete"
+            android:textAllCaps="true"
+            android:textColor="@color/accent"
+            android:textSize="16sp"
+            app:layout_column="0"
+            app:layout_columnWeight="1"
+            app:layout_row="1"/>
+
+        <TextView
+            android:id="@+id/dialog_draft_save"
+            android:clickable="true"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="right"
+            android:padding="8dp"
+            android:text="Save"
+            android:textAllCaps="true"
+            android:textColor="@color/accent"
+            android:textSize="16sp"
+            app:layout_column="1"
+            app:layout_columnWeight="1"
+            app:layout_row="1"/>
+    </android.support.v7.widget.GridLayout>
+</LinearLayout>

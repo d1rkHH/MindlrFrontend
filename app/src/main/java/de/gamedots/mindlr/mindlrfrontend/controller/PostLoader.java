@@ -55,7 +55,7 @@ public class PostLoader {
         Toast.makeText(_context, "Loaded posts: " + postsLoaded, Toast.LENGTH_SHORT).show();
         // loaded unvoted posts size below threshold so try to load more
         if(postsLoaded < MIN_SIZE_THRESHOLD){
-            Log.d(LOG.POSTS, "Load posts from the server for the first time");
+            Log.d(LOG.AUTH, "Load posts from the server for the first time");
             new LoadPostsTask(_context, new JSONObject()).setFragment(fragment).execute();
         }
     }
@@ -80,7 +80,7 @@ public class PostLoader {
     }
 
     private void loadNewPosts() {
-        Log.d(LOG.POSTS, "Load new Posts from Server");
+        Log.d(LOG.AUTH, "Load new Posts from Server");
         new LoadPostsTask(_context, new JSONObject()).execute();
     }
 

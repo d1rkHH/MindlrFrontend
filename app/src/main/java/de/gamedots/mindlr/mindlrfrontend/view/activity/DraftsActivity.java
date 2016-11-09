@@ -1,18 +1,20 @@
 package de.gamedots.mindlr.mindlrfrontend.view.activity;
 
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 
-public class DraftsActivity extends BaseActivity {
+public class DraftsActivity extends AppCompatActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
+        setContentView(R.layout.activity_drafts);
 
-    @Override
-    protected int getLayoutResourceId() {
-        return R.layout.activity_drafts;
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 }

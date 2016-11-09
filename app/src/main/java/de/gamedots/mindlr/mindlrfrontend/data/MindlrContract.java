@@ -211,8 +211,13 @@ public class MindlrContract {
         // Foreign Key to user table
         public static final String COLUMN_USER_KEY = "user_id";
 
-        // Foreign Key to post table
-        public static final String COLUMN_POST_KEY = "post_id";
+        // Uri describing any additional resource (e.g. Image ) for that post
+        public static final String COLUMN_CONTENT_URI = "content_uri";
+
+        // Content text of a user created post. This information is stored instead a
+        // foreign key to a post because the user can create a draft without
+        // having the post synced and that would result into a empty Post.SERVER_ID
+        public static final String COLUMN_CONTENT_TEXT = "content_text";
 
         // The user given category during post creation
         public static final String COLUMN_CATEGORY_KEY = "category_id";
@@ -232,6 +237,10 @@ public class MindlrContract {
 
         public static Uri buildUserCreatePostUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static String getIdPathFromUri(Uri uri){
+            return uri.getPathSegments().get(1);
         }
     }
 
