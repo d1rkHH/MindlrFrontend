@@ -5,11 +5,9 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
@@ -31,11 +29,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
 
 import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.R;
@@ -46,13 +46,16 @@ import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.Category;
 
 public class WritePostActivity extends AppCompatActivity implements TextWatcher, LoaderManager
-        .LoaderCallbacks<Cursor> {
+        .LoaderCallbacks<Cursor>, RequestListener<Uri, Bitmap> {
 
-    public static final int WRITEPOST_DRAFT_LOADER_ID = 3;
-    public static final int PICK_IMAGE_REQUEST = 1;
     public static final String DRAFT_EXTRA = "draftextra";
+    public static final int PICK_IMAGE_REQUEST = 1;
+
+    /* Unique loader id for this activity */
+    public static final int WRITEPOST_DRAFT_LOADER_ID = 3;
+
+    /* Maximum character length of the post content text */
     private static final int POST_CHAR_LIMIT = 500;
-    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 42;
 
     private EditText _postEditText;
     private Spinner _categorySpinner;
@@ -60,9 +63,12 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
     private ImageView _postImageView;
     private ImageButton _closeImageButton;
     private Uri _imageContentUri;
+
     private SimpleCursorAdapter _categoryAdapter;
+    /* Uri passed from DraftsActivity to determine which draft to populate */
     private Uri _loadUri;
 
+    // region projection for CreatePostEntry
 
     public static final String[] CREATE_POST_COLUMNS = {
             UserCreatePostEntry.TABLE_NAME + "." + UserCreatePostEntry._ID,
@@ -76,6 +82,9 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
     public static final int COLUMN_CONTENT_URI = 2;
     public static final int COLUMN_CATEGORY_KEY = 3;
 
+    // endregion
+
+    // region lifecycle
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,9 +101,8 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
         // disable background because the root layout already draw its white background
         getWindow().setBackgroundDrawable(null);
 
+        // setup spinner from cursor using a simpleadapter
         _categorySpinner = (Spinner) findViewById(R.id.category_spinner);
-        //TODO: Change Spinner to represent real category objects and only display the name, cat ID easy
-
         _categoryAdapter = new SimpleCursorAdapter(this,
                 android.R.layout.simple_spinner_item,
                 getContentResolver().query(CategoryEntry.CONTENT_URI, null, null,
@@ -104,6 +112,7 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
         _categoryAdapter.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
         _categorySpinner.setAdapter(_categoryAdapter);
 
+        // write post button to kick off posting
         Button button = (Button) findViewById(R.id.postSubmit);
         if (button != null) {
             button.setOnClickListener(new View.OnClickListener() {
@@ -114,17 +123,17 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
             });
         }
 
+        // scroll handling if post content grow in size
         NestedScrollView scrollView = (NestedScrollView) findViewById(R.id.wp_scrollview);
         scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY,
                                        int oldScrollX, int oldScrollY) {
-
-                Log.v(LOG.AUTH, "X : " + scrollX + " Y: " + scrollY);
                 ViewCompat.setElevation(toolbar, (scrollY > 0) ? 4f : 0f);
             }
         });
 
+        // optional image for a post, its initially hidden (gone)
         _postImageView = (ImageView) findViewById(R.id.wp_post_imageview);
 
         _charCounter = (TextView) findViewById(R.id.wp_char_counter);
@@ -133,6 +142,9 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
         _postEditText = (EditText) findViewById(R.id.postWriteArea);
         _postEditText.addTextChangedListener(this);
 
+        // setup image select action; we need to start different intents here because
+        // the image picker action has changed from KITKAT(API 19) onwards, so check for sdk version
+        // and set appropriate intent
         ImageButton imageSelect = (ImageButton) findViewById(R.id.wp_imageselect);
         if (imageSelect != null) {
             imageSelect.setOnClickListener(new View.OnClickListener() {
@@ -144,7 +156,6 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
                         intent.setAction(Intent.ACTION_GET_CONTENT);
                     } else {
                         intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                        intent.setType("image/*");
                         intent.addCategory(Intent.CATEGORY_OPENABLE);
                     }
                     startActivityForResult(Intent.createChooser(intent, "Select Picture"),
@@ -153,24 +164,25 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
             });
         }
 
+        // close button appearing at the top right corner of the select image to dismiss
         _closeImageButton = (ImageButton) findViewById(R.id.wp_image_close);
         _closeImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                _imageContentUri = null;
                 _postImageView.setImageBitmap(null);
                 _postImageView.setVisibility(View.GONE);
                 _closeImageButton.setVisibility(View.GONE);
             }
         });
 
-        // check if launched from drafts
+        // check if launched from drafts, if so load up content
         if (getIntent() != null && getIntent().hasExtra(DRAFT_EXTRA)) {
             _loadUri = getIntent().getParcelableExtra(DRAFT_EXTRA);
             if (_loadUri != null) {
                 getSupportLoaderManager().initLoader(WRITEPOST_DRAFT_LOADER_ID, null, this);
             }
         }
-
     }
 
     @Override
@@ -185,8 +197,9 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
     protected void onPause() {
         _categoryAdapter.swapCursor(null);
         super.onPause();
-
     }
+
+    //endregion
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -195,24 +208,22 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
         if (requestCode == PICK_IMAGE_REQUEST) {
             if (resultCode == RESULT_OK && data != null && data.getData() != null) {
                 _imageContentUri = data.getData();
-                if (_imageContentUri != null)
+                if (_imageContentUri != null) {
                     Toast.makeText(this, "URI: " + _imageContentUri.toString(), Toast.LENGTH_LONG).show();
-                try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), _imageContentUri);
-                    _postImageView.setImageBitmap(bitmap);
-                    _postImageView.setVisibility(View.VISIBLE);
-                    _closeImageButton.setVisibility(View.VISIBLE);
+                    _postImageView.setVisibility(View.INVISIBLE);
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    // error in retrieving Bitmap so assume something went wrong with the Uri
-                    // so invalidate it
-                    _imageContentUri = null;
+                    Glide.with(this)
+                            .loadFromMediaStore(_imageContentUri)
+                            .asBitmap()
+                            .fitCenter()
+                            .listener(this)
+                            .into(_postImageView);
                 }
             }
         }
     }
 
+    // region start send written post to server
     public void writePost(View view) {
         Log.d(LOG.WRITE, "About to create WritePostTask");
         String catString = _categorySpinner.getSelectedItem().toString();
@@ -229,20 +240,25 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
         new WritePostTask(this, content).execute();
     }
 
+    // endregion
+
+    // region textcounter handling
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        _charCounter.setText(String.valueOf(POST_CHAR_LIMIT - count));
     }
 
     @Override
     public void afterTextChanged(Editable s) {
+        _charCounter.setText(String.valueOf(POST_CHAR_LIMIT - s.length()));
     }
 
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
     }
 
+    // endregion
+
+    // region navigation and store draft
     @Override
     public boolean onSupportNavigateUp() {
         return handleNavigationDraftStorage(true);
@@ -268,10 +284,14 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
             delete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // do nothing
+                    // we come from draftsactivity
+                    if (_loadUri != null && getIntent().hasExtra(DRAFT_EXTRA)) {
+                        getContentResolver().delete(UserCreatePostEntry.CONTENT_URI,
+                                UserCreatePostEntry._ID + " = ? ",
+                                new String[]{UserCreatePostEntry.getIdPathFromUri(_loadUri)});
+                    }
                     dialog.dismiss();
                     finishNavigation(upNavigation);
-
                 }
             });
 
@@ -324,6 +344,9 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
         }
     }
 
+    // endregion
+
+    // region loader
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(this,
@@ -344,18 +367,36 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
         // because the spinner is based on db the id is equal to the spinner row selection id
         Log.v(LOG.AUTH, "categorie loaded " + (int) cursor.getLong(COLUMN_CATEGORY_KEY));
         _categorySpinner.setSelection((int) cursor.getLong(COLUMN_CATEGORY_KEY), true);
-        try {
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),
-                    Uri.parse(cursor.getString(COLUMN_CONTENT_URI)));
-            _postImageView.setImageBitmap(bitmap);
-            _postImageView.setVisibility(View.VISIBLE);
-        } catch (IOException e) {
-            e.printStackTrace();
-            _postImageView.setBackgroundColor(Color.GRAY);
-        }
+
+        _postImageView.setVisibility(View.INVISIBLE);
+        Glide.with(this)
+                .loadFromMediaStore(Uri.parse(cursor.getString(COLUMN_CONTENT_URI)))
+                .asBitmap()
+                .fitCenter()
+                .listener(this)
+                .into(_postImageView);
     }
 
     @Override
     public void onLoaderReset(Loader loader) {
+    }
+
+    // endregion
+
+    @Override
+    public boolean onException(Exception e, Uri model, Target<Bitmap> target, boolean isFirstResource) {
+        // error in retrieving Bitmap so assume something went wrong with the Uri
+        // so invalidate it
+        _imageContentUri = null;
+        _postImageView.setVisibility(View.GONE);
+        return false;
+    }
+
+    @Override
+    public boolean onResourceReady(Bitmap resource, Uri model, Target<Bitmap> target, boolean
+            isFromMemoryCache, boolean isFirstResource) {
+        _postImageView.setVisibility(View.VISIBLE);
+        _closeImageButton.setVisibility(View.VISIBLE);
+        return false;
     }
 }

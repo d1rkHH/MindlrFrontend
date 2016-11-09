@@ -3,10 +3,8 @@ package de.gamedots.mindlr.mindlrfrontend.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
+import com.bumptech.glide.Glide;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
@@ -95,10 +93,14 @@ public class DraftsAdapter extends RecyclerView.Adapter<DraftsAdapter.DraftsAdap
         viewHolder.postContentText.setText(_cursor.getString(DraftsFragment.COLUMN_CONTENT_TEXT));
 
         try {
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(_context.getContentResolver(), Uri.parse
-                    (_cursor.getString(DraftsFragment.COLUMN_CONTENT_URI)));
-            viewHolder.postContentImage.setImageBitmap(bitmap);
-        } catch (IOException e) {
+            //Bitmap bitmap = MediaStore.Images.Media.getBitmap(_context.getContentResolver(), Uri.parse
+              //      (_cursor.getString(DraftsFragment.COLUMN_CONTENT_URI)));
+            //viewHolder.postContentImage.setImageBitmap(bitmap);
+            Glide.with(_context)
+                    .loadFromMediaStore(Uri.parse(_cursor.getString(DraftsFragment.COLUMN_CONTENT_URI)))
+                    .asBitmap()
+                    .into(viewHolder.postContentImage);
+        } catch (Exception e) {
             e.printStackTrace();
             viewHolder.postContentImage.setBackgroundColor(Color.GRAY);
 

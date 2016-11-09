@@ -76,7 +76,7 @@ public class MainActivity extends AuthHandlerActivity implements
         }
         switch (item.getItemId()) {
             case R.id.action_share:
-                ShareUtil.showShareIntent("Empty Test text", this);
+                ShareUtil.showShareIntent(PostLoader.getInstance().getCurrent().getContentText(), this);
                 break;
             case R.id.action_report:
                 DebugUtil.toast(this, "Reported");
