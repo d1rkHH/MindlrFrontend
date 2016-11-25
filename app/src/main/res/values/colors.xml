@@ -37,4 +37,6 @@
         <item>@color/dot_dark_screen3</item>
         <item>@color/dot_dark_screen3</item>
     </array>
+    
+    <drawable name="light_gray_drawable">#e7e8e9</drawable>
 </resources>
