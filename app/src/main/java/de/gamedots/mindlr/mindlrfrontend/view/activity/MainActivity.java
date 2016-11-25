@@ -11,14 +11,13 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import de.gamedots.mindlr.mindlrfrontend.AuthHandlerActivity;
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.util.DebugUtil;
 import de.gamedots.mindlr.mindlrfrontend.util.ShareUtil;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
 
-public class MainActivity extends AuthHandlerActivity implements
+public class MainActivity extends BaseActivity implements
         NavigationView.OnNavigationItemSelectedListener {
 
     protected int getLayoutResourceId() {
@@ -51,15 +50,6 @@ public class MainActivity extends AuthHandlerActivity implements
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         _drawerToggle.onConfigurationChanged(newConfig);
-    }
-
-    // Authentication callbacks
-    @Override
-    public void onSignInSuccess() {
-    }
-
-    @Override
-    public void onSignInFailure() {
     }
 
     // menu items and actions
@@ -112,6 +102,7 @@ public class MainActivity extends AuthHandlerActivity implements
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
             case R.id.nav_help:
+                startActivity(new Intent(this, TutorialActivity.class));
                 break;
         }
 

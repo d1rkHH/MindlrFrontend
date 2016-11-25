@@ -11,7 +11,7 @@ import de.gamedots.mindlr.mindlrfrontend.view.fragment.TutorialFragment;
  */
 
 public class TutorialPagerAdapter extends FragmentPagerAdapter {
-    public static final int FRAGMENT_COUNT = 3;
+    public static final int FRAGMENT_COUNT = 4;
 
     public TutorialPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -26,6 +26,8 @@ public class TutorialPagerAdapter extends FragmentPagerAdapter {
                 return TutorialFragment.newInstance(1);
             case 2:
                 return TutorialFragment.newInstance(2);
+            case 3:
+                return TutorialFragment.newInstance(3);
             default:
                 return null;
         }

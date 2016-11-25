@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/primary"
+              android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:layout_marginTop="40dp"
+        android:gravity="center_horizontal"
+        android:text="Choose 3 or more Categories!"
+        android:textColor="@color/white"
+        android:textSize="28sp"/>
+
+    <com.anton46.collectionitempicker.CollectionPicker
+        android:id="@+id/collection_item_picker"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:cp_addIcon="@drawable/ic_add_24dp"
+        app:cp_cancelIcon="@drawable/ic_check_24dp"
+        app:cp_itemBackgroundNormal="@color/primary_dark"
+        app:cp_itemBackgroundPressed="#FE7852"
+        app:cp_itemMargin="10dp"
+        app:cp_simplified="false"
+        app:cp_textPaddingBottom="10dp"
+        app:cp_textPaddingLeft="10dp"
+        app:cp_textPaddingRight="10dp"
+        app:cp_textPaddingTop="10dp"
+        app:theme="@style/CollectionPickerTheme"/>
+
+</LinearLayout>
