@@ -1,4 +1,4 @@
-<resources>
+<resources  xmlns:xliff="http://schemas.android.com/apk/res-auto">
     <string name="app_name">Mindlr</string>
     <string name="server_client_id">319486160725-gksup5cr2bgric18al3q6h47h3p23dia.apps.googleusercontent.com</string>
 
@@ -82,4 +82,7 @@
 
     <string name="slide_2_title">Lets Go!</string>
     <string name="slide_2_desc">Dive into the world of minds.</string>
+
+    <!-- UP/DOWN votes in % -->
+    <string name="format_vote_percentage"><xliff:g id="vote">%1.0f</xliff:g> %%</string>
 </resources>

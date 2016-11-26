@@ -11,6 +11,9 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,6 +27,7 @@ import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserPostEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrDBHelper;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
+import de.gamedots.mindlr.mindlrfrontend.view.activity.WritePostActivity;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
@@ -223,5 +227,21 @@ public class Utility {
             );
             postCursor.close();
         }
+    }
+
+    public static void buildUserCreatePostValuesFromJSON(ContentValues cv, boolean isDraft, JSONObject
+            content)
+            throws JSONException {
+        cv.put(MindlrContract.UserCreatePostEntry.COLUMN_USER_KEY, MindlrApplication.User.getId());
+        cv.put(MindlrContract.UserCreatePostEntry.COLUMN_CONTENT_TEXT, content.getString(WritePostActivity
+                .JSON_CONTENT_TEXT_KEY));
+        cv.put(MindlrContract.UserCreatePostEntry.COLUMN_CONTENT_URI, content.getString(WritePostActivity
+                .JSON_CONTENT_URI_KEY));
+        cv.put(MindlrContract.UserCreatePostEntry.COLUMN_SUBMIT_DATE, System.currentTimeMillis());
+        if (isDraft) {
+            cv.put(MindlrContract.UserCreatePostEntry.COLUMN_IS_DRAFT, 1);
+        }
+        cv.put(MindlrContract.UserCreatePostEntry.COLUMN_CATEGORY_KEY, content.getJSONArray(WritePostActivity
+                .JSONARR_CONTENT_CATEGORIES_KEY).getLong(0));
     }
 }

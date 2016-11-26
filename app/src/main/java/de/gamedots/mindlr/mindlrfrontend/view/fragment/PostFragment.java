@@ -39,7 +39,7 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
 
     // define post column projection and constants
     public static final String[] POST_COLUMNS = {
-            MindlrContract.PostEntry.TABLE_NAME + "." + MindlrContract.UserEntry._ID,
+            MindlrContract.PostEntry.TABLE_NAME + "." + MindlrContract.PostEntry._ID,
             MindlrContract.PostEntry.COLUMN_CONTENT_TEXT
     };
 

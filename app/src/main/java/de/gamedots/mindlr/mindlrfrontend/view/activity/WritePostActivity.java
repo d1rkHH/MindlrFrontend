@@ -43,13 +43,15 @@ import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.CategoryEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserCreatePostEntry;
 import de.gamedots.mindlr.mindlrfrontend.jobs.WritePostTask;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
-import de.gamedots.mindlr.mindlrfrontend.model.Category;
 
 public class WritePostActivity extends AppCompatActivity implements TextWatcher, LoaderManager
         .LoaderCallbacks<Cursor>, RequestListener<Uri, Bitmap> {
 
     public static final String DRAFT_EXTRA = "draftextra";
     public static final int PICK_IMAGE_REQUEST = 1;
+    public static final String JSON_CONTENT_TEXT_KEY = "content_text";
+    public static final String JSON_CONTENT_URI_KEY = "content_url";
+    public static final String JSONARR_CONTENT_CATEGORIES_KEY = "categories";
 
     /* Unique loader id for this activity */
     public static final int WRITEPOST_DRAFT_LOADER_ID = 3;
@@ -230,14 +232,14 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
         JSONObject content = new JSONObject();
         try {
             JSONArray categories = new JSONArray();
-            categories.put(Category.getCategoryIDForName(catString));
-            content.put("content_text", _postEditText.getText().toString());
-            content.put("content_url", (_imageContentUri == null) ? "" : _imageContentUri.toString());
-            content.put("categories", categories);
+            categories.put(_categorySpinner.getSelectedItemId());
+            content.put(JSON_CONTENT_TEXT_KEY, _postEditText.getText().toString());
+            content.put(JSON_CONTENT_URI_KEY, (_imageContentUri == null) ? "" : _imageContentUri.toString());
+            content.put(JSONARR_CONTENT_CATEGORIES_KEY, categories);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        new WritePostTask(this, content).execute();
+        new WritePostTask(this, content, _loadUri).execute();
     }
 
     // endregion

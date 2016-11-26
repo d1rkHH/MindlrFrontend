@@ -7,9 +7,19 @@
     android:background="#e8e8e8">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerview"
+        android:id="@+id/usercreatepost_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
+    <!-- empty recycler view -->
+    <TextView
+        android:id="@+id/recyclerview_usercreatepost_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:paddingTop="?attr/actionBarSize"
+        android:text="Empty content!!"
+        app:layout_anchor="@+id/usercreatepost_recyclerview"
+        app:layout_anchorGravity="fill"/>
 </RelativeLayout>
