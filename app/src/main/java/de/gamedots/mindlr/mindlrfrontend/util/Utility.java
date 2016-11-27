@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.R;
@@ -184,7 +185,8 @@ public class Utility {
                         PostEntry.COLUMN_CONTENT_URI
                 },
                 UserPostEntry.COLUMN_VOTE + " = ? AND " + UserPostEntry.COLUMN_USER_KEY + " = ?",
-                new String[]{"-1", Long.toString(MindlrApplication.User.getId())},
+                new String[]{Integer.toString(UserPostEntry.VOTE_UNDEFINED), Long.toString
+                        (MindlrApplication.User.getId())},
                 null,
                 null,
                 null);
@@ -244,4 +246,59 @@ public class Utility {
         cv.put(MindlrContract.UserCreatePostEntry.COLUMN_CATEGORY_KEY, content.getJSONArray(WritePostActivity
                 .JSONARR_CONTENT_CATEGORIES_KEY).getLong(0));
     }
+
+    public static void deleteSyncedAndDownvotedPosts(Context context, Set<ViewPost> posts) {
+        // Delete synced and downvoted post
+        for (ViewPost vp : posts) {
+            if (vp.getVote() == UserPostEntry.VOTE_DISLIKED) {
+                Cursor postCursor = context.getContentResolver().query(PostEntry.CONTENT_URI,
+                        new String[]{PostEntry._ID},
+                        PostEntry.COLUMN_SERVER_ID + " = ? ",
+                        new String[]{Long.toString(vp.getId())},
+                        null
+                );
+
+                if (postCursor != null && postCursor.moveToFirst()) {
+                    context.getContentResolver().delete(UserPostEntry.CONTENT_URI,
+                            UserPostEntry.COLUMN_USER_KEY + " = ? AND " +
+                            UserPostEntry.COLUMN_POST_KEY + " = ? AND " +
+                            UserPostEntry.COLUMN_SYNC_FLAG + " = ? ",
+                            new String[]{
+                                    Long.toString(MindlrApplication.User.getId()),
+                                    Long.toString(postCursor.getLong(postCursor.getColumnIndex(PostEntry
+                                            ._ID))),
+                                    UserPostEntry.SYNCED
+                            }
+                    );
+                    postCursor.close();
+                }
+            }
+        }
+    }
+
+    public static void markPostsAsSynced(Context context, Set<ViewPost> posts) {
+        for (ViewPost vp : posts) {
+            Cursor postCursor = context.getContentResolver().query(PostEntry.CONTENT_URI,
+                    new String[]{PostEntry._ID},
+                    PostEntry.COLUMN_SERVER_ID + " = ? ",
+                    new String[]{Long.toString(vp.getId())},
+                    null
+            );
+
+            ContentValues cv = new ContentValues();
+            cv.put(UserPostEntry.COLUMN_SYNC_FLAG, 1);
+            if (postCursor != null && postCursor.moveToFirst()) {
+                context.getContentResolver().update(UserPostEntry.CONTENT_URI,
+                        cv,
+                        UserPostEntry.COLUMN_USER_KEY + " = ? AND " + UserPostEntry.COLUMN_POST_KEY + " = ? ",
+                        new String[]{
+                                Long.toString(MindlrApplication.User.getId()),
+                                Long.toString(postCursor.getLong(postCursor.getColumnIndex(PostEntry._ID)))
+                        }
+                );
+                postCursor.close();
+            }
+        }
+    }
 }
+

@@ -167,6 +167,7 @@ public class MindlrContract {
         public static final int VOTE_LIKED = 1;
         public static final int VOTE_DISLIKED = 0;
         public static final int VOTE_UNDEFINED = -1;
+        public static final String SYNCED = "1";
 
         /* Every record that has been synced (needSync=true) and VoteType == DOWNVOTE will be deleted
          * UPVOTED (and NOT favored!) posts get stored to a limit of 100 and then replaced with newer ones.

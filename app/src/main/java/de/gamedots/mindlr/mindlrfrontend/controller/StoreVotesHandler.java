@@ -1,5 +1,6 @@
 package de.gamedots.mindlr.mindlrfrontend.controller;
 
+import android.content.Context;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -14,6 +15,7 @@ import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.jobs.StoreVotesTask;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
+import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 
 /**
  * Created by Max Wiechmann on 18.08.16.
@@ -21,32 +23,39 @@ import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 public class StoreVotesHandler {
 
     private static final StoreVotesHandler HANDLER = new StoreVotesHandler();
-    private StoreVotesHandler(){}
-    public static StoreVotesHandler getInstance(){  return HANDLER;  }
+
+    private StoreVotesHandler() {
+    }
+
+    public static StoreVotesHandler getInstance() {
+        return HANDLER;
+    }
 
     private final Set<ViewPost> _posts = new HashSet<>();
     private final Set<ViewPost> _postsInSending = new HashSet<>();
 
-    public void addPost(ViewPost post){
+    public void addPost(ViewPost post) {
         _posts.add(post);
         triggerSending();
     }
 
-    public Set<ViewPost> getInSending(){
+    public Set<ViewPost> getInSending() {
         return Collections.unmodifiableSet(_postsInSending);
     }
 
-    public void sendingSuccess(){
+    public void sendingSuccess(Context context) {
+        Utility.markPostsAsSynced(context, _postsInSending);
+        Utility.deleteSyncedAndDownvotedPosts(context, _postsInSending);
         _postsInSending.clear();
     }
 
-    public void sendingFailed(){
+    public void sendingFailed() {
         _posts.addAll(_postsInSending);
         _postsInSending.clear();
     }
 
-    private void triggerSending(){
-        if(_posts.size() > 10){
+    private void triggerSending() {
+        if (_posts.size() > 10) {
             _postsInSending.addAll(_posts);
             _posts.clear();
 
@@ -54,7 +63,7 @@ public class StoreVotesHandler {
             JSONArray upvotes = new JSONArray();
             JSONArray downvotes = new JSONArray();
             for (ViewPost post : _postsInSending) {
-                if(post.getVote() == ViewPost.VOTE_POSITIVE){
+                if (post.getVote() == ViewPost.VOTE_LIKE) {
                     upvotes.put(Long.toString(post.getId()));
                 } else {
                     downvotes.put(Long.toString(post.getId()));
@@ -64,8 +73,9 @@ public class StoreVotesHandler {
                 content.put("upvotes", upvotes);
                 content.put("downvotes", downvotes);
                 Log.d(LOG.POSTS, "Sending votes to server");
-                new StoreVotesTask(MindlrApplication.getInstance().getApplicationContext(), content).execute();
-            } catch (JSONException e){
+                new StoreVotesTask(MindlrApplication.getInstance().getApplicationContext(), content)
+                        .execute();
+            } catch (JSONException e) {
                 Log.e(LOG.JSON, "Could not send votes to server!");
             }
         }

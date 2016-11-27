@@ -8,8 +8,8 @@ package de.gamedots.mindlr.mindlrfrontend.model.post;
  */
 public class ViewPost {
 
-    public static final int VOTE_NEGATIVE = 0;
-    public static final int VOTE_POSITIVE = 1;
+    public static final int VOTE_DISLIKE = 0;
+    public static final int VOTE_LIKE = 1;
 
     //Values from the post itself
     private long id;
@@ -38,11 +38,11 @@ public class ViewPost {
     }
 
     public void ratePositive(){
-        this.vote = VOTE_POSITIVE;
+        this.vote = VOTE_LIKE;
     }
 
     public void rateNegative(){
-        this.vote = VOTE_NEGATIVE;
+        this.vote = VOTE_DISLIKE;
     }
 
 }
