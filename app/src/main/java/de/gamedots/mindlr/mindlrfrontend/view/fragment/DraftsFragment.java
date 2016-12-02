@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.adapter.DraftsAdapter;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserCreatePostEntry;
@@ -71,8 +72,9 @@ public class DraftsFragment extends Fragment implements LoaderManager.LoaderCall
         return new CursorLoader(getActivity(),
                 UserCreatePostEntry.CONTENT_URI,
                 USER_CREATE_POST_COLUMNS,
-                UserCreatePostEntry.COLUMN_IS_DRAFT + " = ? ",
-                new String[]{"1"},
+                UserCreatePostEntry.COLUMN_IS_DRAFT + " = ? AND " +
+                UserCreatePostEntry.COLUMN_USER_KEY + " = ? ",
+                new String[]{"1", Long.toString(MindlrApplication.User.getId())},
                 UserCreatePostEntry.COLUMN_SUBMIT_DATE + " DESC "
         );
     }

@@ -83,8 +83,10 @@ public class DraftsAdapter extends RecyclerView.Adapter<DraftsAdapter.DraftsAdap
                 public void onClick(View v) {
                     _context.getContentResolver().delete(MindlrContract.UserCreatePostEntry.CONTENT_URI,
                             MindlrContract.UserCreatePostEntry._ID + " = ? ",
-                            new String[]{Long.toString(_cursor.getLong(DraftsFragment
-                                    .COLUMN_USER_CREATE_POST_ID))});
+                            new String[]{
+                                    Long.toString(_cursor.getLong(DraftsFragment.COLUMN_USER_CREATE_POST_ID))
+                            }
+                    );
                     dialog.dismiss();
                 }
             });
