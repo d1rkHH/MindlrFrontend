@@ -41,7 +41,7 @@ public abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
     protected Context _context;
     protected String _apiMethod;
     protected String _authProvider;
-    protected String _token;
+    protected JSONObject _authData;
     protected JSONObject _content;
     protected JSONObject _metadata;
 
@@ -53,7 +53,7 @@ public abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
         _content = content;
         _metadata = ServerComUtil.getMetaDataJSON();
         _authHandlerHelper = new AuthHandlerHelper(_context);
-        //_token = "DEFAULT_TOKEN";
+        _authData = new JSONObject();
     }
 
 
@@ -87,9 +87,10 @@ public abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
             if (result.isSuccess()) {
                 GoogleSignInResult gsr = Auth.GoogleSignInApi.silentSignIn(gac).await();
                 if (gsr != null && gsr.isSuccess()) {
-                    _token = gsr.getSignInAccount().getIdToken();
+                    String token = gsr.getSignInAccount().getIdToken();
+                    _authData.put("token", token);
                     Log.d(LOG.AUTH, "doInBackground: GoogleApiClient connected: " + gac.isConnected());
-                    Log.d(LOG.AUTH, "doInBackground: idToken retrieved: " + _token);
+                    Log.d(LOG.AUTH, "doInBackground: idToken retrieved: " + token);
                 } else {
                     Log.d(LOG.AUTH, "doInBackground: FAILURE did not get idToken");
                     signInFailed = true;
@@ -109,7 +110,7 @@ public abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
             requestJSON = new JSONObject();
             requestJSON.put("content", _content);
             requestJSON.put("metadata", _metadata);
-            requestJSON.put("token", _token);
+            requestJSON.put("auth_data", _authData);
             requestJSON.put("auth_provider", _authProvider);
         } catch (JSONException e) {
             e.printStackTrace();

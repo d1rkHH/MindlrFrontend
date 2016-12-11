@@ -12,18 +12,18 @@ public final class Global {
     //public static final PostLoader postLoader = new PostLoader();
 
     //Server Connection
-    public static final String SERVER_URL = "http://mindlr.com/api/";
+    //public static final String SERVER_URL = "http://mindlr.com/api/";
+    public static final String SERVER_URL = "http://192.168.2.102:8000/api/";
     //Methods
-    public static final String BACKEND_METHOD_LOAD_POSTS = "load_posts";
+    public static final String BACKEND_METHOD_LOAD_POSTS = "request_items";
     public static final String BACKEND_METHOD_WRITE_POST = "write_post";
-    public static final String BACKEND_METHOD_SEND_VOTES = "store_votes";
+    public static final String BACKEND_METHOD_SEND_VOTES = "store_feedback";
     public static final String BACKEND_METHOD_DELETE_POST = "delete_post";
     public static final String BACKEND_METHOD_SHOW_PROFILE = "show_profile";
     public static final String BACKEND_METHOD_SIGN_IN = "sign_in";
-    public static final String BACKEND_METHOD_SYNC_USERPOSTS = "sync_userposts";
+    public static final String BACKEND_METHOD_SYNC_USERPOSTS = "sync_user_posts";
     public static final String BACKEND_METHOD_GET_CATEGORIES = "get_categories";
     public static final String BACKEND_METHOD_GET_REPORT_OPTIONS = "get_report_options";
-    public static final String BACKEND_METHOD_REPORT_POSTS = "report_post";
 
     public enum AuthProvider { GOOGLE }
 

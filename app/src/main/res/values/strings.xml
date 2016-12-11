@@ -62,7 +62,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <!-- Auth Provider related strings -->
-    <string name="google_provider">google</string>
+    <string name="google_provider">GOOGLE</string>
+    <string name="twitter_provider">TWITTER</string>
 
     <!-- error messages -->
     <string name="auth_error_network_unavailable">Anmeldung fehlgeschlagen. Netzwerk nicht erreichbar</string>
