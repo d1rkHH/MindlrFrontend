@@ -12,6 +12,7 @@ import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.CategoryEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserPostEntry;
+import de.gamedots.mindlr.mindlrfrontend.model.Category;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 import de.gamedots.mindlr.mindlrfrontend.util.Global;
 
@@ -74,10 +75,10 @@ public class DatabaseIntentService extends IntentService {
     }
 
     private void storeCategories() {
-        ContentValues[] categories = new ContentValues[Global.Categories.CATEGORIES.length];
-        for (int i = 0; i < Global.Categories.CATEGORIES.length; i++) {
+        ContentValues[] categories = new ContentValues[Category.allCategories.size()];
+        for (int i = 0; i < Category.allCategories.size(); i++) {
             ContentValues cv = new ContentValues();
-            cv.put(CategoryEntry.COLUMN_NAME, Global.Categories.CATEGORIES[i]);
+            cv.put(CategoryEntry.COLUMN_NAME, Category.allCategories.get(i).getName());
             categories[i] = cv;
         }
         getContentResolver().bulkInsert(CategoryEntry.CONTENT_URI, categories);
