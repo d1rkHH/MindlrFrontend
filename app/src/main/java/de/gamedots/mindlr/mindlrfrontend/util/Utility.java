@@ -20,6 +20,7 @@ import java.util.Set;
 
 import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.R;
+import de.gamedots.mindlr.mindlrfrontend.auth.ProviderFactory;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.AuthProviderEntry;
@@ -117,7 +118,7 @@ public class Utility {
             // create application user
             long id = cursor.getLong(cursor.getColumnIndex(UserEntry._ID));
             String authProvider = cursor.getString(cursor.getColumnIndex(AuthProviderEntry.COLUMN_NAME));
-            MindlrApplication.User.create(id, authProvider);
+            MindlrApplication.User.create(id, ProviderFactory.getInstance(authProvider, context));
             cursor.close();
 
         }

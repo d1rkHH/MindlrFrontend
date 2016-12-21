@@ -2,45 +2,55 @@ package de.gamedots.mindlr.mindlrfrontend;
 
 
 import android.app.Application;
-import android.util.Log;
 
-import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+
+import de.gamedots.mindlr.mindlrfrontend.auth.IdentityProvider;
+import io.fabric.sdk.android.Fabric;
 
 
 public class MindlrApplication extends Application {
 
     private static MindlrApplication _instance;
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        _instance = this;
-    }
-
     public static MindlrApplication getInstance() {
         return _instance;
     }
 
-    public static class User {
-        // set on application startup
-        private static long _id;
-        private static String _authProvider;
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        _instance = this;
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(
+                getString(R.string.twitter_key),
+                getString(R.string.twitter_secret));
+        Fabric.with(this, new Twitter(authConfig));
+    }
 
-        public static void create(long id, String provider) {
+
+
+    /* Class representing global user */
+    public static class User {
+        /* User id set on application start */
+        private static long _id;
+        /* Global accessible reference to provider in current session */
+        private static IdentityProvider _provider;
+
+        public static void create(long id, IdentityProvider provider) {
             _id = id;
-            _authProvider = provider;
+            _provider = provider;
         }
 
         public static long getId() {
             return _id;
         }
 
-        public static String getAuthProvider() {
-            Log.v(LOG.AUTH, "AUthprovider ++++++++++" + (_authProvider == null));
-            return (_authProvider == null) ?
-                    _instance.getString(R.string.google_provider)
-                    : _authProvider;
+        /* Provider getter and setter */
+        public static void setIdentityProvider(IdentityProvider provider){
+            _provider = provider;
+        }
+        public static IdentityProvider getIdentityProvider(){
+            return _provider;
         }
     }
 }

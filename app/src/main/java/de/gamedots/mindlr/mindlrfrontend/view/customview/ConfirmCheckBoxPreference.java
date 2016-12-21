@@ -1,10 +1,12 @@
-package de.gamedots.mindlr.mindlrfrontend;
+package de.gamedots.mindlr.mindlrfrontend.view.customview;
 
 import android.content.Context;
 import android.content.DialogInterface;
 import android.preference.CheckBoxPreference;
 import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
+
+import de.gamedots.mindlr.mindlrfrontend.R;
 
 /**
  * Created by dirk on 01.11.2016.

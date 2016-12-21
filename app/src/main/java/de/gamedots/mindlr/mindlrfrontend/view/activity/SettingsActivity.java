@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 
@@ -62,9 +63,10 @@ public class SettingsActivity extends AppCompatActivity {
                     Utility.addAuthStateToPreference(getActivity(), false);
                     Utility.deactivateCurrentUser(getActivity());
 
+                    MindlrApplication.User.getIdentityProvider().signOut();
                     // Launch LoginActivity and clear back stack
-                    Intent signoutIntent = new Intent(getActivity(), LoginActivity.class);
-                    signoutIntent.putExtra(LoginActivity.SIGNOUT_EXTRA, true);
+                    Intent signoutIntent = new Intent(getActivity(), TutorialActivity.class);
+                    //signoutIntent.putExtra(LoginActivity.SIGNOUT_EXTRA, true);
                     signoutIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(signoutIntent);
 
