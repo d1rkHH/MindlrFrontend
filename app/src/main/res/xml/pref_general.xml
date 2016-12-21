@@ -8,7 +8,7 @@
             android:summaryOn="@string/pref_notification_true"
             android:title="@string/pref_notification_label"/>
 
-        <de.gamedots.mindlr.mindlrfrontend.ConfirmCheckBoxPreference
+        <de.gamedots.mindlr.mindlrfrontend.view.customview.ConfirmCheckBoxPreference
             android:defaultValue="@string/pref_post_storage_default"
             android:key="@string/pref_post_storage_key"
             android:summaryOff="@string/pref_post_storage_false"

@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.adapter.TutorialPagerAdapter;
+import de.gamedots.mindlr.mindlrfrontend.view.fragment.AuthFragment;
 
 public class TutorialActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
 
@@ -35,7 +36,7 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
         colorsInactive = getResources().getIntArray(R.array.array_dot_inactive);
 
         viewPager = (ViewPager) findViewById(R.id.tutorial_viewpager);
-        TutorialPagerAdapter pagerAdapter = new TutorialPagerAdapter(getSupportFragmentManager());
+        final TutorialPagerAdapter pagerAdapter = new TutorialPagerAdapter(getSupportFragmentManager());
         if (viewPager != null) {
             viewPager.setAdapter(pagerAdapter);
             viewPager.addOnPageChangeListener(this);
@@ -54,7 +55,7 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
         btnSkip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                launchLogin();
+                viewPager.setCurrentItem(TutorialPagerAdapter.FRAGMENT_COUNT - 1);
             }
         });
 
@@ -65,8 +66,6 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
                 // if not at the end move further, otherwise launch login activity
                 if (next < TutorialPagerAdapter.FRAGMENT_COUNT) {
                     viewPager.setCurrentItem(next);
-                } else {
-                    launchLogin();
                 }
             }
         });
@@ -84,11 +83,6 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
         lastActiveDotPos = firstPage;
     }
 
-    private void launchLogin() {
-        startActivity(new Intent(TutorialActivity.this, LoginActivity.class));
-        finish();
-    }
-
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
     }
@@ -102,16 +96,26 @@ public class TutorialActivity extends AppCompatActivity implements ViewPager.OnP
         // changing the next button text 'NEXT' / 'GOT IT'
         if (position == TutorialPagerAdapter.FRAGMENT_COUNT - 1) {
             // last page. make button text to GOT IT
-            btnNext.setText(getString(R.string.start));
+            btnNext.setVisibility(View.GONE);
             btnSkip.setVisibility(View.GONE);
         } else {
             // still pages are left
             btnNext.setText(getString(R.string.next));
+            btnNext.setVisibility(View.VISIBLE);
             btnSkip.setVisibility(View.VISIBLE);
         }
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        AuthFragment fragment = (AuthFragment) getSupportFragmentManager().findFragmentByTag(AuthFragment.TAG);
+        if (fragment != null){
+            fragment.onActivityResult(requestCode,resultCode,data);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

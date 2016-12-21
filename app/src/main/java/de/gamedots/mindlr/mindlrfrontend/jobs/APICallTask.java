@@ -4,16 +4,11 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.gamedots.mindlr.mindlrfrontend.AuthHandlerHelper;
 import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
+import de.gamedots.mindlr.mindlrfrontend.auth.IdpResponse;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.util.ServerComUtil;
 
@@ -45,14 +40,12 @@ public abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
     protected JSONObject _content;
     protected JSONObject _metadata;
 
-    private AuthHandlerHelper _authHandlerHelper;
-    private boolean signInFailed = false;
+    protected IdpResponse _idpResponse;
 
     public APICallTask(Context context, JSONObject content) {
         _context = context;
         _content = content;
         _metadata = ServerComUtil.getMetaDataJSON();
-        _authHandlerHelper = new AuthHandlerHelper(_context);
         _authData = new JSONObject();
     }
 
@@ -70,48 +63,25 @@ public abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
     }
 
     @Override
-    protected void onPreExecute() {
-        if(_authProvider == null){
-            _authProvider = MindlrApplication.User.getAuthProvider();
-        }
-    }
-
-    @Override
     protected JSONObject doInBackground(Void... params) {
         Log.v(LOG.AUTH, "inside APICALL: provider " + _authProvider);
 
-        // connect GoogleApiClient and retrieve idToken
-        GoogleApiClient gac = _authHandlerHelper.getGoogleApiClient();
-        try {
-            ConnectionResult result = gac.blockingConnect();
-            if (result.isSuccess()) {
-                GoogleSignInResult gsr = Auth.GoogleSignInApi.silentSignIn(gac).await();
-                if (gsr != null && gsr.isSuccess()) {
-                    String token = gsr.getSignInAccount().getIdToken();
-                    _authData.put("token", token);
-                    Log.d(LOG.AUTH, "doInBackground: GoogleApiClient connected: " + gac.isConnected());
-                    Log.d(LOG.AUTH, "doInBackground: idToken retrieved: " + token);
-                } else {
-                    Log.d(LOG.AUTH, "doInBackground: FAILURE did not get idToken");
-                    signInFailed = true;
-                    return null; // break execution
-                }
-            }
-        } catch (Exception ex) {
-            Log.d(LOG.AUTH, "doInBackground: ERROR idToken retrieve");
-            signInFailed = true;
-            return null; // break execution
-        } finally {
-            gac.disconnect();
+        IdpResponse idpResponse = MindlrApplication.User.getIdentityProvider().refreshToken();
+        // failed to refresh auth credentials,
+        // so no sense in trying backend authentication
+        if(idpResponse == null){
+            return null;
         }
-        //_authProvider = "google";
+
+        Log.v(LOG.AUTH, "got response");
+
         JSONObject requestJSON = new JSONObject();
         try {
             requestJSON = new JSONObject();
             requestJSON.put("content", _content);
             requestJSON.put("metadata", _metadata);
-            requestJSON.put("auth_data", _authData);
-            requestJSON.put("auth_provider", _authProvider);
+            requestJSON.put("auth_data", idpResponse.toAuthDataJson());
+            requestJSON.put("auth_provider", idpResponse.getProviderType());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -134,11 +104,6 @@ public abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
      * Created by Max Wiechmann on 09.11.2015.
      */
     protected void onPostExecute(JSONObject result) {
-        if (signInFailed) {
-            //_context.startActivity(new Intent(_context, LoginActivity.class));
-            return;
-        }
-
         if (result != null) {
             try {
                 boolean success = result.getBoolean("SUCCESS");
@@ -169,7 +134,7 @@ public abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
                 Log.e(LOG.JSON, Log.getStackTraceString(e));
             }
         } else {
-            Log.d(LOG.JSON, "JSONObject was null");
+            Log.d(LOG.JSON, "JSONObject was null here");
         }
     }
 

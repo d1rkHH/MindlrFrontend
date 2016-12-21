@@ -69,9 +69,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.gamedots.mindlr.mindlrfrontend.view.activity.MainActivity"/>
         </activity>
-        <activity
-            android:name=".view.activity.LoginActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"/>
+        <activity android:name=".view.activity.TutorialActivity"
+                  android:theme="@style/TutorialTheme">
+        </activity>
 
         <provider
             android:name=".data.MindlrProvider"
@@ -84,9 +84,9 @@
             android:exported="false">
         </service>
 
-        <activity android:name=".view.activity.TutorialActivity"
-            android:theme="@style/TutorialTheme">
-        </activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="071d87e6fc1a50ab0c0ae7555c2bdd2c04208430" />
     </application>
 
 </manifest>

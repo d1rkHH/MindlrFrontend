@@ -6,6 +6,7 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.gamedots.mindlr.mindlrfrontend.auth.IdpResponse;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.util.Global;
 
@@ -13,26 +14,27 @@ import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.toast;
 
 public class SignInTask extends APICallTask {
 
-    public interface OnSignInProcessSuccessListener {
-        void onSignInProcessSuccess();
+    public interface AuthRequestCallback {
+        void onSendingSuccess(IdpResponse idpResponse);
     }
 
-    private OnSignInProcessSuccessListener _callback;
+    private AuthRequestCallback _callback;
 
-    public SignInTask(Context context, JSONObject content, String provider, OnSignInProcessSuccessListener
-            callback) {
+    public SignInTask(Context context, JSONObject content, String provider, AuthRequestCallback
+            callback, IdpResponse idpResponse) {
         super(context, content);
         _apiMethod = Global.BACKEND_METHOD_SIGN_IN;
         _authProvider = provider;
         _callback = callback;
+        _idpResponse = idpResponse;
     }
 
     @Override
     public void onSuccess(JSONObject result) {
-        Log.d(LOG.VERIFIED, "successful verified the user on backend");
+        Log.d(LOG.AUTH, "successful verified the user on backend");
         toast(_context, "Verified User");
         if (_callback != null) {
-            _callback.onSignInProcessSuccess();
+            _callback.onSendingSuccess(_idpResponse);
         }
     }
 

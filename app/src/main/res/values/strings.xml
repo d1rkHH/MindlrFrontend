@@ -1,6 +1,8 @@
 <resources  xmlns:xliff="http://schemas.android.com/apk/res-auto">
     <string name="app_name">Mindlr</string>
     <string name="server_client_id">319486160725-gksup5cr2bgric18al3q6h47h3p23dia.apps.googleusercontent.com</string>
+    <string name="twitter_key">8dn7CD8mwmIqdKPRnuWiLZKaH</string>
+    <string name="twitter_secret">AljLkSKcPFSC8vTV1OqeZeUoWsX7fm0i0bmdeUpCGcmrLdlBxO</string>
 
     <!-- Activity labels -->
     <string name="title_activity_main">MainActivity</string>

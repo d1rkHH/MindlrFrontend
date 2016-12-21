@@ -36,7 +36,7 @@ public class SplashActivity extends AppCompatActivity {
                 finishAndRedirect(MainActivity.class);
             } else {
                 // no user signedIn earlier, so launch LoginActivity and try to authenticate him
-                finishAndRedirect(LoginActivity.class);
+                finishAndRedirect(TutorialActivity.class);
             }
         }
     }
