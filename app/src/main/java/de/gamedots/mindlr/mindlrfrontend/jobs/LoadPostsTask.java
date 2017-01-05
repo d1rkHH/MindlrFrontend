@@ -26,7 +26,7 @@ public class LoadPostsTask extends APICallTask {
     private Context _context;
 
     public LoadPostsTask(Context context, JSONObject content) {
-        super(context, content);
+        super(context, content, true);
         _context = context;
         _apiMethod = Global.BACKEND_METHOD_LOAD_POSTS;
     }

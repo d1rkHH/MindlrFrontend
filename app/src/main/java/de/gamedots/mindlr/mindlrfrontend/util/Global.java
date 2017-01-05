@@ -11,7 +11,7 @@ public final class Global {
 
     //Server Connection
     public static final String SERVER_URL = "http://mindlr.com/api/";
-    //public static final String SERVER_URL = "http://192.168.2.102:8000/api/";
+    //public static final String SERVER_URL = "http://192.168.2.160:8000/api/";
 
     //Methods
     public static final String BACKEND_METHOD_LOAD_POSTS = "request_items";

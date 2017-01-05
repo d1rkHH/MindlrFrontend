@@ -26,7 +26,7 @@ public class GetCategoriesTask extends APICallTask{
     private Context _context;
 
     public GetCategoriesTask(Context context, JSONObject content) {
-        super(context, content);
+        super(context, content, false);
         _context = context;
         _apiMethod = Global.BACKEND_METHOD_GET_CATEGORIES;
     }
@@ -39,8 +39,8 @@ public class GetCategoriesTask extends APICallTask{
                 JSONArray categories = result.getJSONArray("categories");
                 for (int i = 0; i < categories.length(); i++) {
                     JSONObject category = categories.getJSONObject(i);
-                    if (category.has("id") && category.has("name")) {
-                        Category cat = new Category(category.getInt("id"), category.getString("name"));
+                    if (category.has("name")) {
+                        Category cat = new Category(category.getString("name"));
                         Category.allCategories.add(cat);
                     } else {
                         Log.e(LOG.JSON, "Post JSON invalid");

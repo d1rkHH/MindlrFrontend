@@ -15,7 +15,7 @@ import de.gamedots.mindlr.mindlrfrontend.util.Global;
 public class StoreVotesTask extends APICallTask {
 
     public StoreVotesTask(Context context, JSONObject content){
-        super(context, content);
+        super(context, content, true);
         _apiMethod = Global.BACKEND_METHOD_SEND_VOTES;
     }
 

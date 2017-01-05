@@ -22,7 +22,7 @@ public class SignInTask extends APICallTask {
 
     public SignInTask(Context context, JSONObject content, String provider, AuthRequestCallback
             callback, IdpResponse idpResponse) {
-        super(context, content);
+        super(context, content, true);
         _apiMethod = Global.BACKEND_METHOD_SIGN_IN;
         _authProvider = provider;
         _callback = callback;

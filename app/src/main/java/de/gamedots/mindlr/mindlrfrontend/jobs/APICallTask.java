@@ -31,18 +31,19 @@ import static de.gamedots.mindlr.mindlrfrontend.util.Global.SERVER_URL;
  * }
  * }
  */
-public abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
+abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
 
-    protected Context _context;
-    protected String _apiMethod;
-    protected String _authProvider;
-    protected JSONObject _authData;
-    protected JSONObject _content;
-    protected JSONObject _metadata;
+    Context _context;
+    String _apiMethod;
+    String _authProvider;
+    JSONObject _authData;
+    JSONObject _content;
+    JSONObject _metadata;
+    boolean _authenticated;
+    IdpResponse _idpResponse;
 
-    protected IdpResponse _idpResponse;
-
-    public APICallTask(Context context, JSONObject content) {
+    APICallTask(Context context, JSONObject content, boolean authenticated) {
+        _authenticated = authenticated;
         _context = context;
         _content = content;
         _metadata = ServerComUtil.getMetaDataJSON();
@@ -65,23 +66,28 @@ public abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
     @Override
     protected JSONObject doInBackground(Void... params) {
         Log.v(LOG.AUTH, "inside APICALL: provider " + _authProvider);
+        JSONObject requestJSON = new JSONObject();
 
-        IdpResponse idpResponse = MindlrApplication.User.getIdentityProvider().refreshToken();
-        // failed to refresh auth credentials,
-        // so no sense in trying backend authentication
-        if(idpResponse == null){
-            return null;
+        if(_authenticated) {
+            IdpResponse idpResponse = MindlrApplication.User.getIdentityProvider().refreshToken();
+            // failed to refresh auth credentials,
+            // so no sense in trying backend authentication
+            if (idpResponse == null) {
+                return null;
+            }
+            Log.v(LOG.AUTH, "got response");
+            try {
+                requestJSON.put("auth_data", idpResponse.toAuthDataJson());
+                requestJSON.put("auth_provider", idpResponse.getProviderType());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
-        Log.v(LOG.AUTH, "got response");
-
-        JSONObject requestJSON = new JSONObject();
         try {
             requestJSON = new JSONObject();
             requestJSON.put("content", _content);
             requestJSON.put("metadata", _metadata);
-            requestJSON.put("auth_data", idpResponse.toAuthDataJson());
-            requestJSON.put("auth_provider", idpResponse.getProviderType());
         } catch (JSONException e) {
             e.printStackTrace();
         }

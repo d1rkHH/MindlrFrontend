@@ -23,7 +23,7 @@ public class WritePostTask extends APICallTask {
     private Uri _draftUri;
 
     public WritePostTask(Context context, JSONObject content, Uri uri) {
-        super(context, content);
+        super(context, content, true);
         _apiMethod = Global.BACKEND_METHOD_WRITE_POST;
         _draftUri = uri;
     }

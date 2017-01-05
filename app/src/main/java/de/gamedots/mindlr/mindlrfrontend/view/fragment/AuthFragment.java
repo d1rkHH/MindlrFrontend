@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.auth.IdentityProvider;
@@ -63,9 +65,7 @@ public class AuthFragment extends Fragment implements IdentityProvider.IdpCallba
             MindlrApplication.User.setIdentityProvider(_idpProvider);
 
             // send auth credentials to server for verification
-            // TODO: fix backend json always null
-            //new SignInTask(getActivity(),
-              //      new JSONObject(), idpResponse.getProviderType(), null, idpResponse).execute();
+            new SignInTask(getActivity(), new JSONObject(), idpResponse.getProviderType(), null, idpResponse).execute();
             onSendingSuccess(idpResponse);
         } else {
             DebugUtil.toast(getActivity(), getString(R.string.auth_error_network_unavailable));

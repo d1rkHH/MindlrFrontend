@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import de.gamedots.mindlr.mindlrfrontend.data.DatabaseIntentService;
+import de.gamedots.mindlr.mindlrfrontend.jobs.GetCategoriesTask;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 
@@ -22,6 +23,8 @@ public class SplashActivity extends AppCompatActivity {
 
         boolean authenticated = Utility.getAuthStateFromPreference(this);
         Log.v(LOG.AUTH, "user is authenticated " + authenticated);
+
+        new GetCategoriesTask(this, null).execute();
 
         if (firstStart) {
             // fill categories
