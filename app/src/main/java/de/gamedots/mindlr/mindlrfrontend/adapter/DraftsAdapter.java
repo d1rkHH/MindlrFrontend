@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.DraftEntry;
 import de.gamedots.mindlr.mindlrfrontend.view.activity.WritePostActivity;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.DraftsFragment;
 
@@ -56,8 +57,8 @@ public class DraftsAdapter extends RecyclerView.Adapter<DraftsAdapter.DraftsAdap
             Intent intent = new Intent(_context, WritePostActivity.class);
 
             // build uri with id and launch writepost activity
-            long id = _cursor.getLong(DraftsFragment.COLUMN_USER_CREATE_POST_ID);
-            Uri uri = MindlrContract.UserCreatePostEntry.buildUserCreatePostUri(id);
+            long id = _cursor.getLong(DraftsFragment.COLUMN_DRAFT_ID);
+            Uri uri = DraftEntry.buildDraftUri(id);
             intent.putExtra(WritePostActivity.DRAFT_EXTRA, uri);
             _context.startActivity(intent);
         }
@@ -81,11 +82,9 @@ public class DraftsAdapter extends RecyclerView.Adapter<DraftsAdapter.DraftsAdap
             delete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    _context.getContentResolver().delete(MindlrContract.UserCreatePostEntry.CONTENT_URI,
-                            MindlrContract.UserCreatePostEntry._ID + " = ? ",
-                            new String[]{
-                                    Long.toString(_cursor.getLong(DraftsFragment.COLUMN_USER_CREATE_POST_ID))
-                            }
+                    _context.getContentResolver().delete(DraftEntry.CONTENT_URI,
+                            MindlrContract.DraftEntry._ID + " = ? ",
+                            new String[]{Long.toString(_cursor.getLong(DraftsFragment.COLUMN_DRAFT_ID))}
                     );
                     dialog.dismiss();
                 }
@@ -120,6 +119,7 @@ public class DraftsAdapter extends RecyclerView.Adapter<DraftsAdapter.DraftsAdap
             //Bitmap bitmap = MediaStore.Images.Media.getBitmap(_context.getContentResolver(), Uri.parse
             //      (_cursor.getString(DraftsFragment.COLUMN_CONTENT_URI)));
             //viewHolder.postContentImage.setImageBitmap(bitmap);
+            // TODO: handle video(thumpnail or plain uri)/image loading
             Glide.with(_context)
                     .loadFromMediaStore(Uri.parse(_cursor.getString(DraftsFragment.COLUMN_CONTENT_URI)))
                     .asBitmap()
@@ -143,7 +143,7 @@ public class DraftsAdapter extends RecyclerView.Adapter<DraftsAdapter.DraftsAdap
     @Override
     public long getItemId(int position) {
         if (_cursor != null && _cursor.moveToPosition(position)) {
-            return _cursor.getLong(DraftsFragment.COLUMN_USER_CREATE_POST_ID);
+            return _cursor.getLong(DraftsFragment.COLUMN_DRAFT_ID);
         }
         return 0;
     }

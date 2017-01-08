@@ -1,6 +1,5 @@
 package de.gamedots.mindlr.mindlrfrontend.controller;
 
-import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -10,6 +9,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.jobs.LoadPostsTask;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
@@ -24,7 +24,6 @@ public class PostLoader {
 
     private static final PostLoader LOADER = new PostLoader();
     private LinkedList<ViewPost> _postList = new LinkedList<>();
-    private Context _context;
     private PostLoader() {
     }
 
@@ -48,15 +47,17 @@ public class PostLoader {
         return !_postList.isEmpty();
     }
 
-    public void initialize(Context context, PostViewFragment fragment) {
-        _context = context.getApplicationContext();
+    public void initialize(PostViewFragment fragment) {
 
-        int postsLoaded = Utility.loadUnvotedPostsOrNothing(_context);
-        Toast.makeText(_context, "Loaded posts: " + postsLoaded, Toast.LENGTH_SHORT).show();
+        int postsLoaded = Utility.loadUnvotedPostsOrNothing(MindlrApplication.getInstance());
+        Toast.makeText(MindlrApplication.getInstance(), "Loaded posts: " + postsLoaded, Toast.LENGTH_SHORT)
+                .show();
         // loaded unvoted posts size below threshold so try to load more
         if(postsLoaded < MIN_SIZE_THRESHOLD){
             Log.d(LOG.AUTH, "Load posts from the server for the first time");
-            new LoadPostsTask(_context, new JSONObject()).setFragment(fragment).execute();
+            new LoadPostsTask(MindlrApplication.getInstance(), new JSONObject())
+                    .setFragment(fragment)
+                    .execute();
         }
     }
 
@@ -81,7 +82,7 @@ public class PostLoader {
 
     private void loadNewPosts() {
         Log.d(LOG.AUTH, "Load new Posts from Server");
-        new LoadPostsTask(_context, new JSONObject()).execute();
+        new LoadPostsTask(MindlrApplication.getInstance(), new JSONObject()).execute();
     }
 
     public List<ViewPost> getPostList() {

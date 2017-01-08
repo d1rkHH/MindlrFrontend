@@ -23,6 +23,10 @@ public class MindlrContract {
     public static final String PATH_USER_CREATE_POST = "user_created_posts";
     public static final String PATH_USER_CATEGORY = "user_category";
 
+    public static final String PATH_ITEM = "item";
+    public static final String PATH_ITEM_CATEGORY = "item_category";
+    public static final String PATH_DRAFT = "draft";
+
 
     public static final class UserEntry implements BaseColumns {
 
@@ -81,11 +85,8 @@ public class MindlrContract {
         // Server id to identify post on the remote server stored as long
         public static final String COLUMN_SERVER_ID = "server_id";
 
-        // Uri describing any additional resource (e.g. Image ) for that post
-        public static final String COLUMN_CONTENT_URI = "content_uri";
-
-        // Content text of a post
-        public static final String COLUMN_CONTENT_TEXT = "content_text";
+        // Foreign Key to Item table
+        public static final String COLUMN_ITEM_KEY = "item_id";
 
         public static Uri buildPostUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
@@ -110,6 +111,9 @@ public class MindlrContract {
         // Unique name of the specific category used for a post. The corresponding
         // string resource will be selected by that name.
         public static final String COLUMN_NAME = "name";
+
+        // String representing the readable format for the category
+        public static final String COLUMN_DISPLAY_NAME = "display_name";
 
         public static Uri buildCategoryUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
@@ -209,26 +213,19 @@ public class MindlrContract {
         // Table name
         public static final String TABLE_NAME = "user_created_post";
 
-        // Foreign Key to user table
+        // Foreign Key to user table representing the creator of the post
         public static final String COLUMN_USER_KEY = "user_id";
 
-        // Uri describing any additional resource (e.g. Image ) for that post
-        public static final String COLUMN_CONTENT_URI = "content_uri";
+        // Foreign Key Item table, the item can also be used to get all categories for that post
+        // using ItemCategory table
+        public static final String COLUMN_ITEM_KEY = "item_id";
 
-        // Content text of a user created post. This information is stored instead a
-        // foreign key to a post because the user can create a draft without
-        // having the post synced and that would result into a empty Post.SERVER_ID
-        public static final String COLUMN_CONTENT_TEXT = "content_text";
-
-        // The user given category during post creation
-        public static final String COLUMN_CATEGORY_KEY = "category_id";
+        // Server id to identify created post on the remote server; stored as long
+        public static final String COLUMN_SERVER_ID = "server_id";
 
         // Date the post was created. It will be first created locally and than
         // updated when successfully synced with server
         public static final String COLUMN_SUBMIT_DATE = "submit_date";
-
-        // Set to true when the WritePostTask fails or the user wants to store a draft, default is false (0)
-        public static final String COLUMN_IS_DRAFT = "is_draft";
 
         // Number of total upvotes for this created post
         public static final String COLUMN_UPVOTES = "upvotes";
@@ -240,7 +237,7 @@ public class MindlrContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
-        public static String getIdPathFromUri(Uri uri){
+        public static String getIdPathFromUri(Uri uri) {
             return uri.getPathSegments().get(1);
         }
     }
@@ -268,6 +265,93 @@ public class MindlrContract {
 
         public static Uri buildUserCategoryUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+    }
+
+    public static final class ItemEntry implements BaseColumns {
+        // Main Uri to access Item entries
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_ITEM).build();
+
+        // Cursor types used to describe the return type of single item or multiple items
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_ITEM;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_ITEM;
+
+        public static final String TABLE_NAME = "items";
+
+        // Uri describing any additional resource (e.g. Image ) for that post
+        public static final String COLUMN_CONTENT_URI = "content_uri";
+
+        // Content text of a post
+        public static final String COLUMN_CONTENT_TEXT = "content_text";
+
+        public static Uri buildItemUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static String getIdPathFromUri(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+
+        public static long getLongIdFromUri(Uri uri) {
+            return Long.parseLong(uri.getPathSegments().get(1));
+        }
+    }
+
+    public static final class ItemCategoryEntry implements BaseColumns {
+        // Main Uri to access ItemCategory entries
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_ITEM_CATEGORY).build();
+
+        // Cursor types used to describe the return type of single item or multiple items
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_ITEM_CATEGORY;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_ITEM_CATEGORY;
+
+        public static final String TABLE_NAME = "item_category";
+
+        // Foreign Key to Item table
+        public static final String COLUMN_ITEM_KEY = "item_id";
+
+        // Foreign Key to Category table
+        public static final String COLUMN_CATEGORY_KEY = "category_id";
+
+        public static Uri buildItemCategoryUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+    }
+
+    public static final class DraftEntry implements BaseColumns {
+        // Main Uri to access Draft entries
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_DRAFT).build();
+
+        // Cursor types used to describe the return type of single item or multiple items
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_DRAFT;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_DRAFT;
+
+        public static final String TABLE_NAME = "drafts";
+
+        // Foreign Key to Item table
+        public static final String COLUMN_ITEM_KEY = "item_id";
+
+        // ForeignKey to User table
+        public static final String COLUMN_USER_KEY = "user_id";
+
+        // Date the draft was created. On sync a new post will be created with server submit date
+        public static final String COLUMN_SUBMIT_DATE = "submit_date";
+
+        public static Uri buildDraftUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static String getIdPathFromUri(Uri uri){
+            return uri.getPathSegments().get(1);
         }
     }
 }

@@ -14,13 +14,15 @@ public class ViewPost {
     //Values from the post itself
     private long id;
     private String contentText;
+    private String content_uri;
 
     //Values the reader generated
     int vote;
 
-    public ViewPost(long id, String contentText){
+    public ViewPost(long id, String contentText, String contentUri){
         this.id = id;
         this.contentText = contentText;
+        this.content_uri = contentUri;
         this.vote = -1;
 
     }
@@ -31,6 +33,10 @@ public class ViewPost {
 
     public long getId() {
         return id;
+    }
+
+    public String getContentUri(){
+        return content_uri;
     }
 
     public String getContentText() {

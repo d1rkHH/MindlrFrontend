@@ -18,22 +18,27 @@
         android:textColor="@color/white"
         android:textSize="28sp"/>
 
-    <com.anton46.collectionitempicker.CollectionPicker
-        android:id="@+id/collection_item_picker"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        app:cp_addIcon="@drawable/ic_add_24dp"
-        app:cp_cancelIcon="@drawable/ic_check_24dp"
-        app:cp_itemBackgroundNormal="@color/primary_dark"
-        app:cp_itemBackgroundPressed="#FE7852"
-        app:cp_itemMargin="10dp"
-        app:cp_simplified="false"
-        app:cp_textPaddingBottom="10dp"
-        app:cp_textPaddingLeft="10dp"
-        app:cp_textPaddingRight="10dp"
-        app:cp_textPaddingTop="10dp"
-        app:theme="@style/CollectionPickerTheme"/>
+        android:layout_weight="1">
+
+        <com.anton46.collectionitempicker.CollectionPicker
+            android:id="@+id/collection_item_picker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cp_addIcon="@drawable/ic_add_24dp"
+            app:cp_cancelIcon="@drawable/ic_check_24dp"
+            app:cp_itemBackgroundNormal="@color/primary_dark"
+            app:cp_itemBackgroundPressed="#FE7852"
+            app:cp_itemMargin="10dp"
+            app:cp_simplified="false"
+            app:cp_textPaddingBottom="10dp"
+            app:cp_textPaddingLeft="10dp"
+            app:cp_textPaddingRight="10dp"
+            app:cp_textPaddingTop="10dp"
+            app:theme="@style/CollectionPickerTheme"/>
+    </ScrollView>
 
     <LinearLayout
         android:id="@+id/auth_button_container"
@@ -41,6 +46,7 @@
         android:layout_height="0dp"
         android:orientation="vertical"
         android:paddingTop="16dp"
+        android:visibility="invisible"
         android:gravity="center_horizontal"
         android:layout_weight="1">
 

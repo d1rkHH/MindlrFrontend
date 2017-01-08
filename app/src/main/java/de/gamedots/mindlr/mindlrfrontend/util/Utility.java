@@ -11,6 +11,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,7 +25,12 @@ import de.gamedots.mindlr.mindlrfrontend.auth.ProviderFactory;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.AuthProviderEntry;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.CategoryEntry;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.DraftEntry;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemCategoryEntry;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.PostEntry;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserCreatePostEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserPostEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrDBHelper;
@@ -175,15 +181,20 @@ public class Utility {
                 " ON " + PostEntry.TABLE_NAME +
                 "." + PostEntry._ID +
                 " = " + UserPostEntry.TABLE_NAME +
-                "." + UserPostEntry.COLUMN_POST_KEY;
+                "." + UserPostEntry.COLUMN_POST_KEY + " INNER JOIN " +
+                ItemEntry.TABLE_NAME +
+                " ON " + PostEntry.TABLE_NAME +
+                "." + PostEntry.COLUMN_ITEM_KEY +
+                " = " + ItemEntry.TABLE_NAME +
+                "." + ItemEntry._ID;
 
         queryBuilder.setTables(innerJoin);
         MindlrDBHelper dbHelper = new MindlrDBHelper(context);
         Cursor cursor = queryBuilder.query(dbHelper.getReadableDatabase(),
                 new String[]{
                         PostEntry.COLUMN_SERVER_ID,
-                        PostEntry.COLUMN_CONTENT_TEXT,
-                        PostEntry.COLUMN_CONTENT_URI
+                        ItemEntry.COLUMN_CONTENT_TEXT,
+                        ItemEntry.COLUMN_CONTENT_URI
                 },
                 UserPostEntry.COLUMN_VOTE + " = ? AND " + UserPostEntry.COLUMN_USER_KEY + " = ?",
                 new String[]{Integer.toString(UserPostEntry.VOTE_UNDEFINED), Long.toString
@@ -195,12 +206,15 @@ public class Utility {
         final int server_id_index = 0;
         final int text_index = 1;
         final int uri_index = 2;
-        Toast.makeText(context, "Cursor count: " + cursor.getCount(), Toast.LENGTH_SHORT).show();
         List<ViewPost> toInsertPosts = new LinkedList<>();
         if (cursor != null && cursor.moveToFirst()) {
+            Toast.makeText(context, "Cursor count: " + cursor.getCount(), Toast.LENGTH_SHORT).show();
             postLoaded = cursor.getCount();
             do {
-                ViewPost vp = new ViewPost(cursor.getLong(server_id_index), cursor.getString(text_index));
+                ViewPost vp = new ViewPost(
+                        cursor.getLong(server_id_index),
+                        cursor.getString(text_index),
+                        cursor.getString(uri_index));
                 toInsertPosts.add(vp);
             } while (cursor.moveToNext());
             cursor.close();
@@ -232,20 +246,79 @@ public class Utility {
         }
     }
 
-    public static void buildUserCreatePostValuesFromJSON(ContentValues cv, boolean isDraft, JSONObject
-            content)
+    public static void storeUserCreatePostFromJSON(Uri draftUri, boolean isDraft, JSONObject content, Context
+            context)
             throws JSONException {
-        cv.put(MindlrContract.UserCreatePostEntry.COLUMN_USER_KEY, MindlrApplication.User.getId());
-        cv.put(MindlrContract.UserCreatePostEntry.COLUMN_CONTENT_TEXT, content.getString(WritePostActivity
-                .JSON_CONTENT_TEXT_KEY));
-        cv.put(MindlrContract.UserCreatePostEntry.COLUMN_CONTENT_URI, content.getString(WritePostActivity
-                .JSON_CONTENT_URI_KEY));
-        cv.put(MindlrContract.UserCreatePostEntry.COLUMN_SUBMIT_DATE, System.currentTimeMillis());
-        if (isDraft) {
-            cv.put(MindlrContract.UserCreatePostEntry.COLUMN_IS_DRAFT, 1);
+
+        // 1. create and insert item
+        ContentValues cv = new ContentValues();
+        cv.put(ItemEntry.COLUMN_CONTENT_URI, content.getString(WritePostActivity.JSON_CONTENT_URI_KEY));
+        cv.put(ItemEntry.COLUMN_CONTENT_TEXT, content.getString(WritePostActivity.JSON_CONTENT_TEXT_KEY));
+        long itemId = -1;
+        if (!isDraft) {
+            // no items exist so insert it
+            itemId = ItemEntry.getLongIdFromUri(context.getContentResolver().insert(ItemEntry
+                    .CONTENT_URI, cv));
+        } else {
+            // loaded from drafts and synced so update item information
+            Cursor draftCursor = context.getContentResolver()
+                    .query(DraftEntry.CONTENT_URI,
+                            new String[]{DraftEntry._ID, DraftEntry.COLUMN_ITEM_KEY},
+                            DraftEntry._ID + " = ? ",
+                            new String[]{DraftEntry.getIdPathFromUri(draftUri)},
+                            null
+                    );
+            if (draftCursor != null && draftCursor.moveToFirst()) {
+                itemId = draftCursor.getLong(draftCursor.getColumnIndex(DraftEntry.COLUMN_ITEM_KEY));
+                context.getContentResolver()
+                        .update(ItemEntry.CONTENT_URI, cv,
+                                ItemEntry._ID + " ? ",
+                                new String[]{String.valueOf(itemId)}
+                        );
+
+                // delete draft
+                context.getContentResolver()
+                        .delete(DraftEntry.CONTENT_URI,
+                                DraftEntry._ID + " ? ",
+                                new String[]{String.valueOf(
+                                        draftCursor.getLong(draftCursor.getColumnIndex(DraftEntry._ID)))});
+
+                draftCursor.close();
+            }
         }
-        cv.put(MindlrContract.UserCreatePostEntry.COLUMN_CATEGORY_KEY, content.getJSONArray(WritePostActivity
-                .JSONARR_CONTENT_CATEGORIES_KEY).getLong(0));
+
+        // 2. insert createdpostentry
+        if (itemId > 0) {
+            if (!isDraft) {
+                JSONArray categories = content.getJSONArray(WritePostActivity.JSONARR_CONTENT_CATEGORIES_KEY);
+                for (int i = 0; i < categories.length(); ++i) {
+                    // TODO: item x category with ID, NAME ?
+                    String cat_name = categories.get(i).toString();
+                    Cursor categoryCursor = context.getContentResolver().query(CategoryEntry.CONTENT_URI,
+                            null, CategoryEntry.COLUMN_NAME + " = ? ",
+                            new String[]{cat_name}, null);
+                    if (categoryCursor != null && categoryCursor.moveToFirst()) {
+                        cv = new ContentValues();
+                        cv.put(ItemCategoryEntry.COLUMN_ITEM_KEY, itemId);
+                        cv.put(ItemCategoryEntry.COLUMN_CATEGORY_KEY, categoryCursor.getLong(categoryCursor
+                                .getColumnIndex(CategoryEntry._ID)));
+                        context.getContentResolver().insert(ItemCategoryEntry.CONTENT_URI, cv);
+                        categoryCursor.close();
+                    }
+                }
+            }
+
+            // 3. insert usercreatepost
+            cv = new ContentValues();
+            cv.put(UserCreatePostEntry.COLUMN_USER_KEY, MindlrApplication.User.getId());
+            cv.put(UserCreatePostEntry.COLUMN_ITEM_KEY, itemId);
+            cv.put(UserCreatePostEntry.COLUMN_SERVER_ID, content.getLong(WritePostActivity
+                    .JSON_CONTENT_SERVER_ID_KEY));
+            // TODO: server date as long or get long from string format
+            cv.put(UserCreatePostEntry.COLUMN_SUBMIT_DATE, content.getLong(WritePostActivity
+                    .JSON_CONTENT_SUBMIT_DATE));
+            context.getContentResolver().insert(UserCreatePostEntry.CONTENT_URI, cv);
+        }
     }
 
     public static void deleteSyncedAndDownvotedPosts(Context context, Set<ViewPost> posts) {
@@ -262,8 +335,8 @@ public class Utility {
                 if (postCursor != null && postCursor.moveToFirst()) {
                     context.getContentResolver().delete(UserPostEntry.CONTENT_URI,
                             UserPostEntry.COLUMN_USER_KEY + " = ? AND " +
-                            UserPostEntry.COLUMN_POST_KEY + " = ? AND " +
-                            UserPostEntry.COLUMN_SYNC_FLAG + " = ? ",
+                                    UserPostEntry.COLUMN_POST_KEY + " = ? AND " +
+                                    UserPostEntry.COLUMN_SYNC_FLAG + " = ? ",
                             new String[]{
                                     Long.toString(MindlrApplication.User.getId()),
                                     Long.toString(postCursor.getLong(postCursor.getColumnIndex(PostEntry

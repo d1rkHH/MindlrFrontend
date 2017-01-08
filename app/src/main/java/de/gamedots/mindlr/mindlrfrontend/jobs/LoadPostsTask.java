@@ -43,8 +43,12 @@ public class LoadPostsTask extends APICallTask {
                 JSONArray posts = result.getJSONArray("posts");
                 for (int i = 0; i < posts.length(); i++) {
                     JSONObject post = posts.getJSONObject(i);
-                    if (post.has("id") && post.has("content_text")) {
-                        ViewPost viewPost = new ViewPost(post.getInt("id"), post.getString("content_text"));
+                    if (post.has("id") && post.has("content_text") && post.has("content_url")) {
+                        ViewPost viewPost = new ViewPost(
+                                post.getInt("id"),
+                                post.getString("content_text"),
+                                post.getString("content_url")
+                        );
                         PostLoader.getInstance().addPost(viewPost);
                         if (_fragment != null && _fragment.getPostView() != null && PostLoader.getInstance
                                 ().getPostList().size() == 1) {

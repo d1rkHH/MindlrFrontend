@@ -105,7 +105,7 @@ public class TutorialFragment extends Fragment {
                     }
 
                     view.findViewById(R.id.auth_button_container).setVisibility(
-                            (selectedCategories.size() <= MIN_SELECT_CATEGORIES) ?
+                            (selectedCategories.size() >= MIN_SELECT_CATEGORIES) ?
                                     View.VISIBLE
                                     : View.INVISIBLE);
                 }

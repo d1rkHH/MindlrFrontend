@@ -23,6 +23,7 @@ import android.widget.TextView;
 import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.adapter.UserCreatePostAdapter;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserCreatePostEntry;
 
 public class UserPostsFragment extends Fragment implements SearchView.OnQueryTextListener, LoaderManager
@@ -41,8 +42,8 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
     // define usercreatepost column projection and constants
     public static final String[] USERCREATEPOST_COLUMNS = {
             UserCreatePostEntry.TABLE_NAME + "." + UserCreatePostEntry._ID,
-            UserCreatePostEntry.COLUMN_CONTENT_TEXT,
-            UserCreatePostEntry.COLUMN_CONTENT_URI,
+            ItemEntry.COLUMN_CONTENT_TEXT,
+            ItemEntry.COLUMN_CONTENT_URI,
             UserCreatePostEntry.COLUMN_SUBMIT_DATE,
             UserCreatePostEntry.COLUMN_UPVOTES,
             UserCreatePostEntry.COLUMN_DOWNVOTES
@@ -124,16 +125,16 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        // user_id = ? AND is_draft = ?
-        String selection = UserCreatePostEntry.COLUMN_USER_KEY + " = ? AND " +
-                UserCreatePostEntry.COLUMN_IS_DRAFT + " = ? ";
+        // user_id = ?
+        String selection = UserCreatePostEntry.COLUMN_USER_KEY + " = ? ";
 
         return new CursorLoader(getActivity(),
                 UserCreatePostEntry.CONTENT_URI,
                 USERCREATEPOST_COLUMNS,
                 selection,
-                new String[]{Long.toString(MindlrApplication.User.getId()), Integer.toString(0)},
-                null);
+                new String[]{Long.toString(MindlrApplication.User.getId())},
+                null
+        );
     }
 
     @Override

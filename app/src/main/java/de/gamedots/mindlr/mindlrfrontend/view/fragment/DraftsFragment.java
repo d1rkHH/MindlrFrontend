@@ -17,6 +17,8 @@ import android.widget.TextView;
 import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.adapter.DraftsAdapter;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.DraftEntry;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserCreatePostEntry;
 
 /**
@@ -31,13 +33,13 @@ public class DraftsFragment extends Fragment implements LoaderManager.LoaderCall
     private DraftsAdapter _draftsAdapter;
     private TextView _emptyView;
 
-    public static final String[] USER_CREATE_POST_COLUMNS = {
-            UserCreatePostEntry.TABLE_NAME + "." + UserCreatePostEntry._ID,
-            UserCreatePostEntry.COLUMN_CONTENT_TEXT,
-            UserCreatePostEntry.COLUMN_CONTENT_URI
+    public static final String[] DRAFT_COLUMNS = {
+            DraftEntry.TABLE_NAME + "." + DraftEntry._ID,
+            ItemEntry.COLUMN_CONTENT_TEXT,
+            ItemEntry.COLUMN_CONTENT_URI
     };
 
-    public static final int COLUMN_USER_CREATE_POST_ID = 0;
+    public static final int COLUMN_DRAFT_ID = 0;
     public static final int COLUMN_CONTENT_TEXT = 1;
     public static final int COLUMN_CONTENT_URI = 2;
 
@@ -68,13 +70,12 @@ public class DraftsFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        // load all user created post that where stored as drafts
+        // load all user drafts
         return new CursorLoader(getActivity(),
-                UserCreatePostEntry.CONTENT_URI,
-                USER_CREATE_POST_COLUMNS,
-                UserCreatePostEntry.COLUMN_IS_DRAFT + " = ? AND " +
+                DraftEntry.CONTENT_URI,
+                DRAFT_COLUMNS,
                 UserCreatePostEntry.COLUMN_USER_KEY + " = ? ",
-                new String[]{"1", Long.toString(MindlrApplication.User.getId())},
+                new String[]{Long.toString(MindlrApplication.User.getId())},
                 UserCreatePostEntry.COLUMN_SUBMIT_DATE + " DESC "
         );
     }

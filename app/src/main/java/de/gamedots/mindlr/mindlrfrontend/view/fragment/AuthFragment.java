@@ -82,7 +82,7 @@ public class AuthFragment extends Fragment implements IdentityProvider.IdpCallba
 
     /* Successful verified user on backend. Mark user as authenticated and create DB entry */
     @Override
-    public void onSendingSuccess(IdpResponse idpResponse) {
+    public void onSendingSuccess(IdpResponse idpResponse) { //TODO: json content as parameter from response
         // user was verified on backend so set authstate accordingly
         Utility.addAuthStateToPreference(getActivity(), true);
 

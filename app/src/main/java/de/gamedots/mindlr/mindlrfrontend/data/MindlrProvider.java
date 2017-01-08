@@ -12,6 +12,9 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.DraftEntry;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemCategoryEntry;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemEntry;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 
 import static de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.AuthProviderEntry;
@@ -20,6 +23,9 @@ import static de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.CONTENT_AUTH
 import static de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.CategoryEntry;
 import static de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.PATH_AUTH_PROVIDER;
 import static de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.PATH_CATEGORY;
+import static de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.PATH_DRAFT;
+import static de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.PATH_ITEM;
+import static de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.PATH_ITEM_CATEGORY;
 import static de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.PATH_POST;
 import static de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.PATH_USER;
 import static de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.PATH_USER_CATEGORY;
@@ -48,18 +54,53 @@ public class MindlrProvider extends ContentProvider {
     public static final int USER_CATEGORY = 700;
     public static final int POSTS_FOR_USER = 800;
 
+    public static final int ITEM = 900;
+    public static final int DRAFT = 1000;
+    public static final int LOADED_DRAFT = 1100;
+    public static final int ITEM_CATEGORY = 1200;
+
     private static final SQLiteQueryBuilder sPostsForUserQueryBuilder;
+    private static final SQLiteQueryBuilder sDraftsQueryBuilder;
+    private static final SQLiteQueryBuilder sUserCreatedPostsBuilder;
 
     static {
         sPostsForUserQueryBuilder = new SQLiteQueryBuilder();
         // userpost INNER JOIN post ON userpost.post_id = post._id
+        //          INNER JOIN item ON post.item_id = item.id
         sPostsForUserQueryBuilder.setTables(
                 UserPostEntry.TABLE_NAME + " INNER JOIN " +
                         PostEntry.TABLE_NAME +
                         " ON " + UserPostEntry.TABLE_NAME +
                         "." + UserPostEntry.COLUMN_POST_KEY
                         + " = " + PostEntry.TABLE_NAME +
-                        "." + PostEntry._ID
+                        "." + PostEntry._ID + " INNER JOIN " +
+                        ItemEntry.TABLE_NAME +
+                        " ON " + PostEntry.TABLE_NAME +
+                        "." + PostEntry.COLUMN_ITEM_KEY +
+                        " = " + ItemEntry.TABLE_NAME +
+                        "." + ItemEntry._ID
+        );
+
+        sDraftsQueryBuilder = new SQLiteQueryBuilder();
+        // draft INNER JOIN item ON draft.item_id = item._id
+        sDraftsQueryBuilder.setTables(
+                DraftEntry.TABLE_NAME + " INNER JOIN " +
+                        ItemEntry.TABLE_NAME +
+                        " ON " + DraftEntry.TABLE_NAME +
+                        "." + DraftEntry.COLUMN_ITEM_KEY +
+                        " = " + ItemEntry.TABLE_NAME +
+                        "." + ItemEntry._ID
+
+        );
+
+        sUserCreatedPostsBuilder = new SQLiteQueryBuilder();
+        sUserCreatedPostsBuilder.setTables(
+                UserCreatePostEntry.TABLE_NAME + " INNER JOIN " +
+                ItemEntry.TABLE_NAME +
+                " ON " + UserCreatePostEntry.TABLE_NAME +
+                "." + UserCreatePostEntry.COLUMN_ITEM_KEY +
+                " = " + ItemEntry.TABLE_NAME +
+                "." + ItemEntry._ID
         );
     }
 
@@ -81,6 +122,39 @@ public class MindlrProvider extends ContentProvider {
                 sortOrder);
     }
 
+    public static final String sDraftForIdSelection = DraftEntry.TABLE_NAME + "." + DraftEntry._ID + " = ? ";
+
+    private Cursor getSingleDraftWithJoinedContent(Uri uri, String[] projection, String sortOrder) {
+        return sDraftsQueryBuilder.query(_dbOpenHelper.getReadableDatabase(),
+                projection,
+                sDraftForIdSelection,
+                new String[]{DraftEntry.getIdPathFromUri(uri)},
+                null,
+                null,
+                sortOrder);
+    }
+
+    private Cursor getDraftsWithJoinedContent(String[] projection, String sortOrder) {
+        return sDraftsQueryBuilder.query(_dbOpenHelper.getReadableDatabase(),
+                projection,
+                null,
+                null,
+                null,
+                null,
+                sortOrder);
+    }
+
+    private Cursor getUserCreatedPosts(String[] projection, String selection, String[] args, String
+            sortOrder) {
+        return sUserCreatedPostsBuilder.query(_dbOpenHelper.getReadableDatabase(),
+                projection,
+                selection,
+                args,
+                null,
+                null,
+                sortOrder);
+    }
+
     // build a UriMatcher that match each URI to the USER, POST, CATEGORY.. constants
     private static UriMatcher buildUriMatcher() {
 
@@ -90,6 +164,10 @@ public class MindlrProvider extends ContentProvider {
         String authority = CONTENT_AUTHORITY;
         uriMatcher.addURI(authority, PATH_USER, USER);
         uriMatcher.addURI(authority, PATH_POST, POST);
+        uriMatcher.addURI(authority, PATH_ITEM, ITEM);
+        uriMatcher.addURI(authority, PATH_DRAFT, DRAFT);
+        uriMatcher.addURI(authority, PATH_DRAFT + "/#", LOADED_DRAFT);
+        uriMatcher.addURI(authority, PATH_ITEM_CATEGORY, ITEM_CATEGORY);
         uriMatcher.addURI(authority, PATH_CATEGORY, CATEGORY);
         uriMatcher.addURI(authority, PATH_AUTH_PROVIDER, AUTH_PROVIDER);
         uriMatcher.addURI(authority, PATH_USER_POST, USER_POST);
@@ -138,11 +216,24 @@ public class MindlrProvider extends ContentProvider {
                 resultCursor = getPostsByUser(uri, projection, sortOrder);
                 break;
             case USER_CREATE_POST:
-                resultCursor = _dbOpenHelper.getReadableDatabase().query(UserCreatePostEntry.TABLE_NAME,
-                        projection, selection, selectionArgs, null, null, sortOrder);
+                resultCursor = getUserCreatedPosts(projection, selection, selectionArgs, sortOrder);
                 break;
             case USER_CATEGORY:
                 resultCursor = _dbOpenHelper.getReadableDatabase().query(UserCategoryEntry.TABLE_NAME,
+                        projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            case ITEM:
+                resultCursor = _dbOpenHelper.getReadableDatabase().query(ItemEntry.TABLE_NAME,
+                        projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            case DRAFT:
+                resultCursor = getDraftsWithJoinedContent(projection, sortOrder);
+                break;
+            case LOADED_DRAFT:
+                resultCursor = getSingleDraftWithJoinedContent(uri, projection, sortOrder);
+                break;
+            case ITEM_CATEGORY:
+                resultCursor = _dbOpenHelper.getReadableDatabase().query(ItemCategoryEntry.TABLE_NAME,
                         projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             default:
@@ -177,6 +268,12 @@ public class MindlrProvider extends ContentProvider {
                 return UserCategoryEntry.CONTENT_TYPE;
             case POSTS_FOR_USER:
                 return UserPostEntry.CONTENT_TYPE;
+            case ITEM:
+                return ItemEntry.CONTENT_TYPE;
+            case DRAFT:
+                return DraftEntry.CONTENT_TYPE;
+            case ITEM_CATEGORY:
+                return ItemCategoryEntry.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -247,6 +344,30 @@ public class MindlrProvider extends ContentProvider {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
             }
+            case ITEM: {
+                long _id = db.insert(ItemEntry.TABLE_NAME, null, values);
+                if (_id > 0)
+                    returnUri = ItemEntry.buildItemUri(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
+            case DRAFT: {
+                long _id = db.insert(DraftEntry.TABLE_NAME, null, values);
+                if (_id > 0)
+                    returnUri = DraftEntry.buildDraftUri(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
+            case ITEM_CATEGORY: {
+                long _id = db.insert(ItemCategoryEntry.TABLE_NAME, null, values);
+                if (_id > 0)
+                    returnUri = ItemCategoryEntry.buildItemCategoryUri(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -293,6 +414,19 @@ public class MindlrProvider extends ContentProvider {
                 rowsDeleted = db.delete(UserCategoryEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             }
+            case ITEM: {
+                rowsDeleted = db.delete(ItemEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            }
+            case DRAFT: {
+                rowsDeleted = db.delete(DraftEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            }
+            case ITEM_CATEGORY: {
+                rowsDeleted = db.delete(ItemCategoryEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            }
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -339,6 +473,18 @@ public class MindlrProvider extends ContentProvider {
                 rowsUpdated = db.update(UserCategoryEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
             }
+            case ITEM: {
+                rowsUpdated = db.update(ItemEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            }
+            case DRAFT: {
+                rowsUpdated = db.update(DraftEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            }
+            case ITEM_CATEGORY: {
+                rowsUpdated = db.update(ItemCategoryEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -368,6 +514,13 @@ public class MindlrProvider extends ContentProvider {
                 return insertWithTransaction(UserCreatePostEntry.TABLE_NAME, db, values, uri);
             case USER_CATEGORY:
                 return insertWithTransaction(UserCategoryEntry.TABLE_NAME, db, values, uri);
+            case ITEM:
+                return insertWithTransaction(ItemEntry.TABLE_NAME, db, values, uri);
+            case DRAFT:
+                return insertWithTransaction(DraftEntry.TABLE_NAME, db, values, uri);
+            case ITEM_CATEGORY:
+                return insertWithTransaction(ItemCategoryEntry.TABLE_NAME, db, values, uri);
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }

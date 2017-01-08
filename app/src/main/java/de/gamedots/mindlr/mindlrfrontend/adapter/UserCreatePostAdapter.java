@@ -69,6 +69,7 @@ public class UserCreatePostAdapter extends RecyclerView.Adapter<UserCreatePostAd
         // read data from cursor and apply to post text content
         viewHolder.postTextView.setText(_cursor.getString(UserPostsFragment.COLUMN_CONTENT_TEXT));
 
+        // TODO: handle content uri
         // read uri from cursor and load into imageview
         Glide.with(_context)
                 .load(Uri.parse(_cursor.getString(UserPostsFragment.COLUMN_CONTENT_URI)))

@@ -11,10 +11,11 @@ import java.util.Vector;
 import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.CategoryEntry;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemEntry;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.PostEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserPostEntry;
 import de.gamedots.mindlr.mindlrfrontend.model.Category;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
-import de.gamedots.mindlr.mindlrfrontend.util.Global;
 
 
 public class DatabaseIntentService extends IntentService {
@@ -38,24 +39,35 @@ public class DatabaseIntentService extends IntentService {
 
 
     private void storePostsToLocalDb() {
+        SQLiteDatabase db = new MindlrDBHelper(this).getWritableDatabase();
+
         List<ViewPost> posts = PostLoader.getInstance().getPostList();
         Vector<ContentValues> values = new Vector<>(posts.size());
         for (int i = 0; i < posts.size(); i++) {
             ViewPost p = posts.get(i);
+
+            // 1. create and insert item
             ContentValues cv = new ContentValues();
-            cv.put(MindlrContract.PostEntry.COLUMN_CONTENT_TEXT, p.getContentText());
-            cv.put(MindlrContract.PostEntry.COLUMN_SERVER_ID, p.getId());
-            cv.put(MindlrContract.PostEntry.COLUMN_CONTENT_URI, "");
-            values.add(cv);
+            cv.put(ItemEntry.COLUMN_CONTENT_TEXT, p.getContentText());
+            cv.put(ItemEntry.COLUMN_CONTENT_URI, p.getContentUri());
+
+            long itemId = db.insert(ItemEntry.TABLE_NAME, null, cv);
+
+            // 2. add post content values using received item id
+            if(itemId > 0 ){
+                ContentValues postcv = new ContentValues();
+                cv.put(PostEntry.COLUMN_ITEM_KEY, itemId);
+                cv.put(PostEntry.COLUMN_SERVER_ID, p.getId());
+                values.add(postcv);
+            }
         }
         ContentValues[] cvArray = new ContentValues[values.size()];
         values.toArray(cvArray);
 
-        SQLiteDatabase db = new MindlrDBHelper(this).getWritableDatabase();
         db.beginTransaction();
         try {
             for (ContentValues value : values) {
-                long post_id = db.insert(MindlrContract.PostEntry.TABLE_NAME, null, value);
+                long post_id = db.insert(PostEntry.TABLE_NAME, null, value);
                 // insert post associated with current user to userpost table
                 if (post_id != -1) {
                     ContentValues userPostValues = new ContentValues();
@@ -70,7 +82,7 @@ public class DatabaseIntentService extends IntentService {
             db.endTransaction();
             db.close();
         }
-        getContentResolver().notifyChange(MindlrContract.PostEntry.CONTENT_URI, null);
+        getContentResolver().notifyChange(PostEntry.CONTENT_URI, null);
         getContentResolver().notifyChange(UserPostEntry.CONTENT_URI, null);
     }
 

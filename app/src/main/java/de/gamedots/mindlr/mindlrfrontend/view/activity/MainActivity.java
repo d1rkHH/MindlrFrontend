@@ -117,7 +117,7 @@ public class MainActivity extends BaseActivity implements
                 : new PostViewFragment();
 
         if (!PostLoader.getInstance().isInitialized()) {
-            PostLoader.getInstance().initialize(this, fragment);
+            PostLoader.getInstance().initialize(fragment);
         }
 
         //add PostViewFragment dynamically

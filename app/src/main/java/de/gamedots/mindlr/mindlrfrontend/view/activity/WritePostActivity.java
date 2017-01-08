@@ -39,8 +39,10 @@ import org.json.JSONObject;
 
 import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.R;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.CategoryEntry;
-import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserCreatePostEntry;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.DraftEntry;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemEntry;
 import de.gamedots.mindlr.mindlrfrontend.jobs.WritePostTask;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 
@@ -52,6 +54,8 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
     public static final String JSON_CONTENT_TEXT_KEY = "content_text";
     public static final String JSON_CONTENT_URI_KEY = "content_url";
     public static final String JSONARR_CONTENT_CATEGORIES_KEY = "categories";
+    public static final String JSON_CONTENT_SERVER_ID_KEY = "server_id";
+    public static final String JSON_CONTENT_SUBMIT_DATE = "submit_date";
 
     /* Unique loader id for this activity */
     public static final int WRITEPOST_DRAFT_LOADER_ID = 3;
@@ -70,19 +74,19 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
     /* Uri passed from DraftsActivity to determine which draft to populate */
     private Uri _loadUri;
 
-    // region projection for CreatePostEntry
+    // region projection for DraftEntry
 
-    public static final String[] CREATE_POST_COLUMNS = {
-            UserCreatePostEntry.TABLE_NAME + "." + UserCreatePostEntry._ID,
-            UserCreatePostEntry.COLUMN_CONTENT_TEXT,
-            UserCreatePostEntry.COLUMN_CONTENT_URI,
-            UserCreatePostEntry.COLUMN_CATEGORY_KEY,
+    public static final String[] DRAFT_COLUMNS = {
+            DraftEntry.TABLE_NAME + "." + DraftEntry._ID,
+            ItemEntry.TABLE_NAME + "." + ItemEntry._ID,
+            ItemEntry.COLUMN_CONTENT_TEXT,
+            ItemEntry.COLUMN_CONTENT_URI,
     };
 
     public static final int COLUMN_ID = 0;
-    public static final int COLUMN_CONTENT_TEXT = 1;
-    public static final int COLUMN_CONTENT_URI = 2;
-    public static final int COLUMN_CATEGORY_KEY = 3;
+    public static final int COLUMN_ITEM_ID = 1;
+    public static final int COLUMN_CONTENT_TEXT = 2;
+    public static final int COLUMN_CONTENT_URI = 3;
 
     // endregion
 
@@ -232,6 +236,7 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
         JSONObject content = new JSONObject();
         try {
             JSONArray categories = new JSONArray();
+            // TODO: multi selectable categories  + insert values in JSON arr
             categories.put(_categorySpinner.getSelectedItemId());
             content.put(JSON_CONTENT_TEXT_KEY, _postEditText.getText().toString());
             content.put(JSON_CONTENT_URI_KEY, (_imageContentUri == null) ? "" : _imageContentUri.toString());
@@ -288,9 +293,9 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
                 public void onClick(View v) {
                     // we come from draftsactivity
                     if (_loadUri != null && getIntent().hasExtra(DRAFT_EXTRA)) {
-                        getContentResolver().delete(UserCreatePostEntry.CONTENT_URI,
-                                UserCreatePostEntry._ID + " = ? ",
-                                new String[]{UserCreatePostEntry.getIdPathFromUri(_loadUri)});
+                        getContentResolver().delete(DraftEntry.CONTENT_URI,
+                                DraftEntry._ID + " = ? ",
+                                new String[]{DraftEntry.getIdPathFromUri(_loadUri)});
                     }
                     dialog.dismiss();
                     finishNavigation(upNavigation);
@@ -303,22 +308,54 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
                 public void onClick(View v) {
                     // avoid saving draft another time.
                     // If launched from draftsactivity this uri is not null.
-                    if (_loadUri == null) {
-                        //save draft
-                        ContentValues cv = new ContentValues();
-                        cv.put(UserCreatePostEntry.COLUMN_USER_KEY, MindlrApplication.User.getId());
-                        cv.put(UserCreatePostEntry.COLUMN_CONTENT_URI, (_imageContentUri == null) ? "" :
-                                _imageContentUri.toString());
-                        cv.put(UserCreatePostEntry.COLUMN_CONTENT_TEXT, _postEditText.getText().toString());
-                        cv.put(UserCreatePostEntry.COLUMN_IS_DRAFT, 1);
-                        cv.put(UserCreatePostEntry.COLUMN_SUBMIT_DATE, System.currentTimeMillis());
-                        Cursor c = _categoryAdapter.getCursor();
-                        c.moveToPosition(_categorySpinner.getSelectedItemPosition());
-                        long catID = c.getLong(c.getColumnIndex(CategoryEntry._ID));
-                        cv.put(UserCreatePostEntry.COLUMN_CATEGORY_KEY, catID);
 
-                        getContentResolver().insert(UserCreatePostEntry.CONTENT_URI, cv);
+                    // 1. create and insert item
+                    ContentValues cv = new ContentValues();
+                    // TODO: handle content uri for youtube
+                    cv.put(ItemEntry.COLUMN_CONTENT_URI, (_imageContentUri == null) ? "" :
+                            _imageContentUri.toString());
+                    cv.put(ItemEntry.COLUMN_CONTENT_TEXT, _postEditText.getText().toString());
+
+                    long itemId = -1;
+                    long draftItemId = -1;
+                    if (_loadUri == null) { // insert if new draft
+                        itemId = Long.valueOf(ItemEntry.getIdPathFromUri(getContentResolver()
+                                .insert(ItemEntry.CONTENT_URI, cv)));
+                    } else { // update item entry if already exist
+                        Cursor c = getContentResolver().query(DraftEntry.CONTENT_URI,
+                                new String[]{DraftEntry.COLUMN_ITEM_KEY},
+                                DraftEntry._ID + " = ?",
+                                new String[]{_loadUri.getPathSegments().get(1)}, null);
+                        if (c != null && c.moveToFirst()) {
+                            draftItemId = c.getLong(c.getColumnIndex(DraftEntry.COLUMN_ITEM_KEY));
+                            c.close();
+                        }
+                        if (draftItemId > 0) {
+                            getContentResolver().update(ItemEntry.CONTENT_URI, cv,
+                                    ItemEntry.TABLE_NAME + "." + ItemEntry._ID + " = ? ",
+                                    new String[]{String.valueOf(draftItemId)});
+                        }
                     }
+
+                    // 2. store item category reations
+                    // TODO: multi categories + identify categories by unique name instead of id
+                    Cursor c = _categoryAdapter.getCursor();
+                    c.moveToPosition(_categorySpinner.getSelectedItemPosition());
+                    long catID = c.getLong(c.getColumnIndex(CategoryEntry._ID));
+
+                    cv = new ContentValues();
+                    cv.put(MindlrContract.ItemCategoryEntry.COLUMN_ITEM_KEY, itemId);
+                    cv.put(MindlrContract.ItemCategoryEntry.COLUMN_CATEGORY_KEY, catID);
+                    getContentResolver().insert(MindlrContract.ItemCategoryEntry.CONTENT_URI, cv);
+
+                    // 3. store draft
+                    cv = new ContentValues();
+                    cv.put(DraftEntry.COLUMN_USER_KEY, MindlrApplication.User.getId());
+                    cv.put(DraftEntry.COLUMN_ITEM_KEY, itemId);
+                    cv.put(DraftEntry.COLUMN_SUBMIT_DATE, System.currentTimeMillis());
+
+                    getContentResolver().insert(DraftEntry.CONTENT_URI, cv);
+
                     dialog.dismiss();
                     // if we come from drafts activity return to it otherwise process normal
                     // up or back navigation
@@ -352,10 +389,10 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(this,
-                UserCreatePostEntry.CONTENT_URI,
-                CREATE_POST_COLUMNS,
-                UserCreatePostEntry._ID + " = ? ",
-                new String[]{UserCreatePostEntry.getIdPathFromUri(_loadUri)},
+                _loadUri,
+                DRAFT_COLUMNS,
+                null,
+                null,
                 null
         );
     }
@@ -367,10 +404,12 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
         }
         _postEditText.setText(cursor.getString(COLUMN_CONTENT_TEXT));
         // because the spinner is based on db the id is equal to the spinner row selection id
-        Log.v(LOG.AUTH, "categorie loaded " + (int) cursor.getLong(COLUMN_CATEGORY_KEY));
-        _categorySpinner.setSelection((int) cursor.getLong(COLUMN_CATEGORY_KEY), true);
+        //Log.v(LOG.AUTH, "categorie loaded " + (int) cursor.getLong(COLUMN_CATEGORY_KEY));
+        // TODO: load categories from item x category and set multi selection
+        //_categorySpinner.setSelection((int) cursor.getLong(COLUMN_CATEGORY_KEY), true);
 
         _postImageView.setVisibility(View.INVISIBLE);
+        // TODO: check between content types video/ image
         Glide.with(this)
                 .loadFromMediaStore(Uri.parse(cursor.getString(COLUMN_CONTENT_URI)))
                 .asBitmap()
