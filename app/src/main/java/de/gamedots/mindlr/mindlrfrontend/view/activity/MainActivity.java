@@ -10,6 +10,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
@@ -151,5 +152,10 @@ public class MainActivity extends BaseActivity implements
     @Override
     protected boolean isFABenabled() {
         return true;
+    }
+
+    public void showDetail(View view) {
+
+
     }
 }

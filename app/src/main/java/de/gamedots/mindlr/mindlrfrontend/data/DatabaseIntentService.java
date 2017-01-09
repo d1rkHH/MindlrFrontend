@@ -57,7 +57,7 @@ public class DatabaseIntentService extends IntentService {
             if(itemId > 0 ){
                 ContentValues postcv = new ContentValues();
                 cv.put(PostEntry.COLUMN_ITEM_KEY, itemId);
-                cv.put(PostEntry.COLUMN_SERVER_ID, p.getId());
+                cv.put(PostEntry.COLUMN_SERVER_ID, p.getServerId());
                 values.add(postcv);
             }
         }

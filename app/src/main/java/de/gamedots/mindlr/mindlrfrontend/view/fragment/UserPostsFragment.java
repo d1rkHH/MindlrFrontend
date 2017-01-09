@@ -2,6 +2,7 @@ package de.gamedots.mindlr.mindlrfrontend.view.fragment;
 
 
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,7 +19,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 
 import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.R;
@@ -32,6 +40,7 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
     private RecyclerView _recyclerView;
     private UserCreatePostAdapter _adapter;
     private TextView _emptyText;
+    private boolean isDetailed;
 
     public UserPostsFragment() {
     }
@@ -75,17 +84,22 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_user_posts, container, false);
+        View view;
+        if (getArguments() != null && getArguments().containsKey(PostViewFragment.DETAIL_EXTRA)) {
+            view = inflater.inflate(R.layout.fragment_user_posts_detail, container, false);
+            isDetailed = true;
+            setHasOptionsMenu(false);
+        } else {
+            view = inflater.inflate(R.layout.fragment_user_posts, container, false);
+            _recyclerView = (RecyclerView) view.findViewById(R.id.usercreatepost_recyclerview);
+            _emptyText = (TextView) view.findViewById(R.id.recyclerview_usercreatepost_empty);
 
-        _recyclerView = (RecyclerView) view.findViewById(R.id.usercreatepost_recyclerview);
-        _emptyText = (TextView) view.findViewById(R.id.recyclerview_usercreatepost_empty);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+            _recyclerView.setLayoutManager(layoutManager);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        _recyclerView.setLayoutManager(layoutManager);
-
-        _adapter = new UserCreatePostAdapter(getActivity(), _emptyText);
-        _recyclerView.setAdapter(_adapter);
-
+            _adapter = new UserCreatePostAdapter(getActivity(), _emptyText);
+            _recyclerView.setAdapter(_adapter);
+        }
         return view;
     }
 
@@ -127,26 +141,74 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // user_id = ?
         String selection = UserCreatePostEntry.COLUMN_USER_KEY + " = ? ";
+        ArrayList<String> selArgs = new ArrayList<>();
+        selArgs.add(Long.toString(MindlrApplication.User.getId()));
+
+        // if we got launched to show a detail add ID parameter to selection
+        Uri data = getActivity().getIntent().getData();
+        if (data != null) {
+            selection += " AND " + UserCreatePostEntry.TABLE_NAME + "." + UserCreatePostEntry._ID + " = ? ";
+            selArgs.add(UserCreatePostEntry.getIdPathFromUri(data));
+        }
 
         return new CursorLoader(getActivity(),
                 UserCreatePostEntry.CONTENT_URI,
                 USERCREATEPOST_COLUMNS,
                 selection,
-                new String[]{Long.toString(MindlrApplication.User.getId())},
+                selArgs.toArray(new String[selArgs.size()]),
                 null
         );
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        _adapter.swapCursor(cursor);
-        if (_adapter.getItemCount() == 0) {
-            _emptyText.setText("You have not written any posts yet.");
+
+        if (isDetailed) {
+            if (cursor == null || !cursor.moveToFirst()) {
+                return;
+            }
+
+            // read data from cursor and apply to post text content
+            ((TextView) getActivity().findViewById(R.id.usercreatepost_content_textview)).setText(cursor
+                    .getString(UserPostsFragment.COLUMN_CONTENT_TEXT));
+
+            // TODO: handle content uri
+            // read uri from cursor and load into imageview
+            Glide.with(getActivity())
+                    .load(Uri.parse(cursor.getString(UserPostsFragment.COLUMN_CONTENT_URI)))
+                    .fitCenter()
+                    .into((ImageView) getActivity().findViewById(R.id.usercreatepost_imageview));
+
+            //TODO: utility format date Today, Yesterday, 5. Nov. + string res formatter
+            // read date millis from cursor and get day and month using calendar object
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(cursor.getLong(UserPostsFragment.COLUMN_SUBMIT_DATE));
+            SimpleDateFormat month_date = new SimpleDateFormat("dd MMM",
+                    getActivity().getResources().getConfiguration().locale);
+            String dayWithMonth = month_date.format(cal.getTime());
+            ((TextView) getActivity().findViewById(R.id.usercreatepost_date_textview)).setText(dayWithMonth);
+
+            // read uppercent from cursor
+            ((TextView) getActivity().findViewById(R.id.usercreatepost_uppercent_textview))
+                    .setText(String.format(getActivity().getString(R.string.format_vote_percentage),
+                            cursor.getFloat(UserPostsFragment.COLUMN_UPVOTES)));
+
+            // read downpercent from cursor
+            ((TextView) getActivity().findViewById(R.id.usercreatepost_downpercent_textview))
+                    .setText(String.format(getActivity().getString(R.string.format_vote_percentage),
+                            cursor.getFloat(UserPostsFragment.COLUMN_DOWNVOTES)));
+        } else {
+            _adapter.swapCursor(cursor);
+            if (_adapter.getItemCount() == 0) {
+                _emptyText.setText("You have not written any posts yet.");
+            }
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        _adapter.swapCursor(null);
+        if(!isDetailed) {
+            _adapter.swapCursor(null);
+        }
     }
 }

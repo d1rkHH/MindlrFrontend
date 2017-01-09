@@ -1,6 +1,7 @@
 package de.gamedots.mindlr.mindlrfrontend.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
+import de.gamedots.mindlr.mindlrfrontend.view.activity.DetailActivity;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.UserPostsFragment;
 
 /**
@@ -34,7 +37,8 @@ public class UserCreatePostAdapter extends RecyclerView.Adapter<UserCreatePostAd
         _emptyView = emptyView;
     }
 
-    public class UserCreatePostAdapterViewHolder extends RecyclerView.ViewHolder {
+    public class UserCreatePostAdapterViewHolder extends RecyclerView.ViewHolder
+    implements View.OnClickListener {
 
         private TextView postTextView;
         private TextView submitDate;
@@ -49,6 +53,18 @@ public class UserCreatePostAdapter extends RecyclerView.Adapter<UserCreatePostAd
             upvotes = (TextView) view.findViewById(R.id.usercreatepost_uppercent_textview);
             downvotes = (TextView) view.findViewById(R.id.usercreatepost_downpercent_textview);
             postContentImage = (ImageView) view.findViewById(R.id.usercreatepost_imageview);
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            _cursor.moveToPosition(getAdapterPosition());
+            long id = _cursor.getLong(UserPostsFragment.COLUMN_USERCREATEPOST_ID);
+            Uri uri = MindlrContract.UserCreatePostEntry.buildUserCreatePostUri(id);
+            Intent intent = new Intent(_context, DetailActivity.class);
+            intent.putExtra(DetailActivity.FRAGMENT_EXTRA, true);
+            intent.setData(uri);
+            _context.startActivity(intent);
         }
     }
 

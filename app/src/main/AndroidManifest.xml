@@ -72,6 +72,9 @@
         <activity android:name=".view.activity.TutorialActivity"
                   android:theme="@style/TutorialTheme">
         </activity>
+        <activity
+            android:name=".view.activity.DetailActivity"
+            android:theme="@style/AppTheme"/>
 
         <provider
             android:name=".data.MindlrProvider"

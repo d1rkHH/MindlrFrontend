@@ -36,6 +36,11 @@ public class ProfileActivity extends AppCompatActivity {
 
         _viewPager = (ViewPager) findViewById(R.id.viewpager);
         initViewPager(_viewPager);
+        if (getIntent().hasExtra("parent")){
+            if (getIntent().getStringExtra("parent").equals("profile")){
+                _viewPager.setCurrentItem(2);
+            }
+        }
 
         _tapLayout = (TabLayout) findViewById(R.id.tablayout);
         if(_tapLayout != null) {

@@ -2,6 +2,7 @@ package de.gamedots.mindlr.mindlrfrontend.view.fragment;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -19,6 +20,7 @@ import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
+import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 
 import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.toast;
@@ -29,6 +31,8 @@ import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.toast;
  */
 public class PostViewFragment extends Fragment {
 
+    public static final String DETAIL_EXTRA = "detail_extra";
+    public static final String POST_EXTRA  ="post_extra";
     private TextView _postView;
 
 
@@ -40,15 +44,28 @@ public class PostViewFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         Log.d(LOG.AUTH, "onCreateView: postviewfragment recreated with " + (savedInstanceState != null));
+        View view;
+        boolean isDetail = getArguments() != null && getArguments().containsKey(DETAIL_EXTRA);
+        if(isDetail) {
+            view = inflater.inflate(R.layout.fragment_detail_post_view, container, false);
+        } else {
+            view = inflater.inflate(R.layout.fragment_post_view, container, false);
 
-        View view = inflater.inflate(R.layout.fragment_post_view, container, false);
-        _postView = (TextView) view.findViewById(R.id.postTextView);
-
-        if (PostLoader.getInstance().isInitialized()) {
-            String text = PostLoader.getInstance().getCurrent().getContentText();
-            text = text.replaceAll(System.getProperty("line.separator"), "");
-            _postView.setText(text);
+            if (PostLoader.getInstance().isInitialized()) {
+                String text = PostLoader.getInstance().getCurrent().getContentText();
+                text = text.replaceAll(System.getProperty("line.separator"), "");
+                _postView.setText(text);
+            }
         }
+        _postView = (TextView) view.findViewById(R.id.postTextView);
+        if(isDetail){
+            Intent launchIntent = getActivity().getIntent();
+            if (launchIntent != null && launchIntent.getExtras().containsKey(POST_EXTRA)) {
+                ViewPost vp = launchIntent.getParcelableExtra(POST_EXTRA);
+                _postView.setText(vp.getContentText());
+            }
+        }
+
 
         LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.post_fragment_container);
         if (linearLayout != null) {
@@ -128,7 +145,7 @@ public class PostViewFragment extends Fragment {
             //toast(getActivity(), "Upvote");
             PostLoader.getInstance().getCurrent().ratePositive();
             Utility.updatePostVoteType(getActivity(),
-                    PostLoader.getInstance().getCurrent().getId(),
+                    PostLoader.getInstance().getCurrent().getServerId(),
                     MindlrContract.UserPostEntry.VOTE_LIKED);
 
             if (PostLoader.getInstance().next()) {
@@ -142,7 +159,7 @@ public class PostViewFragment extends Fragment {
             // toast(getActivity(), "Downvote");
             PostLoader.getInstance().getCurrent().rateNegative();
             Utility.updatePostVoteType(getActivity(),
-                    PostLoader.getInstance().getCurrent().getId(),
+                    PostLoader.getInstance().getCurrent().getServerId(),
                     MindlrContract.UserPostEntry.VOTE_DISLIKED);
 
             if (PostLoader.getInstance().next()) {

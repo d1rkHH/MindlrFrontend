@@ -312,11 +312,12 @@ public class Utility {
             cv = new ContentValues();
             cv.put(UserCreatePostEntry.COLUMN_USER_KEY, MindlrApplication.User.getId());
             cv.put(UserCreatePostEntry.COLUMN_ITEM_KEY, itemId);
-            cv.put(UserCreatePostEntry.COLUMN_SERVER_ID, content.getLong(WritePostActivity
-                    .JSON_CONTENT_SERVER_ID_KEY));
+            // TODO: backend return server_id as well
+            cv.put(UserCreatePostEntry.COLUMN_SERVER_ID, 5);//content.getLong(WritePostActivity
+                    //.JSON_CONTENT_SERVER_ID_KEY));
             // TODO: server date as long or get long from string format
-            cv.put(UserCreatePostEntry.COLUMN_SUBMIT_DATE, content.getLong(WritePostActivity
-                    .JSON_CONTENT_SUBMIT_DATE));
+            cv.put(UserCreatePostEntry.COLUMN_SUBMIT_DATE, 500); //content.getLong(WritePostActivity
+                   // .JSON_CONTENT_SUBMIT_DATE));
             context.getContentResolver().insert(UserCreatePostEntry.CONTENT_URI, cv);
         }
     }
@@ -328,7 +329,7 @@ public class Utility {
                 Cursor postCursor = context.getContentResolver().query(PostEntry.CONTENT_URI,
                         new String[]{PostEntry._ID},
                         PostEntry.COLUMN_SERVER_ID + " = ? ",
-                        new String[]{Long.toString(vp.getId())},
+                        new String[]{Long.toString(vp.getServerId())},
                         null
                 );
 
@@ -355,7 +356,7 @@ public class Utility {
             Cursor postCursor = context.getContentResolver().query(PostEntry.CONTENT_URI,
                     new String[]{PostEntry._ID},
                     PostEntry.COLUMN_SERVER_ID + " = ? ",
-                    new String[]{Long.toString(vp.getId())},
+                    new String[]{Long.toString(vp.getServerId())},
                     null
             );
 

@@ -1,6 +1,7 @@
 package de.gamedots.mindlr.mindlrfrontend.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,7 +10,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
+import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
+import de.gamedots.mindlr.mindlrfrontend.view.activity.DetailActivity;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostFragment;
+
+import static de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment.POST_EXTRA;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostAdapterViewHolder> {
 
@@ -23,13 +28,22 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostAdapterVie
         _emptyView = emptyView;
     }
 
-    public class PostAdapterViewHolder extends RecyclerView.ViewHolder {
+    public class PostAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private TextView postTextView;
 
         public PostAdapterViewHolder(View view) {
             super(view);
             postTextView = (TextView) view.findViewById(R.id.post_preview_text);
+        }
+
+        @Override
+        public void onClick(View v) {
+            _cursor.moveToPosition(getAdapterPosition());
+            ViewPost vp = ViewPost.fromCursor(_cursor);
+            Intent intent = new Intent(_context, DetailActivity.class);
+            intent.putExtra(POST_EXTRA, vp);
+            _context.startActivity(intent);
         }
     }
 

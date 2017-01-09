@@ -64,9 +64,9 @@ public class StoreVotesHandler {
             JSONArray downvotes = new JSONArray();
             for (ViewPost post : _postsInSending) {
                 if (post.getVote() == ViewPost.VOTE_LIKE) {
-                    upvotes.put(Long.toString(post.getId()));
+                    upvotes.put(Long.toString(post.getServerId()));
                 } else {
-                    downvotes.put(Long.toString(post.getId()));
+                    downvotes.put(Long.toString(post.getServerId()));
                 }
             }
             try {
