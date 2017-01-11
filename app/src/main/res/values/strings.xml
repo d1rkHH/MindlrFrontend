@@ -88,4 +88,5 @@
 
     <!-- UP/DOWN votes in % -->
     <string name="format_vote_percentage"><xliff:g id="vote">%1.0f</xliff:g> %%</string>
+    <string name="post_send_failure_msg">Senden fehlgeschlagen. Post als Entwurf gespeichert.</string>
 </resources>

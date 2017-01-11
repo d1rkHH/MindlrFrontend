@@ -10,8 +10,13 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.R;
+import de.gamedots.mindlr.mindlrfrontend.model.ImageUploadResult;
 import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 
 /**
@@ -37,6 +42,23 @@ public class SettingsActivity extends AppCompatActivity {
                     .add(R.id.settings_container, sf)
                     .commit();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onImageUploadResultEvent(ImageUploadResult event) {
+        Utility.handleImageResult(event, this);
     }
 
     public static class SettingsFragment extends PreferenceFragment implements

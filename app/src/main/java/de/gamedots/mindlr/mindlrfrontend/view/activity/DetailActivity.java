@@ -7,7 +7,13 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import de.gamedots.mindlr.mindlrfrontend.R;
+import de.gamedots.mindlr.mindlrfrontend.model.ImageUploadResult;
+import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.UserPostsFragment;
 
@@ -44,6 +50,23 @@ public class DetailActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.detail_post_container, fragment)
                 .commit();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onImageUploadResultEvent(ImageUploadResult event) {
+        Utility.handleImageResult(event, this);
     }
 
     @Nullable

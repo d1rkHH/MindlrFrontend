@@ -8,14 +8,22 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
+import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
+import de.gamedots.mindlr.mindlrfrontend.model.ImageUploadResult;
 import de.gamedots.mindlr.mindlrfrontend.util.DebugUtil;
 import de.gamedots.mindlr.mindlrfrontend.util.ShareUtil;
+import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
 
 public class MainActivity extends BaseActivity implements
@@ -38,6 +46,24 @@ public class MainActivity extends BaseActivity implements
         _saveInstanceStateAvailable = (savedInstanceState != null);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         initializeUI();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onImageUploadResultEvent(ImageUploadResult event) {
+        Log.v(LOG.AUTH, "received upload event from BUS");
+        Utility.handleImageResult(event, this);
     }
 
     @Override
@@ -155,7 +181,5 @@ public class MainActivity extends BaseActivity implements
     }
 
     public void showDetail(View view) {
-
-
     }
 }

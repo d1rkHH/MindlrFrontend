@@ -46,10 +46,9 @@ public class WritePostTask extends APICallTask {
     @Override
     public void onFailure(JSONObject result) {
         try {
-            // save post if its not a draft
-            if (_draftUri == null || _draftUri.toString().isEmpty()) {
-                Utility.storeUserCreatePostFromJSON(_draftUri, false, _content, _context);
-            }
+            // failed so save or update draft
+            Utility.updateOrCreateDraft(_content,_draftUri, _context);
+
             String text = result.getString("ERROR");
             Toast.makeText(_context, text, Toast.LENGTH_SHORT).show();
         } catch (JSONException e) {

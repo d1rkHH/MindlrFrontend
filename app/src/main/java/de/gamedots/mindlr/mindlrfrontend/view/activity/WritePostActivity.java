@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NavUtils;
@@ -19,7 +18,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -43,14 +41,16 @@ import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.CategoryEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.DraftEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemEntry;
+import de.gamedots.mindlr.mindlrfrontend.helper.IntentHelper;
+import de.gamedots.mindlr.mindlrfrontend.jobs.ImgurUploadService;
 import de.gamedots.mindlr.mindlrfrontend.jobs.WritePostTask;
-import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
+
+import static de.gamedots.mindlr.mindlrfrontend.helper.IntentHelper.PICK_IMAGE_REQUEST;
 
 public class WritePostActivity extends AppCompatActivity implements TextWatcher, LoaderManager
-        .LoaderCallbacks<Cursor>, RequestListener<Uri, Bitmap> {
+        .LoaderCallbacks<Cursor>, RequestListener<Uri, Bitmap>{
 
     public static final String DRAFT_EXTRA = "draftextra";
-    public static final int PICK_IMAGE_REQUEST = 1;
     public static final String JSON_CONTENT_TEXT_KEY = "content_text";
     public static final String JSON_CONTENT_URI_KEY = "content_url";
     public static final String JSONARR_CONTENT_CATEGORIES_KEY = "categories";
@@ -124,7 +124,7 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    writePost(v);
+                    startPostSending(v);
                 }
             });
         }
@@ -156,16 +156,7 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
             imageSelect.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent();
-                    intent.setType("image/*");
-                    if (Build.VERSION.SDK_INT < 19) {
-                        intent.setAction(Intent.ACTION_GET_CONTENT);
-                    } else {
-                        intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                        intent.addCategory(Intent.CATEGORY_OPENABLE);
-                    }
-                    startActivityForResult(Intent.createChooser(intent, "Select Picture"),
-                            PICK_IMAGE_REQUEST);
+                    IntentHelper.imageChooseIntent(WritePostActivity.this);
                 }
             });
         }
@@ -230,21 +221,40 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
     }
 
     // region start send written post to server
-    public void writePost(View view) {
-        Log.d(LOG.WRITE, "About to create WritePostTask");
+    public void startPostSending(View view) {
+        // user added image to post content, upload it to imgur to get global URL
+        if(_imageContentUri != null && !_imageContentUri.toString().isEmpty()){
+
+            ImgurUploadService service = new ImgurUploadService(this, _loadUri, composeContent());
+            service.start(_imageContentUri);
+            startActivity(IntentHelper.buildNewClearTask(this, MainActivity.class));
+        } else {
+            // no image select we can start sending right away
+            composeContentAndSendToServer();
+        }
+    }
+
+    private JSONObject composeContent(){
         String catString = _categorySpinner.getSelectedItem().toString();
         JSONObject content = new JSONObject();
         try {
             JSONArray categories = new JSONArray();
             // TODO: multi selectable categories  + insert values in JSON arr
-            categories.put(_categorySpinner.getSelectedItemId());
+            categories.put(catString);
             content.put(JSON_CONTENT_TEXT_KEY, _postEditText.getText().toString());
-            content.put(JSON_CONTENT_URI_KEY, (_imageContentUri == null) ? "" : _imageContentUri.toString());
+            content.put(JSON_CONTENT_URI_KEY, "");
             content.put(JSONARR_CONTENT_CATEGORIES_KEY, categories);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        new WritePostTask(this, content, _loadUri).execute();
+
+        return content;
+    }
+
+    private void composeContentAndSendToServer(){
+        // send post in background thread and go back to MainActivity
+        new WritePostTask(this, composeContent(), _loadUri).execute();
+        startActivity(IntentHelper.buildNewClearTask(this, MainActivity.class));
     }
 
     // endregion
@@ -403,6 +413,7 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
             return;
         }
         _postEditText.setText(cursor.getString(COLUMN_CONTENT_TEXT));
+        _imageContentUri = Uri.parse(cursor.getString(COLUMN_CONTENT_URI));
         // because the spinner is based on db the id is equal to the spinner row selection id
         //Log.v(LOG.AUTH, "categorie loaded " + (int) cursor.getLong(COLUMN_CATEGORY_KEY));
         // TODO: load categories from item x category and set multi selection
@@ -411,7 +422,7 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
         _postImageView.setVisibility(View.INVISIBLE);
         // TODO: check between content types video/ image
         Glide.with(this)
-                .loadFromMediaStore(Uri.parse(cursor.getString(COLUMN_CONTENT_URI)))
+                .loadFromMediaStore(_imageContentUri)
                 .asBitmap()
                 .fitCenter()
                 .listener(this)

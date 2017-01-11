@@ -34,10 +34,13 @@ import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserCreatePostEntry
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserPostEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrDBHelper;
+import de.gamedots.mindlr.mindlrfrontend.jobs.WritePostTask;
+import de.gamedots.mindlr.mindlrfrontend.model.ImageUploadResult;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 import de.gamedots.mindlr.mindlrfrontend.view.activity.WritePostActivity;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
+import static de.gamedots.mindlr.mindlrfrontend.view.activity.WritePostActivity.JSON_CONTENT_URI_KEY;
 
 public class Utility {
 
@@ -134,8 +137,8 @@ public class Utility {
         Cursor c = context.getContentResolver().query(MindlrContract.UserPostEntry.CONTENT_URI,
                 null, null, null, null);
         if (c != null && c.moveToFirst()) {
-            Toast.makeText(context, "USerPosts: " + c.getCount() + " first id=" +
-                    c.getLong(c.getColumnIndex(UserPostEntry._ID)), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context, "USerPosts: " + c.getCount() + " first id=" +
+            //        c.getLong(c.getColumnIndex(UserPostEntry._ID)), Toast.LENGTH_SHORT).show();
             c.close();
         }
     }
@@ -208,7 +211,7 @@ public class Utility {
         final int uri_index = 2;
         List<ViewPost> toInsertPosts = new LinkedList<>();
         if (cursor != null && cursor.moveToFirst()) {
-            Toast.makeText(context, "Cursor count: " + cursor.getCount(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context, "Cursor count: " + cursor.getCount(), Toast.LENGTH_SHORT).show();
             postLoaded = cursor.getCount();
             do {
                 ViewPost vp = new ViewPost(
@@ -252,7 +255,7 @@ public class Utility {
 
         // 1. create and insert item
         ContentValues cv = new ContentValues();
-        cv.put(ItemEntry.COLUMN_CONTENT_URI, content.getString(WritePostActivity.JSON_CONTENT_URI_KEY));
+        cv.put(ItemEntry.COLUMN_CONTENT_URI, content.getString(JSON_CONTENT_URI_KEY));
         cv.put(ItemEntry.COLUMN_CONTENT_TEXT, content.getString(WritePostActivity.JSON_CONTENT_TEXT_KEY));
         long itemId = -1;
         if (!isDraft) {
@@ -261,13 +264,8 @@ public class Utility {
                     .CONTENT_URI, cv));
         } else {
             // loaded from drafts and synced so update item information
-            Cursor draftCursor = context.getContentResolver()
-                    .query(DraftEntry.CONTENT_URI,
-                            new String[]{DraftEntry._ID, DraftEntry.COLUMN_ITEM_KEY},
-                            DraftEntry._ID + " = ? ",
-                            new String[]{DraftEntry.getIdPathFromUri(draftUri)},
-                            null
-                    );
+            Cursor draftCursor = getDraftFromUri(draftUri, context);
+
             if (draftCursor != null && draftCursor.moveToFirst()) {
                 itemId = draftCursor.getLong(draftCursor.getColumnIndex(DraftEntry.COLUMN_ITEM_KEY));
                 context.getContentResolver()
@@ -313,13 +311,76 @@ public class Utility {
             cv.put(UserCreatePostEntry.COLUMN_USER_KEY, MindlrApplication.User.getId());
             cv.put(UserCreatePostEntry.COLUMN_ITEM_KEY, itemId);
             // TODO: backend return server_id as well
-            cv.put(UserCreatePostEntry.COLUMN_SERVER_ID, 5);//content.getLong(WritePostActivity
+            cv.put(UserCreatePostEntry.COLUMN_SERVER_ID, 7);//content.getLong(WritePostActivity
                     //.JSON_CONTENT_SERVER_ID_KEY));
             // TODO: server date as long or get long from string format
             cv.put(UserCreatePostEntry.COLUMN_SUBMIT_DATE, 500); //content.getLong(WritePostActivity
                    // .JSON_CONTENT_SUBMIT_DATE));
             context.getContentResolver().insert(UserCreatePostEntry.CONTENT_URI, cv);
         }
+    }
+
+    public static void updateOrCreateDraft(JSONObject content, Uri draftUri, Context context )
+            throws JSONException {
+
+        boolean shouldCreateDraft = draftUri == null || draftUri.toString().isEmpty();
+
+        ContentValues cv = new ContentValues();
+        cv.put(ItemEntry.COLUMN_CONTENT_URI, content.getString(JSON_CONTENT_URI_KEY));
+        cv.put(ItemEntry.COLUMN_CONTENT_TEXT, content.getString(WritePostActivity.JSON_CONTENT_TEXT_KEY));
+        long itemId = -1;
+        if (shouldCreateDraft) {
+            itemId = ItemEntry.getLongIdFromUri(context.getContentResolver().insert(ItemEntry
+                    .CONTENT_URI, cv));
+            if (itemId > 0){
+                ContentValues draftCv = new ContentValues();
+                draftCv.put(DraftEntry.COLUMN_ITEM_KEY, itemId);
+                draftCv.put(DraftEntry.COLUMN_USER_KEY, MindlrApplication.User.getId());
+                draftCv.put(DraftEntry.COLUMN_SUBMIT_DATE, System.currentTimeMillis());
+
+                context.getContentResolver().insert(DraftEntry.CONTENT_URI, draftCv);
+            }
+        } else {
+            Cursor draftCursor = getDraftFromUri(draftUri, context);
+
+            if (draftCursor != null && draftCursor.moveToFirst()) {
+                itemId = draftCursor.getLong(draftCursor.getColumnIndex(DraftEntry.COLUMN_ITEM_KEY));
+                context.getContentResolver()
+                        .update(ItemEntry.CONTENT_URI, cv,
+                                ItemEntry.TABLE_NAME + "." + ItemEntry._ID + " = ? ",
+                                new String[]{String.valueOf(itemId)}
+                        );
+                draftCursor.close();
+            }
+        }
+    }
+
+    public static void handleImageResult(ImageUploadResult event, Context context){
+        try {
+            if (event.successful) {
+                event.content.put(JSON_CONTENT_URI_KEY, event.link);
+                Toast.makeText(context, "Result OK SEND", Toast.LENGTH_SHORT).show();
+                new WritePostTask(context, event.content, event.draftUri).execute();
+
+            } else {
+                Utility.updateOrCreateDraft(event.content, event.draftUri, context);
+                Toast.makeText(context, context.getString(R.string.post_send_failure_msg), Toast.LENGTH_SHORT)
+                        .show();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static Cursor getDraftFromUri(Uri uri, Context context){
+        return context.getContentResolver()
+                .query(DraftEntry.CONTENT_URI,
+                        new String[]{DraftEntry.TABLE_NAME + "." + DraftEntry._ID,
+                                DraftEntry.COLUMN_ITEM_KEY},
+                        DraftEntry._ID + " = ? ",
+                        new String[]{DraftEntry.getIdPathFromUri(uri)},
+                        null
+                );
     }
 
     public static void deleteSyncedAndDownvotedPosts(Context context, Set<ViewPost> posts) {
