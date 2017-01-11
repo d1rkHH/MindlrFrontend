@@ -17,15 +17,15 @@ import com.anton46.collectionitempicker.OnItemClickListener;
 import com.google.android.gms.common.SignInButton;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
-import de.gamedots.mindlr.mindlrfrontend.view.customview.CustomTwitterLoginButton;
 import de.gamedots.mindlr.mindlrfrontend.auth.GoogleProvider;
 import de.gamedots.mindlr.mindlrfrontend.auth.TwitterProvider;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.CategoryEntry;
+import de.gamedots.mindlr.mindlrfrontend.helper.CategoryHelper;
+import de.gamedots.mindlr.mindlrfrontend.view.customview.CustomTwitterLoginButton;
 
 
 public class TutorialFragment extends Fragment {
@@ -54,7 +54,7 @@ public class TutorialFragment extends Fragment {
             Cursor catCursor = getContext().getContentResolver()
                     .query(CategoryEntry.CONTENT_URI, null, null, null, null);
 
-            final Set<Integer> selectedCategories = new HashSet<>();
+            final Set<Long> selectedCategories = CategoryHelper.getCategories();
 
             // get all available categories from db
             // and add theme to collection picker list
@@ -98,10 +98,11 @@ public class TutorialFragment extends Fragment {
             picker.setOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onClick(com.anton46.collectionitempicker.Item item, int position) {
-                    if (selectedCategories.contains(position)) {
-                        selectedCategories.remove(position);
+                    long id = Long.parseLong(item.id);
+                    if (selectedCategories.contains(id)) {
+                        selectedCategories.remove(id);
                     } else {
-                        selectedCategories.add(position);
+                        selectedCategories.add(id);
                     }
 
                     view.findViewById(R.id.auth_button_container).setVisibility(

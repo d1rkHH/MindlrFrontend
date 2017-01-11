@@ -30,10 +30,12 @@ import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.DraftEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemCategoryEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.PostEntry;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserCategoryEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserCreatePostEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserPostEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrDBHelper;
+import de.gamedots.mindlr.mindlrfrontend.helper.CategoryHelper;
 import de.gamedots.mindlr.mindlrfrontend.jobs.WritePostTask;
 import de.gamedots.mindlr.mindlrfrontend.model.ImageUploadResult;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
@@ -434,6 +436,19 @@ public class Utility {
                 );
                 postCursor.close();
             }
+        }
+    }
+
+    public static void insertUserCategories(Context context) {
+        long userId = MindlrApplication.User.getId();
+
+        ContentValues cv = new ContentValues();
+        for(long categoryId : CategoryHelper.getCategories()){
+            cv.clear();
+            cv.put(UserCategoryEntry.COLUMN_USER_KEY, userId);
+            cv.put(UserCategoryEntry.COLUMN_CATEGORY_KEY, categoryId);
+
+            context.getContentResolver().insert(UserCategoryEntry.CONTENT_URI, cv);
         }
     }
 }

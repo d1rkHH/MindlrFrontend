@@ -11,6 +11,7 @@ import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.auth.IdentityProvider;
 import de.gamedots.mindlr.mindlrfrontend.auth.IdpResponse;
+import de.gamedots.mindlr.mindlrfrontend.helper.IntentHelper;
 import de.gamedots.mindlr.mindlrfrontend.jobs.SignInTask;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.util.DebugUtil;
@@ -90,9 +91,9 @@ public class AuthFragment extends Fragment implements IdentityProvider.IdpCallba
         Utility.createUserEntryIfNotExists(getActivity(),
                 idpResponse.getEmail(), idpResponse.getProviderType());
 
+        Utility.insertUserCategories(getActivity());
+
         // user was successfully verified and account was created
-        Intent intent = new Intent(getActivity(), MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        IntentHelper.buildNewClearTask(getActivity(), MainActivity.class);
     }
 }
