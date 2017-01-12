@@ -33,6 +33,7 @@ import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.adapter.UserCreatePostAdapter;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserCreatePostEntry;
+import de.gamedots.mindlr.mindlrfrontend.helper.UriHelper;
 
 public class UserPostsFragment extends Fragment implements SearchView.OnQueryTextListener, LoaderManager
         .LoaderCallbacks<Cursor> {
@@ -172,12 +173,21 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
             ((TextView) getActivity().findViewById(R.id.usercreatepost_content_textview)).setText(cursor
                     .getString(UserPostsFragment.COLUMN_CONTENT_TEXT));
 
-            // TODO: handle content uri
-            // read uri from cursor and load into imageview
-            Glide.with(getActivity())
-                    .load(Uri.parse(cursor.getString(UserPostsFragment.COLUMN_CONTENT_URI)))
-                    .fitCenter()
-                    .into((ImageView) getActivity().findViewById(R.id.usercreatepost_imageview));
+            // read uri from cursor
+            Uri uri = Uri.parse(cursor.getString(UserPostsFragment.COLUMN_CONTENT_URI));
+            ImageView postImage = (ImageView) getActivity().findViewById(R.id.usercreatepost_imageview);
+            if(UriHelper.isImgur(uri)){
+                Glide.with(getActivity())
+                        .load(uri)
+                        .fitCenter()
+                        .into(postImage);
+            } else {
+                postImage.setVisibility(View.GONE);
+            }
+
+            if (UriHelper.isYoutube(uri)){
+                //TODO: load into player or thumbnail
+            }
 
             //TODO: utility format date Today, Yesterday, 5. Nov. + string res formatter
             // read date millis from cursor and get day and month using calendar object

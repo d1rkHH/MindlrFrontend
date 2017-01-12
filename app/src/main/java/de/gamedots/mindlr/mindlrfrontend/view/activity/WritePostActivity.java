@@ -42,6 +42,7 @@ import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.CategoryEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.DraftEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemEntry;
 import de.gamedots.mindlr.mindlrfrontend.helper.IntentHelper;
+import de.gamedots.mindlr.mindlrfrontend.helper.UriHelper;
 import de.gamedots.mindlr.mindlrfrontend.jobs.ImgurUploadService;
 import de.gamedots.mindlr.mindlrfrontend.jobs.WritePostTask;
 
@@ -68,7 +69,7 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
     private TextView _charCounter;
     private ImageView _postImageView;
     private ImageButton _closeImageButton;
-    private Uri _imageContentUri;
+    private Uri _postContentUri;
 
     private SimpleCursorAdapter _categoryAdapter;
     /* Uri passed from DraftsActivity to determine which draft to populate */
@@ -166,7 +167,7 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
         _closeImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                _imageContentUri = null;
+                _postContentUri = null;
                 _postImageView.setImageBitmap(null);
                 _postImageView.setVisibility(View.GONE);
                 _closeImageButton.setVisibility(View.GONE);
@@ -178,6 +179,19 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
             _loadUri = getIntent().getParcelableExtra(DRAFT_EXTRA);
             if (_loadUri != null) {
                 getSupportLoaderManager().initLoader(WRITEPOST_DRAFT_LOADER_ID, null, this);
+            }
+        }
+
+        // check if launched from share event and set uri if app was youtube
+        final String action = getIntent().getAction();
+        if(action != null && action.equals(Intent.ACTION_SEND)) {
+            String url = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+            Uri uri = Uri.parse(url);
+            if (UriHelper.isYoutube(uri)){
+                _postContentUri = uri;
+                _postEditText.append("\n");
+                _postEditText.append(uri.toString());
+                //TODO: disable button and handle only 1 content for post
             }
         }
     }
@@ -204,13 +218,13 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
 
         if (requestCode == PICK_IMAGE_REQUEST) {
             if (resultCode == RESULT_OK && data != null && data.getData() != null) {
-                _imageContentUri = data.getData();
-                if (_imageContentUri != null) {
-                    Toast.makeText(this, "URI: " + _imageContentUri.toString(), Toast.LENGTH_LONG).show();
+                _postContentUri = data.getData();
+                if (_postContentUri != null) {
+                    Toast.makeText(this, "URI: " + _postContentUri.toString(), Toast.LENGTH_LONG).show();
                     _postImageView.setVisibility(View.INVISIBLE);
 
                     Glide.with(this)
-                            .loadFromMediaStore(_imageContentUri)
+                            .loadFromMediaStore(_postContentUri)
                             .asBitmap()
                             .fitCenter()
                             .listener(this)
@@ -223,10 +237,11 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
     // region start send written post to server
     public void startPostSending(View view) {
         // user added image to post content, upload it to imgur to get global URL
-        if(_imageContentUri != null && !_imageContentUri.toString().isEmpty()){
+        if(_postContentUri != null && !_postContentUri.toString().isEmpty()
+                && !UriHelper.isYoutube(_postContentUri)){
 
             ImgurUploadService service = new ImgurUploadService(this, _loadUri, composeContent());
-            service.start(_imageContentUri);
+            service.start(_postContentUri);
             startActivity(IntentHelper.buildNewClearTask(this, MainActivity.class));
         } else {
             // no image select we can start sending right away
@@ -236,13 +251,20 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
 
     private JSONObject composeContent(){
         String catString = _categorySpinner.getSelectedItem().toString();
+        String contentUri = UriHelper.isYoutube(_postContentUri) ? _postContentUri.toString() : "";
+        String postText = _postEditText.getText().toString();
+
+        if (UriHelper.isYoutube(_postContentUri)){
+            postText = postText.replace(_postContentUri.toString(), "");
+        }
+
         JSONObject content = new JSONObject();
         try {
             JSONArray categories = new JSONArray();
             // TODO: multi selectable categories  + insert values in JSON arr
             categories.put(catString);
-            content.put(JSON_CONTENT_TEXT_KEY, _postEditText.getText().toString());
-            content.put(JSON_CONTENT_URI_KEY, "");
+            content.put(JSON_CONTENT_TEXT_KEY, postText);
+            content.put(JSON_CONTENT_URI_KEY, contentUri);
             content.put(JSONARR_CONTENT_CATEGORIES_KEY, categories);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -265,8 +287,12 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
     }
 
     @Override
-    public void afterTextChanged(Editable s) {
-        _charCounter.setText(String.valueOf(POST_CHAR_LIMIT - s.length()));
+    public void afterTextChanged(Editable postText) {
+        if(UriHelper.isYoutube(_postContentUri)
+                && !postText.toString().contains(_postContentUri.toString())){
+            _postContentUri = null;
+        }
+        _charCounter.setText(String.valueOf(POST_CHAR_LIMIT - postText.length()));
     }
 
     @Override
@@ -288,8 +314,18 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
 
     private boolean handleNavigationDraftStorage(final boolean upNavigation) {
         String text = _postEditText.getText().toString();
-        if (!text.trim().isEmpty() || (_imageContentUri != null && !_imageContentUri.toString().isEmpty())
+
+        if (!text.trim().isEmpty() || (_postContentUri != null && !_postContentUri.toString().isEmpty())
                 || _loadUri != null) {
+
+            final String postText;
+            if (UriHelper.isYoutube(_postContentUri)){
+                // remove youtube uri from content text for later use
+                // because it is stored separately inside an uri field
+                postText = text.replace(_postContentUri.toString(), "");
+            } else{
+                postText = text;
+            }
 
             final Dialog dialog = new Dialog(WritePostActivity.this);
             dialog.setContentView(R.layout.dialog_store_drafts);
@@ -321,10 +357,9 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
 
                     // 1. create and insert item
                     ContentValues cv = new ContentValues();
-                    // TODO: handle content uri for youtube
-                    cv.put(ItemEntry.COLUMN_CONTENT_URI, (_imageContentUri == null) ? "" :
-                            _imageContentUri.toString());
-                    cv.put(ItemEntry.COLUMN_CONTENT_TEXT, _postEditText.getText().toString());
+                    cv.put(ItemEntry.COLUMN_CONTENT_URI, (_postContentUri == null) ? "" :
+                            _postContentUri.toString());
+                    cv.put(ItemEntry.COLUMN_CONTENT_TEXT, postText);
 
                     long itemId = -1;
                     long draftItemId = -1;
@@ -413,20 +448,32 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
             return;
         }
         _postEditText.setText(cursor.getString(COLUMN_CONTENT_TEXT));
-        _imageContentUri = Uri.parse(cursor.getString(COLUMN_CONTENT_URI));
+        _postContentUri = Uri.parse(cursor.getString(COLUMN_CONTENT_URI));
         // because the spinner is based on db the id is equal to the spinner row selection id
         //Log.v(LOG.AUTH, "categorie loaded " + (int) cursor.getLong(COLUMN_CATEGORY_KEY));
         // TODO: load categories from item x category and set multi selection
         //_categorySpinner.setSelection((int) cursor.getLong(COLUMN_CATEGORY_KEY), true);
 
-        _postImageView.setVisibility(View.INVISIBLE);
-        // TODO: check between content types video/ image
-        Glide.with(this)
-                .loadFromMediaStore(_imageContentUri)
-                .asBitmap()
-                .fitCenter()
-                .listener(this)
-                .into(_postImageView);
+        // initially the image is not in the layout because the additional content
+        // may not be an image
+        _postImageView.setVisibility(View.GONE);
+
+        // check between content uri types
+        if (UriHelper.isImgur(_postContentUri)){
+            _postImageView.setVisibility(View.VISIBLE);
+            Glide.with(this)
+                    .loadFromMediaStore(_postContentUri)
+                    .asBitmap()
+                    .fitCenter()
+                    .listener(this)
+                    .into(_postImageView);
+        }
+
+        if (UriHelper.isYoutube(_postContentUri)){
+            // TODO: maybe load video or set gone
+            _postEditText.append("\n");
+            _postEditText.append(_postContentUri.toString());
+        }
     }
 
     @Override
@@ -439,7 +486,7 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
     public boolean onException(Exception e, Uri model, Target<Bitmap> target, boolean isFirstResource) {
         // error in retrieving Bitmap so assume something went wrong with the Uri
         // so invalidate it
-        _imageContentUri = null;
+        _postContentUri = null;
         _postImageView.setVisibility(View.GONE);
         return false;
     }

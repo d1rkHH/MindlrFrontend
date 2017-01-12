@@ -3,6 +3,7 @@ package de.gamedots.mindlr.mindlrfrontend.view.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -12,13 +13,17 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
+import de.gamedots.mindlr.mindlrfrontend.helper.UriHelper;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 import de.gamedots.mindlr.mindlrfrontend.util.Utility;
@@ -34,6 +39,7 @@ public class PostViewFragment extends Fragment {
     public static final String DETAIL_EXTRA = "detail_extra";
     public static final String POST_EXTRA  ="post_extra";
     private TextView _postView;
+    private ImageView _postImageView;
 
 
     public PostViewFragment() {
@@ -52,20 +58,19 @@ public class PostViewFragment extends Fragment {
             view = inflater.inflate(R.layout.fragment_post_view, container, false);
 
             if (PostLoader.getInstance().isInitialized()) {
-                String text = PostLoader.getInstance().getCurrent().getContentText();
-                text = text.replaceAll(System.getProperty("line.separator"), "");
-                _postView.setText(text);
+                setViewValues(PostLoader.getInstance().getCurrent());
             }
         }
         _postView = (TextView) view.findViewById(R.id.postTextView);
+        _postImageView = (ImageView)view.findViewById(R.id.postImageView);
+
         if(isDetail){
             Intent launchIntent = getActivity().getIntent();
             if (launchIntent != null && launchIntent.getExtras().containsKey(POST_EXTRA)) {
                 ViewPost vp = launchIntent.getParcelableExtra(POST_EXTRA);
-                _postView.setText(vp.getContentText());
+                setViewValues(vp);
             }
         }
-
 
         LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.post_fragment_container);
         if (linearLayout != null) {
@@ -75,6 +80,31 @@ public class PostViewFragment extends Fragment {
         }
 
         return view;
+    }
+
+    private void setViewValues(ViewPost vp){
+        // set post content text
+        String postText = vp.getContentText();
+        postText = postText.replaceAll(System.getProperty("line.separator"), "");
+        _postView.setText(postText);
+
+        // load image into view or load video depending on uri type
+        String uri = vp.getContentUri();
+        if (!uri.isEmpty()){
+            Uri mediaUri = Uri.parse(uri);
+
+            if (UriHelper.isImgur(mediaUri)){
+                Glide.with(this).load(mediaUri).fitCenter().into(_postImageView);
+            } else {
+                _postImageView.setVisibility(View.GONE);
+            }
+
+            if(UriHelper.isYoutube(mediaUri)){
+                // TODO: init video loading
+            } else {
+                // disable video player view
+            }
+        }
     }
 
     public TextView getPostView() {

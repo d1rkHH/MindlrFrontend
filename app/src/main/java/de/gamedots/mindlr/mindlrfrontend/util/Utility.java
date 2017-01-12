@@ -65,7 +65,9 @@ public class Utility {
                         Boolean.parseBoolean(context.getString(R.string.pref_notification_false)));
     }
 
-    public static void createUserEntryIfNotExists(Context context, String email, String provider) {
+    public static void createUserEntryIfNotExists(
+            Context context, long userServerId, String email, String provider) {
+
         String selection = UserEntry.TABLE_NAME + "." + UserEntry.COLUMN_EMAIL + " = ? ";
 
         // check if user already exists
@@ -83,7 +85,7 @@ public class Utility {
             // no active user, so create local user entry
             ContentValues ucv = new ContentValues();
             ucv.put(UserEntry.COLUMN_EMAIL, email);
-            ucv.put(UserEntry.COLUMN_SERVER_ID, 1); //TODO: update when server_id is retrieved
+            ucv.put(UserEntry.COLUMN_SERVER_ID, userServerId);
             ucv.put(UserEntry.COLUMN_IS_ACTIVE, 1);
             ucv.put(UserEntry.COLUMN_AUTH_PROVIDER_KEY, ContentUris.parseId(resultUri));
             context.getContentResolver().insert(UserEntry.CONTENT_URI, ucv);

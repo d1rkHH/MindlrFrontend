@@ -18,6 +18,7 @@ import java.util.Calendar;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
+import de.gamedots.mindlr.mindlrfrontend.helper.UriHelper;
 import de.gamedots.mindlr.mindlrfrontend.view.activity.DetailActivity;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.UserPostsFragment;
 
@@ -85,12 +86,17 @@ public class UserCreatePostAdapter extends RecyclerView.Adapter<UserCreatePostAd
         // read data from cursor and apply to post text content
         viewHolder.postTextView.setText(_cursor.getString(UserPostsFragment.COLUMN_CONTENT_TEXT));
 
-        // TODO: handle content uri
-        // read uri from cursor and load into imageview
-        Glide.with(_context)
-                .load(Uri.parse(_cursor.getString(UserPostsFragment.COLUMN_CONTENT_URI)))
-                .fitCenter()
-                .into(viewHolder.postContentImage);
+        // read uri from cursor
+        Uri uri = Uri.parse(_cursor.getString(UserPostsFragment.COLUMN_CONTENT_URI));
+        if(UriHelper.isImgur(uri)){
+            viewHolder.postContentImage.setVisibility(View.VISIBLE);
+            Glide.with(_context)
+                    .load(uri)
+                    .fitCenter()
+                    .into(viewHolder.postContentImage);
+        } else {
+            viewHolder.postContentImage.setVisibility(View.GONE);
+        }
 
         //TODO: utility format date Today, Yesterday, 5. Nov. + string res formatter
         // read date millis from cursor and get day and month using calendar object

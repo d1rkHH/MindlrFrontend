@@ -38,9 +38,16 @@
             android:parentActivityName=".view.activity.MainActivity"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize">
+
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.gamedots.mindlr.mindlrfrontend.view.activity.MainActivity"/>
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".view.activity.SplashActivity"

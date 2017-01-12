@@ -67,7 +67,6 @@ public class AuthFragment extends Fragment implements IdentityProvider.IdpCallba
 
             // send auth credentials to server for verification
             new SignInTask(getActivity(), new JSONObject(), idpResponse.getProviderType(), null, idpResponse).execute();
-            onSendingSuccess(idpResponse);
         } else {
             DebugUtil.toast(getActivity(), getString(R.string.auth_error_network_unavailable));
         }
@@ -83,12 +82,13 @@ public class AuthFragment extends Fragment implements IdentityProvider.IdpCallba
 
     /* Successful verified user on backend. Mark user as authenticated and create DB entry */
     @Override
-    public void onSendingSuccess(IdpResponse idpResponse) { //TODO: json content as parameter from response
+    public void onSendingSuccess(IdpResponse idpResponse, long userServerId) {
+
         // user was verified on backend so set authstate accordingly
         Utility.addAuthStateToPreference(getActivity(), true);
 
         // create new user if not already exists
-        Utility.createUserEntryIfNotExists(getActivity(),
+        Utility.createUserEntryIfNotExists(getActivity(), userServerId,
                 idpResponse.getEmail(), idpResponse.getProviderType());
 
         Utility.insertUserCategories(getActivity());

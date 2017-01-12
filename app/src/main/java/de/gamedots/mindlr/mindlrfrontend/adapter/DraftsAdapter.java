@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,6 +17,7 @@ import com.bumptech.glide.Glide;
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.DraftEntry;
+import de.gamedots.mindlr.mindlrfrontend.helper.UriHelper;
 import de.gamedots.mindlr.mindlrfrontend.view.activity.WritePostActivity;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.DraftsFragment;
 
@@ -114,22 +114,18 @@ public class DraftsAdapter extends RecyclerView.Adapter<DraftsAdapter.DraftsAdap
 
         // bind values from cursor
         viewHolder.postContentText.setText(_cursor.getString(DraftsFragment.COLUMN_CONTENT_TEXT));
+        viewHolder.postContentImage.setVisibility(View.GONE);
 
-        try {
-            //Bitmap bitmap = MediaStore.Images.Media.getBitmap(_context.getContentResolver(), Uri.parse
-            //      (_cursor.getString(DraftsFragment.COLUMN_CONTENT_URI)));
-            //viewHolder.postContentImage.setImageBitmap(bitmap);
-            // TODO: handle video(thumpnail or plain uri)/image loading
+        Uri uri = Uri.parse(_cursor.getString(DraftsFragment.COLUMN_CONTENT_URI));
+        if (!UriHelper.isYoutube(uri)){
+            viewHolder.postContentImage.setVisibility(View.VISIBLE);
             Glide.with(_context)
-                    .loadFromMediaStore(Uri.parse(_cursor.getString(DraftsFragment.COLUMN_CONTENT_URI)))
+                    .loadFromMediaStore(uri)
                     .asBitmap()
                     .into(viewHolder.postContentImage);
-        } catch (Exception e) {
-            e.printStackTrace();
-            viewHolder.postContentImage.setBackgroundColor(Color.GRAY);
-
+            //TODO: add placeholder
+            //viewHolder.postContentImage.setBackgroundColor(Color.GRAY);
         }
-
     }
 
     @Override

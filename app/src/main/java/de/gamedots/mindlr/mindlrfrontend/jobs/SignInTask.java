@@ -15,7 +15,7 @@ import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.toast;
 public class SignInTask extends APICallTask {
 
     public interface AuthRequestCallback {
-        void onSendingSuccess(IdpResponse idpResponse);
+        void onSendingSuccess(IdpResponse idpResponse, long userServerId);
     }
 
     private AuthRequestCallback _callback;
@@ -34,7 +34,8 @@ public class SignInTask extends APICallTask {
         Log.d(LOG.AUTH, "successful verified the user on backend");
         toast(_context, "Verified User");
         if (_callback != null) {
-            _callback.onSendingSuccess(_idpResponse);
+            // TODO: backend send server_id in result json
+            _callback.onSendingSuccess(_idpResponse, 0 /* TODO: get server id form json*/);
         }
     }
 
