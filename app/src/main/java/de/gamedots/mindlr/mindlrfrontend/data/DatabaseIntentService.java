@@ -5,6 +5,10 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
 import java.util.Vector;
 
@@ -13,6 +17,7 @@ import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.CategoryEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.PostEntry;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserCreatePostEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserPostEntry;
 import de.gamedots.mindlr.mindlrfrontend.model.Category;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
@@ -22,6 +27,9 @@ public class DatabaseIntentService extends IntentService {
 
     public static final String INSERT_POST_ACTION = "insertposts";
     public static final String INSERT_CATEGORIES_ACTION = "insertcategories";
+    public static final String UPDATE_USERPOSTS_VOTES_ACTION = "updateuserposts";
+
+    public static final String JSON_EXTRA = "json_extra";
 
 
     public DatabaseIntentService() {
@@ -34,9 +42,10 @@ public class DatabaseIntentService extends IntentService {
             storePostsToLocalDb();
         } else if (intent.getAction().equals(INSERT_CATEGORIES_ACTION)) {
             storeCategories();
+        } else if (intent.getAction().equals(UPDATE_USERPOSTS_VOTES_ACTION)){
+            updateUserPostsVotes(intent.getStringExtra(JSON_EXTRA));
         }
     }
-
 
     private void storePostsToLocalDb() {
         SQLiteDatabase db = new MindlrDBHelper(this).getWritableDatabase();
@@ -94,5 +103,34 @@ public class DatabaseIntentService extends IntentService {
             categories[i] = cv;
         }
         getContentResolver().bulkInsert(CategoryEntry.CONTENT_URI, categories);
+    }
+
+    private void updateUserPostsVotes(String jsonString) {
+        // TODO: define json contract backend
+        try {
+            JSONObject result = new JSONObject(jsonString);
+            JSONArray posts = result.getJSONArray("posts");
+
+            ContentValues cv = new ContentValues();
+            for (int i = 0; i < posts.length(); ++i) {
+                cv.clear();
+
+                JSONObject post = posts.getJSONObject(i);
+                long server_id = post.getLong("id");
+                int upvotes = post.getInt("upvotes");
+                int downvotes = post.getInt("downvotes");
+
+                cv.put(UserCreatePostEntry.COLUMN_UPVOTES, upvotes);
+                cv.put(UserCreatePostEntry.COLUMN_DOWNVOTES, downvotes);
+
+                getContentResolver().update(UserCreatePostEntry.CONTENT_URI,
+                        cv,
+                        UserCreatePostEntry.COLUMN_SERVER_ID + " = ? ",
+                        new String[]{String.valueOf(server_id)});
+
+            }
+        } catch (JSONException jex) {
+            jex.printStackTrace();
+        }
     }
 }

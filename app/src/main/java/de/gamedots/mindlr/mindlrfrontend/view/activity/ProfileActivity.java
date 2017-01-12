@@ -9,9 +9,11 @@ import android.support.v7.widget.Toolbar;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONObject;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.adapter.ViewPagerAdapter;
+import de.gamedots.mindlr.mindlrfrontend.jobs.SyncUserPostTask;
 import de.gamedots.mindlr.mindlrfrontend.model.ImageUploadResult;
 import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostFragment;
@@ -53,6 +55,8 @@ public class ProfileActivity extends AppCompatActivity {
             _tapLayout.setupWithViewPager(_viewPager);
         }
         initTapIcons();
+
+        syncUserPost();
     }
 
     @Override
@@ -84,5 +88,11 @@ public class ProfileActivity extends AppCompatActivity {
         _tapLayout.getTabAt(0).setIcon(tabIcons[0]);
         _tapLayout.getTabAt(1).setIcon(tabIcons[1]);
         _tapLayout.getTabAt(2).setIcon(tabIcons[2]);
+    }
+
+    private void syncUserPost(){
+        if (Utility.isNetworkAvailable(this)) {
+            new SyncUserPostTask(this, new JSONObject()).execute();
+        }
     }
 }
