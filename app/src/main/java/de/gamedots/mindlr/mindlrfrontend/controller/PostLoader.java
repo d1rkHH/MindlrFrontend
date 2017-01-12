@@ -1,7 +1,6 @@
 package de.gamedots.mindlr.mindlrfrontend.controller;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -50,8 +49,6 @@ public class PostLoader {
     public void initialize(PostViewFragment fragment) {
 
         int postsLoaded = Utility.loadUnvotedPostsOrNothing(MindlrApplication.getInstance());
-        Toast.makeText(MindlrApplication.getInstance(), "Loaded posts: " + postsLoaded, Toast.LENGTH_SHORT)
-                .show();
         // loaded unvoted posts size below threshold so try to load more
         if(postsLoaded < MIN_SIZE_THRESHOLD){
             Log.d(LOG.AUTH, "Load posts from the server for the first time");
@@ -72,8 +69,9 @@ public class PostLoader {
         }
 
         if (_postList.size() >= 2) {
-            //Remove read post from list and add it to the store votes handler
-            StoreVotesHandler.getInstance().addPost(_postList.poll());
+            //Remove read post from list and increase send threshold in storevoteshandler
+            _postList.poll();
+            StoreVotesHandler.getInstance().increaseSendThreshold();
             return true;
         } else {
             return false;

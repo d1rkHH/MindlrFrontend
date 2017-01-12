@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemEntry;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostFragment;
 
 /**
@@ -87,8 +88,8 @@ public class ViewPost implements Parcelable {
     }
 
     public static ViewPost fromCursor(Cursor c){
-        String contentText = c.getString(PostFragment.COLUMN_CONTENT_TEXT);
-        String contentUri = c.getString(PostFragment.COLUMN_CONTENT_URI);
+        String contentText = c.getString(c.getColumnIndex(ItemEntry.COLUMN_CONTENT_TEXT));
+        String contentUri = c.getString(c.getColumnIndex(ItemEntry.COLUMN_CONTENT_URI));
         long serverId = c.getLong(PostFragment.COLUMN_POST_ID);
 
         return new ViewPost(serverId, contentText, contentUri);

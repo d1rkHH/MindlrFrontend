@@ -110,13 +110,20 @@ public class MindlrProvider extends ContentProvider {
                     UserPostEntry.COLUMN_VOTE + " = ? ";
 
     //extract userId from uri and perform inner join to get all user related posts
-    private Cursor getPostsByUser(Uri uri, String[] projection, String sortOrder) {
+    private
+    Cursor
+    getPostsByUser(Uri uri, String selection, String[] selArgs, String[] projection, String sortOrder) {
+
         long userId = UserPostEntry.getUserIdFromUri(uri);
+        String sel = (selection == null) ? sUserPostForIdSelection : selection;
+        String[] args = (selArgs == null) ?
+                new String[]{Long.toString(userId), Integer.toString(UserPostEntry.VOTE_LIKED)}
+                    : selArgs;
 
         return sPostsForUserQueryBuilder.query(_dbOpenHelper.getReadableDatabase(),
                 projection,
-                sUserPostForIdSelection,
-                new String[]{Long.toString(userId), Integer.toString(UserPostEntry.VOTE_LIKED)},
+                sel,
+                args,
                 null,
                 null,
                 sortOrder);
@@ -213,7 +220,7 @@ public class MindlrProvider extends ContentProvider {
                         projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case POSTS_FOR_USER:
-                resultCursor = getPostsByUser(uri, projection, sortOrder);
+                resultCursor = getPostsByUser(uri, selection, selectionArgs, projection, sortOrder);
                 break;
             case USER_CREATE_POST:
                 resultCursor = getUserCreatedPosts(projection, selection, selectionArgs, sortOrder);

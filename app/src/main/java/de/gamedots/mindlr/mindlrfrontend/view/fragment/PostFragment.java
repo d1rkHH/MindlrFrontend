@@ -40,14 +40,16 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
     // define post column projection and constants
     public static final String[] POST_COLUMNS = {
             MindlrContract.PostEntry.TABLE_NAME + "." + MindlrContract.PostEntry._ID,
+            MindlrContract.PostEntry.COLUMN_SERVER_ID,
             MindlrContract.ItemEntry.COLUMN_CONTENT_TEXT,
             MindlrContract.ItemEntry.COLUMN_CONTENT_URI
     };
 
     // Constant for column indices used by the cursor that are tied to the POST_COLUMNS
     public static final int COLUMN_POST_ID = 0;
-    public static final int COLUMN_CONTENT_TEXT = 1;
-    public static final int COLUMN_CONTENT_URI = 2;
+    public static final int COLUMN_POST_SERVER_ID = 1;
+    public static final int COLUMN_CONTENT_TEXT = 2;
+    public static final int COLUMN_CONTENT_URI = 3;
 
 
     public PostFragment() {

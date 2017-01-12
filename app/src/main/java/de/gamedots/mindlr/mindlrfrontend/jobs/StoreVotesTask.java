@@ -28,6 +28,5 @@ public class StoreVotesTask extends APICallTask {
     @Override
     public void onFailure(JSONObject result) {
         Log.e(LOG.POSTS, "ERROR storing votes");
-        StoreVotesHandler.getInstance().sendingFailed();
     }
 }
