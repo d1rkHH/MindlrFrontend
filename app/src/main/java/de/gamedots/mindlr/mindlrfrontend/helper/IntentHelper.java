@@ -36,8 +36,8 @@ public class IntentHelper {
         }
     }
 
-    public static Intent buildNewClearTask(Context ctxPackage, Class cls){
-        return new Intent(ctxPackage,cls)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    public static void buildNewClearTask(Context ctxPackage, Class cls){
+        ctxPackage.startActivity(new Intent(ctxPackage,cls)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
     }
 }

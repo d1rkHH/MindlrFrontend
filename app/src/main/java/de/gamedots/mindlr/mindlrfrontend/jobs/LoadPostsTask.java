@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.bumptech.glide.Glide;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,6 +55,8 @@ public class LoadPostsTask extends APICallTask {
                         if (_fragment != null && _fragment.getPostView() != null && PostLoader.getInstance
                                 ().getPostList().size() == 1) {
                             _fragment.getPostView().setText(viewPost.getContentText());
+                            Glide.with(_fragment).load(viewPost.getContentUri()).into(_fragment
+                                    .getImageView());
                         }
 
                     } else {

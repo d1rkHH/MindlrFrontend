@@ -34,8 +34,11 @@ public class SignInTask extends APICallTask {
         Log.d(LOG.AUTH, "successful verified the user on backend");
         toast(_context, "Verified User");
         if (_callback != null) {
-            // TODO: backend send server_id in result json
-            _callback.onSendingSuccess(_idpResponse, 0 /* TODO: get server id form json*/);
+            try {
+                _callback.onSendingSuccess(_idpResponse, result.getLong("userID"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -67,20 +67,22 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
         // check if recreated due to activity configuration change and read fullscreen information
         if(savedInstanceState != null && savedInstanceState.containsKey(FULLSCREEN_KEY)){
             _fullScreen = savedInstanceState.getBoolean(FULLSCREEN_KEY);
-            // create player container fragment
-            _youtubePlayerFragment = new YouTubePlayerSupportFragment();
+            if (_fullScreen) {
+                // create player container fragment
+                _youtubePlayerFragment = new YouTubePlayerSupportFragment();
 
 
-            // dynamically add the fragment to allow nested fragments
-            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-            transaction.add(R.id.postview_video_container, _youtubePlayerFragment, FRAGMENT_PLAYER_TAG);
-            //transaction.addToBackStack(null);
-            transaction.commit();
+                // dynamically add the fragment to allow nested fragments
+                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+                transaction.add(R.id.postview_video_container, _youtubePlayerFragment, FRAGMENT_PLAYER_TAG);
+                //transaction.addToBackStack(null);
+                transaction.commit();
 
-            _videoID = savedInstanceState.getString(VIDEO_ID_KEY);
-            _youtubePlayerFragment.initialize(
-                    getActivity().getString(R.string.youtube_developer_key),
-                    this);
+                _videoID = savedInstanceState.getString(VIDEO_ID_KEY);
+                _youtubePlayerFragment.initialize(
+                        getActivity().getString(R.string.youtube_developer_key),
+                        this);
+            }
         }
 
         View view;
@@ -90,21 +92,22 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
         } else {
             view = inflater.inflate(R.layout.fragment_post_view, container, false);
 
-            if (PostLoader.getInstance().isInitialized()) {
-                setViewValues(PostLoader.getInstance().getCurrent());
-            }
         }
         _postView = (TextView) view.findViewById(R.id.postTextView);
         _postImageView = (ImageView) view.findViewById(R.id.postImageView);
 
         //TODO: remove after testing
-        setViewValues(new ViewPost(5, "hallo", "https://youtu.be/Y7kUG_PiTXc"));
+        //setViewValues(new ViewPost(5, "hallo", "https://youtu.be/Y7kUG_PiTXc"));
 
         if (isDetail) {
             Intent launchIntent = getActivity().getIntent();
             if (launchIntent != null && launchIntent.getExtras().containsKey(POST_EXTRA)) {
                 ViewPost vp = launchIntent.getParcelableExtra(POST_EXTRA);
                 setViewValues(vp);
+            }
+        } else {
+            if (PostLoader.getInstance().isInitialized()) {
+                setViewValues(PostLoader.getInstance().getCurrent());
             }
         }
 
@@ -130,8 +133,11 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
             Uri mediaUri = Uri.parse(uri);
 
             if (UriHelper.isImgur(mediaUri)) {
+                Log.v(LOG.AUTH, "loaded imgur image");
+                _postImageView.setVisibility(View.VISIBLE);
                 Glide.with(this).load(mediaUri).fitCenter().into(_postImageView);
             } else {
+                Log.v(LOG.AUTH, "was NO imgur image");
                 _postImageView.setVisibility(View.GONE);
             }
 
@@ -209,6 +215,10 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
     public void onDestroy() {
         super.onDestroy();
         Log.v(LOG.AUTH, "postview fragment destroyed");
+    }
+
+    public ImageView getImageView() {
+        return _postImageView;
     }
 
     // region touch handler

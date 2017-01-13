@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -37,6 +38,7 @@ import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserPostEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrDBHelper;
 import de.gamedots.mindlr.mindlrfrontend.helper.CategoryHelper;
 import de.gamedots.mindlr.mindlrfrontend.jobs.WritePostTask;
+import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.ImageUploadResult;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 import de.gamedots.mindlr.mindlrfrontend.view.activity.WritePostActivity;
@@ -227,7 +229,7 @@ public class Utility {
             cursor.close();
         }
         dbHelper.close();
-
+        Log.v(LOG.AUTH, "habe geladen " + postLoaded);
         PostLoader.getInstance().addAllPosts(toInsertPosts);
         return postLoaded;
     }
