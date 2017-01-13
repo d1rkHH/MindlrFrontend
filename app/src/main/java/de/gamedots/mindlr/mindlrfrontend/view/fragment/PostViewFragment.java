@@ -19,6 +19,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
@@ -34,12 +37,22 @@ import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.toast;
  * This class displays a post to the user. Furthermore it handles the
  * swipe interaction and the fragment transaction together with the PostLoader class.
  */
-public class PostViewFragment extends Fragment {
+public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitializedListener {
 
     public static final String DETAIL_EXTRA = "detail_extra";
-    public static final String POST_EXTRA  ="post_extra";
+    public static final String POST_EXTRA = "post_extra";
+    public static final String FULLSCREEN_KEY = "fullscreen_key";
+    /* Unique identifier for the current player fragment */
+    public static final String FRAGMENT_PLAYER_TAG = "de.gamedots.mindlrfrontend.PostViewFragment";
+    private static final String VIDEO_ID_KEY = "video_id_tag";
+
     private TextView _postView;
     private ImageView _postImageView;
+
+    private YouTubePlayerSupportFragment _youtubePlayerFragment;
+    private YouTubePlayer _player;
+    private boolean _fullScreen;
+    private String _videoID;
 
 
     public PostViewFragment() {
@@ -50,9 +63,29 @@ public class PostViewFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         Log.d(LOG.AUTH, "onCreateView: postviewfragment recreated with " + (savedInstanceState != null));
+
+        // check if recreated due to activity configuration change and read fullscreen information
+        if(savedInstanceState != null && savedInstanceState.containsKey(FULLSCREEN_KEY)){
+            _fullScreen = savedInstanceState.getBoolean(FULLSCREEN_KEY);
+            // create player container fragment
+            _youtubePlayerFragment = new YouTubePlayerSupportFragment();
+
+
+            // dynamically add the fragment to allow nested fragments
+            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+            transaction.add(R.id.postview_video_container, _youtubePlayerFragment, FRAGMENT_PLAYER_TAG);
+            //transaction.addToBackStack(null);
+            transaction.commit();
+
+            _videoID = savedInstanceState.getString(VIDEO_ID_KEY);
+            _youtubePlayerFragment.initialize(
+                    getActivity().getString(R.string.youtube_developer_key),
+                    this);
+        }
+
         View view;
         boolean isDetail = getArguments() != null && getArguments().containsKey(DETAIL_EXTRA);
-        if(isDetail) {
+        if (isDetail) {
             view = inflater.inflate(R.layout.fragment_detail_post_view, container, false);
         } else {
             view = inflater.inflate(R.layout.fragment_post_view, container, false);
@@ -62,9 +95,12 @@ public class PostViewFragment extends Fragment {
             }
         }
         _postView = (TextView) view.findViewById(R.id.postTextView);
-        _postImageView = (ImageView)view.findViewById(R.id.postImageView);
+        _postImageView = (ImageView) view.findViewById(R.id.postImageView);
 
-        if(isDetail){
+        //TODO: remove after testing
+        setViewValues(new ViewPost(5, "hallo", "https://youtu.be/Y7kUG_PiTXc"));
+
+        if (isDetail) {
             Intent launchIntent = getActivity().getIntent();
             if (launchIntent != null && launchIntent.getExtras().containsKey(POST_EXTRA)) {
                 ViewPost vp = launchIntent.getParcelableExtra(POST_EXTRA);
@@ -82,7 +118,7 @@ public class PostViewFragment extends Fragment {
         return view;
     }
 
-    private void setViewValues(ViewPost vp){
+    private void setViewValues(ViewPost vp) {
         // set post content text
         String postText = vp.getContentText();
         postText = postText.replaceAll(System.getProperty("line.separator"), "");
@@ -90,19 +126,31 @@ public class PostViewFragment extends Fragment {
 
         // load image into view or load video depending on uri type
         String uri = vp.getContentUri();
-        if (!uri.isEmpty()){
+        if (!uri.isEmpty()) {
             Uri mediaUri = Uri.parse(uri);
 
-            if (UriHelper.isImgur(mediaUri)){
+            if (UriHelper.isImgur(mediaUri)) {
                 Glide.with(this).load(mediaUri).fitCenter().into(_postImageView);
             } else {
                 _postImageView.setVisibility(View.GONE);
             }
 
-            if(UriHelper.isYoutube(mediaUri)){
-                // TODO: init video loading
+            if (UriHelper.isYoutube(mediaUri)) {
+                // create player container fragment
+                _youtubePlayerFragment = new YouTubePlayerSupportFragment();
+
+                // dynamically add the fragment to allow nested fragments
+                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+                transaction.add(R.id.postview_video_container, _youtubePlayerFragment, FRAGMENT_PLAYER_TAG);
+                //transaction.addToBackStack(null);
+                transaction.commit();
+
+                _videoID = UriHelper.extractVideoPathFromYoutubeUrl(mediaUri.toString());
+                _youtubePlayerFragment.initialize(
+                        getActivity().getString(R.string.youtube_developer_key),
+                        this);
             } else {
-                // disable video player view
+                // maybe disable video player view
             }
         }
     }
@@ -111,15 +159,59 @@ public class PostViewFragment extends Fragment {
         return _postView;
     }
 
-    private void fragmentTrans(int animStart, int animEnd) {
-        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager()
-                .beginTransaction();
-        fragmentTransaction.setCustomAnimations(animStart, animEnd);
-        fragmentTransaction.replace(R.id.main_content, new PostViewFragment());
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+    public boolean isPlayerFullscreen(){
+        return _fullScreen;
     }
 
+    public void setPlayerFullscreen(boolean fullscreen){
+        _fullScreen = fullscreen;
+    }
+
+    public YouTubePlayer getPlayer(){
+        return _player;
+    }
+
+    // region youtube handling
+    @Override
+    public void onInitializationSuccess(YouTubePlayer.Provider provider,
+                                        YouTubePlayer youTubePlayer,
+                                        boolean wasRestored) {
+        _player = youTubePlayer;
+        if (!wasRestored) {
+            _player.setOnFullscreenListener(new YouTubePlayer.OnFullscreenListener() {
+                @Override
+                public void onFullscreen(boolean isFullscreen) {
+                    _fullScreen = isFullscreen;
+                    _player.setPlayerStyle(YouTubePlayer.PlayerStyle.DEFAULT);
+                }
+            });
+        }
+        youTubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.DEFAULT);
+        youTubePlayer.cueVideo(_videoID);
+    }
+
+    @Override
+    public void
+    onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult errorReason) {
+            String errorMessage = errorReason.toString();
+            Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
+    }
+    // endregion
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(FULLSCREEN_KEY, _fullScreen);
+        outState.putString(VIDEO_ID_KEY, _videoID);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.v(LOG.AUTH, "postview fragment destroyed");
+    }
+
+    // region touch handler
     private class OnSwipeTouchListener implements View.OnTouchListener {
 
         private final GestureDetector gestureDetector;
@@ -202,5 +294,16 @@ public class PostViewFragment extends Fragment {
         public boolean onTouch(View v, MotionEvent event) {
             return gestureDetector.onTouchEvent(event);
         }
+    }
+
+    // endregion
+
+    private void fragmentTrans(int animStart, int animEnd) {
+        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager()
+                .beginTransaction();
+        fragmentTransaction.setCustomAnimations(animStart, animEnd);
+        fragmentTransaction.replace(R.id.main_content, new PostViewFragment());
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 }

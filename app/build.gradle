@@ -62,6 +62,8 @@ dependencies {
     // eventbus
     compile 'org.greenrobot:eventbus:3.0.0'
 
+    //youtube
+    compile files('libs/YouTubeAndroidPlayerApi.jar')
 
     // 3rd party libs
     compile 'com.github.bumptech.glide:glide:3.7.0'

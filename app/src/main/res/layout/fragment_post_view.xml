@@ -48,6 +48,11 @@
                 android:adjustViewBounds="true"/>
 
             <!-- TODO: insert youtube player fragment-->
+            <FrameLayout
+                android:id="@+id/postview_video_container"
+                android:layout_marginTop="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
 
