@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.support.v4.app.ShareCompat;
+import android.support.v7.app.AppCompatActivity;
 
 public class IntentHelper {
     public static final int PICK_IMAGE_REQUEST = 1;
@@ -22,6 +24,16 @@ public class IntentHelper {
         }
         activity.startActivityForResult(Intent.createChooser(intent, "Select Picture"),
                 PICK_IMAGE_REQUEST);
+    }
+
+    public static void showShareIntent(String shareText, Context context) {
+        Intent shareIntent = ShareCompat.IntentBuilder.from((AppCompatActivity)context)
+                .setType("text/plain")
+                .setText(shareText)
+                .createChooserIntent();
+        if (shareIntent.resolveActivity(context.getPackageManager()) != null) {
+            context.startActivity(shareIntent);
+        }
     }
 
     public static Intent buildNewClearTask(Context ctxPackage, Class cls){

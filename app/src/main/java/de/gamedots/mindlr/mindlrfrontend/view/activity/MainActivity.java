@@ -19,10 +19,10 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
+import de.gamedots.mindlr.mindlrfrontend.helper.IntentHelper;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.ImageUploadResult;
 import de.gamedots.mindlr.mindlrfrontend.util.DebugUtil;
-import de.gamedots.mindlr.mindlrfrontend.util.ShareUtil;
 import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
 
@@ -93,7 +93,7 @@ public class MainActivity extends BaseActivity implements
         }
         switch (item.getItemId()) {
             case R.id.action_share:
-                ShareUtil.showShareIntent(PostLoader.getInstance().getCurrent().getContentText(), this);
+                IntentHelper.showShareIntent(PostLoader.getInstance().getCurrent().getContentText(), this);
                 break;
             case R.id.action_report:
                 DebugUtil.toast(this, "Reported");
