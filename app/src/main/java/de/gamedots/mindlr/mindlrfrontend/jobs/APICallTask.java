@@ -83,9 +83,7 @@ abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
                 e.printStackTrace();
             }
         }
-
         try {
-            requestJSON = new JSONObject();
             requestJSON.put("content", _content);
             requestJSON.put("metadata", _metadata);
         } catch (JSONException e) {

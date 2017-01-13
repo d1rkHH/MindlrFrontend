@@ -250,7 +250,8 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
     }
 
     private JSONObject composeContent(){
-        String catString = _categorySpinner.getSelectedItem().toString();
+        Cursor cursor = (Cursor) _categorySpinner.getSelectedItem();
+        String catString = cursor.getString(cursor.getColumnIndex(CategoryEntry.COLUMN_NAME));
         String contentUri = UriHelper.isYoutube(_postContentUri) ? _postContentUri.toString() : "";
         String postText = _postEditText.getText().toString();
 

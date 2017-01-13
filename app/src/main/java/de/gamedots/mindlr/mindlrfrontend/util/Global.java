@@ -10,7 +10,7 @@ public final class Global {
     //public static final PostLoader postLoader = new PostLoader();
 
     //Server Connection
-    public static final String SERVER_URL = "http://mindlr.com/api/";
+    public static final String SERVER_URL = "https://mindlr.com/api/";
     //public static final String SERVER_URL = "http://192.168.2.160:8000/api/";
 
     //Methods
