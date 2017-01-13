@@ -89,4 +89,23 @@
     <!-- UP/DOWN votes in % -->
     <string name="format_vote_percentage"><xliff:g id="vote">%1.0f</xliff:g> %%</string>
     <string name="post_send_failure_msg">Senden fehlgeschlagen. Post als Entwurf gespeichert.</string>
+
+    <!-- Date format for like/write [Liked 30 seconds ago, Written today, Liked 30 Feb] -->
+    <string name="date_format">%1$s %2$d second %4$s</string>
+
+    <!-- Liked/Written 30 seconds ago -->
+    <string name="time_ago">%1$s %2$s ago</string>
+    <!-- Liked/Written Tuesday -->
+    <string name="time_weekday">%1$s %2$s</string>
+    <!-- Liked on 5 Jan -->
+    <string name="time_day_with_month">%1$s on %2$s</string>
+    <!-- Liked/Written Today/Yesterday -->
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+
+    <!-- Format start string -->
+    <string name="liked">Liked</string>
+    <string name="written">Written</string>
+
+
 </resources>

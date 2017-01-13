@@ -13,11 +13,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
+import de.gamedots.mindlr.mindlrfrontend.helper.DateFormatHelper;
 import de.gamedots.mindlr.mindlrfrontend.helper.UriHelper;
 import de.gamedots.mindlr.mindlrfrontend.view.activity.DetailActivity;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.UserPostsFragment;
@@ -100,12 +98,10 @@ public class UserCreatePostAdapter extends RecyclerView.Adapter<UserCreatePostAd
 
         //TODO: utility format date Today, Yesterday, 5. Nov. + string res formatter
         // read date millis from cursor and get day and month using calendar object
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(_cursor.getLong(UserPostsFragment.COLUMN_SUBMIT_DATE));
-        SimpleDateFormat month_date = new SimpleDateFormat("dd MMM",
-                _context.getResources().getConfiguration().locale);
-        String dayWithMonth = month_date.format(cal.getTime());
-        viewHolder.submitDate.setText(dayWithMonth);
+        long dateMillis = _cursor.getLong(UserPostsFragment.COLUMN_SUBMIT_DATE);
+        String dateFormat = DateFormatHelper.getFormattedDateString(
+                _context, dateMillis, DateFormatHelper.WRITE_FORMAT);
+        viewHolder.submitDate.setText(dateFormat);
 
         // read uppercent from cursor
         viewHolder.upvotes.setText(String.format(_context.getString(R.string.format_vote_percentage),

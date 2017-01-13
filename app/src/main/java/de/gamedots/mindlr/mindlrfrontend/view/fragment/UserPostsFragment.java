@@ -24,15 +24,14 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.adapter.UserCreatePostAdapter;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserCreatePostEntry;
+import de.gamedots.mindlr.mindlrfrontend.helper.DateFormatHelper;
 import de.gamedots.mindlr.mindlrfrontend.helper.UriHelper;
 
 public class UserPostsFragment extends Fragment implements SearchView.OnQueryTextListener, LoaderManager
@@ -191,12 +190,10 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
 
             //TODO: utility format date Today, Yesterday, 5. Nov. + string res formatter
             // read date millis from cursor and get day and month using calendar object
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(cursor.getLong(UserPostsFragment.COLUMN_SUBMIT_DATE));
-            SimpleDateFormat month_date = new SimpleDateFormat("dd MMM",
-                    getActivity().getResources().getConfiguration().locale);
-            String dayWithMonth = month_date.format(cal.getTime());
-            ((TextView) getActivity().findViewById(R.id.usercreatepost_date_textview)).setText(dayWithMonth);
+            long dateMillis = cursor.getLong(UserPostsFragment.COLUMN_SUBMIT_DATE);
+            String formatDate = DateFormatHelper.getFullDateString(getActivity(), dateMillis);
+            ((TextView) getActivity().findViewById(R.id.usercreatepost_date_textview))
+                    .setText(formatDate);
 
             // read uppercent from cursor
             ((TextView) getActivity().findViewById(R.id.usercreatepost_uppercent_textview))

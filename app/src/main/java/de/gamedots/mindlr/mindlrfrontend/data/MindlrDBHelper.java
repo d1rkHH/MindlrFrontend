@@ -83,6 +83,7 @@ public class MindlrDBHelper extends SQLiteOpenHelper {
                 UserPostEntry.COLUMN_USER_KEY + " INTEGER NOT NULL, " +
                 UserPostEntry.COLUMN_POST_KEY + " INTEGER NOT NULL, " +
                 UserPostEntry.COLUMN_VOTE + " INTEGER NOT NULL, " +
+                UserPostEntry.COLUMN_VOTE_DATE + " INTEGER DEFAULT 0, " +
                 UserPostEntry.COLUMN_SYNC_FLAG + " INTEGER DEFAULT 0, " +
 
                 " FOREIGN KEY (" + UserPostEntry.COLUMN_USER_KEY + ") REFERENCES " +

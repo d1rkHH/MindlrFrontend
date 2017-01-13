@@ -245,6 +245,8 @@ public class Utility {
         if (postCursor != null && postCursor.moveToFirst()) {
             ContentValues values = new ContentValues();
             values.put(UserPostEntry.COLUMN_VOTE, vote);
+            values.put(UserPostEntry.COLUMN_VOTE_DATE, System.currentTimeMillis());
+
             context.getContentResolver().update(UserPostEntry.CONTENT_URI, values,
                     UserPostEntry.COLUMN_POST_KEY + " = ?",
                     new String[]{Long.toString(postCursor.getLong(postId_index))}

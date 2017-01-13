@@ -3,13 +3,19 @@ package de.gamedots.mindlr.mindlrfrontend.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import de.gamedots.mindlr.mindlrfrontend.R;
+import de.gamedots.mindlr.mindlrfrontend.helper.DateFormatHelper;
+import de.gamedots.mindlr.mindlrfrontend.helper.UriHelper;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 import de.gamedots.mindlr.mindlrfrontend.view.activity.DetailActivity;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostFragment;
@@ -31,10 +37,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostAdapterVie
     public class PostAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private TextView postTextView;
+        private ImageView postImageView;
+        private TextView postLikedDateView;
 
         public PostAdapterViewHolder(View view) {
             super(view);
             postTextView = (TextView) view.findViewById(R.id.post_preview_text);
+            postImageView = (ImageView)view.findViewById(R.id.post_preview_imageview);
+            postLikedDateView = (TextView)view.findViewById(R.id.post_preview_liked_date);
+            view.setOnClickListener(this);
         }
 
         @Override
@@ -63,6 +74,27 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostAdapterVie
 
         // read data from cursor and apply to post text content
         viewHolder.postTextView.setText(_cursor.getString(PostFragment.COLUMN_CONTENT_TEXT));
+
+        // handle different content uri types
+        Uri uri = Uri.parse(_cursor.getString(PostFragment.COLUMN_CONTENT_URI));
+        if (UriHelper.isImgur(uri)){
+            // TODO: placeholder
+            Glide.with(_context).load(uri).fitCenter().into(viewHolder.postImageView);
+        } else {
+            viewHolder.postImageView.setVisibility(View.GONE);
+        }
+
+        if (UriHelper.isYoutube(uri)){
+            // TODO: show link or video thumbnail
+        } else {
+            // set gone
+        }
+
+        // read date millis from cursor and create formatted string
+        long dateMillis = _cursor.getLong(PostFragment.COLUMN_VOTE_DATE);
+        String dateFormat = DateFormatHelper.getFormattedDateString(
+                _context, dateMillis, DateFormatHelper.LIKE_FORMAT);
+        viewHolder.postLikedDateView.setText(dateFormat);
     }
 
     @Override

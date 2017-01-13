@@ -90,7 +90,7 @@ public class ViewPost implements Parcelable {
     public static ViewPost fromCursor(Cursor c){
         String contentText = c.getString(c.getColumnIndex(ItemEntry.COLUMN_CONTENT_TEXT));
         String contentUri = c.getString(c.getColumnIndex(ItemEntry.COLUMN_CONTENT_URI));
-        long serverId = c.getLong(PostFragment.COLUMN_POST_ID);
+        long serverId = c.getLong(PostFragment.COLUMN_POST_SERVER_ID);
 
         return new ViewPost(serverId, contentText, contentUri);
     }

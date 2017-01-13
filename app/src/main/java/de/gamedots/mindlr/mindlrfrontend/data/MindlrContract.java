@@ -174,6 +174,9 @@ public class MindlrContract {
         public static final String SYNCED = "1";
         public static final String UNSYNCED = "0";
 
+        // Date the post was voted. Stored as long millis.
+        public static final String COLUMN_VOTE_DATE = "voted_at";
+
         /* Every record that has been synced (needSync=true) and VoteType == DOWNVOTE will be deleted
          * UPVOTED (and NOT favored!) posts get stored to a limit of 100 and then replaced with newer ones.
          * More UPVOTED posts can be loaded on demand and will be cached */
