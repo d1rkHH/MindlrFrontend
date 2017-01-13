@@ -66,7 +66,7 @@ public class AuthFragment extends Fragment implements IdentityProvider.IdpCallba
             MindlrApplication.User.setIdentityProvider(_idpProvider);
 
             // send auth credentials to server for verification
-            new SignInTask(getActivity(), new JSONObject(), idpResponse.getProviderType(), null, idpResponse).execute();
+            new SignInTask(getActivity(), new JSONObject(), idpResponse.getProviderType(), this, idpResponse).execute();
         } else {
             DebugUtil.toast(getActivity(), getString(R.string.auth_error_network_unavailable));
         }
