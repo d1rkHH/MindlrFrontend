@@ -56,7 +56,7 @@ public class ImageStrategy implements PreviewStrategy {
         _fragment = fragment;
         _postImageView = (ImageView) _fragment.getView().findViewById(R.id.postImageView);
         _postImageView.setVisibility(View.VISIBLE);
-        Glide.with(_fragment).load(_imageURL).fitCenter().into(_postImageView);
+        Glide.with(_fragment).load(_imageURL).into(_postImageView);
     }
 
     @Override

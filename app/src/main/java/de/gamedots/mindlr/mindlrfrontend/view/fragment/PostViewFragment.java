@@ -43,11 +43,8 @@ public class PostViewFragment extends Fragment {
     public static final String DETAIL_EXTRA = "detail_extra";
     public static final String POST_EXTRA = "post_extra";
     /* Unique identifier for the current player fragment */
-    public static final String FRAGMENT_PLAYER_TAG = "de.gamedots.mindlrfrontend.PostViewFragment";
-
 
     private TextView _postView;
-
     private PreviewStrategy _previewStrategy;
     private View _view;
 

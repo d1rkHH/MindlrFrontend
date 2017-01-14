@@ -120,7 +120,6 @@ public class MainActivity extends BaseActivity implements
                 if(strategy.isFullScreen()){
                     if(strategy.getPlayer() != null){
                         strategy.getPlayer().setFullscreen(false);
-                        strategy.getPlayer().setPlayerStyle(YouTubePlayer.PlayerStyle.MINIMAL);
                     }
                 }
             } else {
