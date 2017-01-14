@@ -4,8 +4,8 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="@color/primary"
               android:animateLayoutChanges="true"
+              android:background="@color/primary"
               android:orientation="vertical">
 
     <TextView
@@ -14,11 +14,12 @@
         android:layout_marginBottom="32dp"
         android:layout_marginTop="40dp"
         android:gravity="center_horizontal"
-        android:text="Choose 3 or more Categories!"
+        android:text="@string/category_choose"
         android:textColor="@color/white"
         android:textSize="28sp"/>
 
     <ScrollView
+        android:id="@+id/categories_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
@@ -44,22 +45,47 @@
         android:id="@+id/auth_button_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_weight="1"
+        android:animateLayoutChanges="true"
+        android:gravity="center"
         android:orientation="vertical"
-        android:paddingTop="16dp"
-        android:visibility="invisible"
-        android:gravity="center_horizontal"
-        android:layout_weight="1">
+        android:paddingTop="16dp">
+
+        <TextView
+            android:id="@+id/skip_info_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/already_registered"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            tools:text="@string/already_registered"/>
+
+        <TextView
+            android:id="@+id/tutorial_skip_cat_selection_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:clickable="true"
+            android:fontFamily="sans-serif-medium"
+            android:padding="16dp"
+            android:textColor="@color/linkblue"
+            android:textSize="20sp"
+            android:text="@string/sign_in_skip"
+            tools:text="Sign In"/>
 
         <com.google.android.gms.common.SignInButton
             android:id="@+id/google_signIn_button"
             android:layout_width="250dp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:layout_height="wrap_content"/>
+            android:visibility="gone"/>
 
         <de.gamedots.mindlr.mindlrfrontend.view.customview.CustomTwitterLoginButton
             android:id="@+id/twitter_login_button"
             android:layout_width="250dp"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
 
     </LinearLayout>
 

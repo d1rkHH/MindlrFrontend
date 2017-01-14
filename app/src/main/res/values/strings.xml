@@ -103,10 +103,14 @@
     <!-- Liked/Written Today/Yesterday -->
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
+    <string name="time_day">%1$s %2$s</string>
 
     <!-- Format start string -->
     <string name="liked">Liked</string>
     <string name="written">Written</string>
+    <string name="already_registered">Already registered?</string>
+    <string name="category_choose">Choose 3 or more Categories!</string>
+    <string name="sign_in_skip">Sign In</string>
 
 
 </resources>

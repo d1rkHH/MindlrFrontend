@@ -65,7 +65,7 @@ public class DateFormatHelper {
                 } else {
                     // Liked Today/ Written Today
                     String today = res.getString(R.string.today);
-                    out = res.getString(R.string.time_ago, formatStart, today);
+                    out = res.getString(R.string.time_day, formatStart, today);
                 }
             } else {
                 // Liked Yesterday

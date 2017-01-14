@@ -26,9 +26,12 @@ public class ProfileActivity extends AppCompatActivity {
 
     private int[] tabIcons = {
             R.drawable.ic_favorite_black_24dp,
-            R.drawable.ic_favor_star_white_24dp,
             R.drawable.ic_my_posts_archive_white_24dp
     };
+
+    public static final int TAP_LIKED = 0;
+    public static final int TAP_USERPOST = 1;
+    public static final String TAP_SELECT_KEY = "tap_select_pos";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +47,8 @@ public class ProfileActivity extends AppCompatActivity {
 
         _viewPager = (ViewPager) findViewById(R.id.viewpager);
         initViewPager(_viewPager);
-        if (getIntent().hasExtra("parent")){
-            _viewPager.setCurrentItem(getIntent().getIntExtra("parent",0));
+        if (getIntent().hasExtra(TAP_SELECT_KEY)){
+            _viewPager.setCurrentItem(getIntent().getIntExtra(TAP_SELECT_KEY,0));
         }
 
         _tapLayout = (TabLayout) findViewById(R.id.tablayout);
@@ -77,7 +80,6 @@ public class ProfileActivity extends AppCompatActivity {
     private void initViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new PostFragment(), "Liked");
-        adapter.addFragment(new PostFragment(), "Favor");
         adapter.addFragment(new UserPostsFragment(), "Posts");
         viewPager.setAdapter(adapter);
     }
@@ -85,7 +87,6 @@ public class ProfileActivity extends AppCompatActivity {
     private void initTapIcons() {
         _tapLayout.getTabAt(0).setIcon(tabIcons[0]);
         _tapLayout.getTabAt(1).setIcon(tabIcons[1]);
-        _tapLayout.getTabAt(2).setIcon(tabIcons[2]);
     }
 
     private void syncUserPost(){

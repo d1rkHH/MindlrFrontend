@@ -41,12 +41,12 @@ public class DetailActivity extends AppCompatActivity {
         if(getIntent().hasExtra(FRAGMENT_EXTRA)){
             fragment = new UserPostsFragment();
             upToMainActivity = false;
-            tapSelectionOnNavigation = 2;
+            tapSelectionOnNavigation = ProfileActivity.TAP_USERPOST;
         } else {
             fragment = new PostViewFragment();
             upToMainActivity = !getIntent().hasExtra(LIKED_EXTRA);
             if (!upToMainActivity){
-                tapSelectionOnNavigation = 0;
+                tapSelectionOnNavigation = ProfileActivity.TAP_LIKED;
             }
         }
         Bundle args = new Bundle();
@@ -80,7 +80,7 @@ public class DetailActivity extends AppCompatActivity {
     public Intent getSupportParentActivityIntent() {
         Class dest = (upToMainActivity)? MainActivity.class : ProfileActivity.class;
         Intent intent = new Intent(this, dest);
-        intent.putExtra("parent", tapSelectionOnNavigation);
+        intent.putExtra(ProfileActivity.TAP_SELECT_KEY, tapSelectionOnNavigation);
         return intent;
     }
 }
