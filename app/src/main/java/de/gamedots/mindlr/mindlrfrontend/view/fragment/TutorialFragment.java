@@ -32,6 +32,7 @@ public class TutorialFragment extends Fragment {
 
     public static final String PAGE_ARGUMENT = "page_argument";
     public static final int MIN_SELECT_CATEGORIES = 3;
+    private boolean _skippedAlreadyAccount;
 
     public TutorialFragment() {
     }
@@ -67,15 +68,17 @@ public class TutorialFragment extends Fragment {
                 catCursor.close();
             }
 
+
+
             /* add the authentication fragment to the activity and configure listener. */
             final AuthFragment authFragment = AuthFragment.getInstance();
             FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
             ft.add(R.id.auth_button_container, authFragment, AuthFragment.TAG);
             ft.commit();
 
-            SignInButton googleLoginButton =
+            final SignInButton googleLoginButton =
                     (SignInButton) view.findViewById(R.id.google_signIn_button);
-            CustomTwitterLoginButton twitterLoginButton =
+            final CustomTwitterLoginButton twitterLoginButton =
                     (CustomTwitterLoginButton) view.findViewById(R.id.twitter_login_button);
 
             /* Provider Button handling, set provider according to pressed button and start auth flow */
@@ -93,6 +96,24 @@ public class TutorialFragment extends Fragment {
             twitterLoginButton.setOnClickListener(listener);
             googleLoginButton.setOnClickListener(listener);
 
+            final TextView skippSelectionTV = (TextView)view.findViewById(R.id
+                    .tutorial_skip_cat_selection_textview);
+            final TextView skipInfoTV = (TextView)view.findViewById(R.id.skip_info_textview);
+
+            skippSelectionTV.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // hide skip information and enable login buttons
+                    skipInfoTV.setVisibility(View.GONE);
+                    skippSelectionTV.setVisibility(View.GONE);
+                    googleLoginButton.setVisibility(View.VISIBLE);
+                    twitterLoginButton.setVisibility(View.VISIBLE);
+
+                    // we skipped so set flag
+                    _skippedAlreadyAccount = true;
+                }
+            });
+
             CollectionPicker picker = (CollectionPicker) view.findViewById(R.id.collection_item_picker);
             picker.setItems(items);
             picker.setOnItemClickListener(new OnItemClickListener() {
@@ -104,11 +125,12 @@ public class TutorialFragment extends Fragment {
                     } else {
                         selectedCategories.add(id);
                     }
-
-                    view.findViewById(R.id.auth_button_container).setVisibility(
-                            (selectedCategories.size() >= MIN_SELECT_CATEGORIES) ?
-                                    View.VISIBLE
-                                    : View.INVISIBLE);
+                    if (!_skippedAlreadyAccount) {
+                        int visibility = (selectedCategories.size() >= MIN_SELECT_CATEGORIES) ?
+                                View.VISIBLE : View.GONE;
+                        googleLoginButton.setVisibility(visibility);
+                        twitterLoginButton.setVisibility(visibility);
+                    }
                 }
             });
             // end if page == 3
