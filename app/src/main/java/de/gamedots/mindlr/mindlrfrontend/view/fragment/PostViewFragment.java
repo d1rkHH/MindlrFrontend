@@ -61,7 +61,6 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         Log.d(LOG.AUTH, "onCreateView: postviewfragment recreated with " + (savedInstanceState != null));
 
         // check if recreated due to activity configuration change and read fullscreen information
@@ -87,6 +86,7 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
         View view;
         boolean isDetail = getArguments() != null && getArguments().containsKey(DETAIL_EXTRA);
         if (isDetail) {
+            Log.v(LOG.AUTH, "inflate detail layout");
             view = inflater.inflate(R.layout.fragment_detail_post_view, container, false);
         } else {
             view = inflater.inflate(R.layout.fragment_post_view, container, false);
@@ -100,7 +100,8 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
 
         if (isDetail) {
             Intent launchIntent = getActivity().getIntent();
-            if (launchIntent != null && launchIntent.getExtras().containsKey(POST_EXTRA)) {
+            if (launchIntent != null && launchIntent.getExtras() != null
+                    && launchIntent.getExtras().containsKey(POST_EXTRA)) {
                 ViewPost vp = launchIntent.getParcelableExtra(POST_EXTRA);
                 setViewValues(vp);
             }
@@ -121,6 +122,9 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
     }
 
     private void setViewValues(ViewPost vp) {
+        if (_postView == null || _postImageView == null)
+            return;
+        Log.v(LOG.AUTH, "initial UI element values");
         // set post content text
         String postText = vp.getContentText();
         postText = postText.replaceAll(System.getProperty("line.separator"), "");
@@ -134,7 +138,7 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
             if (UriHelper.isImgur(mediaUri)) {
                 Log.v(LOG.AUTH, "loaded imgur image");
                 _postImageView.setVisibility(View.VISIBLE);
-                Glide.with(this).load(mediaUri).fitCenter().into(_postImageView);
+                Glide.with(getActivity()).load(mediaUri).into(_postImageView);
             } else {
                 Log.v(LOG.AUTH, "was NO imgur image");
                 _postImageView.setVisibility(View.GONE);

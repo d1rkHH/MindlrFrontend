@@ -20,6 +20,7 @@ import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 import de.gamedots.mindlr.mindlrfrontend.view.activity.DetailActivity;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostFragment;
 
+import static de.gamedots.mindlr.mindlrfrontend.view.activity.DetailActivity.LIKED_EXTRA;
 import static de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment.POST_EXTRA;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostAdapterViewHolder> {
@@ -53,6 +54,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostAdapterVie
             _cursor.moveToPosition(getAdapterPosition());
             ViewPost vp = ViewPost.fromCursor(_cursor);
             Intent intent = new Intent(_context, DetailActivity.class);
+            intent.putExtra(LIKED_EXTRA, true);
             intent.putExtra(POST_EXTRA, vp);
             _context.startActivity(intent);
         }

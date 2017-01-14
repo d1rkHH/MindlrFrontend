@@ -24,24 +24,30 @@ import de.gamedots.mindlr.mindlrfrontend.view.fragment.UserPostsFragment;
 public class DetailActivity extends AppCompatActivity {
 
     public static final String FRAGMENT_EXTRA = "fragment_extra";
+    public static final String LIKED_EXTRA = "liked_extra";
     private boolean upToMainActivity;
+    private int tapSelectionOnNavigation;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
         setSupportActionBar((Toolbar)findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getWindow().setBackgroundDrawable(null);
 
         Fragment fragment;
         if(getIntent().hasExtra(FRAGMENT_EXTRA)){
             fragment = new UserPostsFragment();
             upToMainActivity = false;
+            tapSelectionOnNavigation = 2;
         } else {
             fragment = new PostViewFragment();
-            upToMainActivity = true;
+            upToMainActivity = !getIntent().hasExtra(LIKED_EXTRA);
+            if (!upToMainActivity){
+                tapSelectionOnNavigation = 0;
+            }
         }
         Bundle args = new Bundle();
         args.putBoolean(PostViewFragment.DETAIL_EXTRA, true);
@@ -74,7 +80,7 @@ public class DetailActivity extends AppCompatActivity {
     public Intent getSupportParentActivityIntent() {
         Class dest = (upToMainActivity)? MainActivity.class : ProfileActivity.class;
         Intent intent = new Intent(this, dest);
-        intent.putExtra("parent", upToMainActivity? "main": "profile");
+        intent.putExtra("parent", tapSelectionOnNavigation);
         return intent;
     }
 }

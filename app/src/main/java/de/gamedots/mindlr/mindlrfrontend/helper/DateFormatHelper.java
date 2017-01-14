@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 
@@ -89,9 +90,8 @@ public class DateFormatHelper {
         return out;
     }
 
-    public static String getFullDateString(Context context, long dateMillis){
-        SimpleDateFormat full_date_format = new SimpleDateFormat("dd MMM YYYY",
-                context.getResources().getConfiguration().locale);
+    public static String getFullDateString(long dateMillis){
+        SimpleDateFormat full_date_format = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
         return full_date_format.format(dateMillis);
     }
 

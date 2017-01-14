@@ -18,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -45,6 +46,7 @@ import de.gamedots.mindlr.mindlrfrontend.helper.IntentHelper;
 import de.gamedots.mindlr.mindlrfrontend.helper.UriHelper;
 import de.gamedots.mindlr.mindlrfrontend.jobs.ImgurUploadService;
 import de.gamedots.mindlr.mindlrfrontend.jobs.WritePostTask;
+import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 
 import static de.gamedots.mindlr.mindlrfrontend.helper.IntentHelper.PICK_IMAGE_REQUEST;
 
@@ -95,6 +97,7 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.v(LOG.AUTH, "writepost recreated");
         setContentView(R.layout.activity_write_post);
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -194,6 +197,12 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
                 //TODO: disable button and handle only 1 content for post
             }
         }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.v(LOG.AUTH, "launched from exisiting onnewintent()");
     }
 
     @Override
