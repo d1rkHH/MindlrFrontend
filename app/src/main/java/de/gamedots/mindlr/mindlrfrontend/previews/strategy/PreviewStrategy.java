@@ -1,6 +1,6 @@
 package de.gamedots.mindlr.mindlrfrontend.previews.strategy;
 
-import android.support.v4.app.Fragment;
+import android.os.Bundle;
 
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
 
@@ -12,5 +12,9 @@ public interface PreviewStrategy {
 
     boolean match(String url);
 
-    void buildPreviewUI(PostViewFragment fragment);
+    PreviewStrategy getCopy();
+
+    void buildPreviewUI(PostViewFragment fragment, Bundle savedInstanceState);
+
+    void saveInstanceState(Bundle outState);
 }

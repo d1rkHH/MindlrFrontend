@@ -42,17 +42,14 @@ public class PostViewFragment extends Fragment {
 
     public static final String DETAIL_EXTRA = "detail_extra";
     public static final String POST_EXTRA = "post_extra";
-    public static final String FULLSCREEN_KEY = "fullscreen_key";
     /* Unique identifier for the current player fragment */
     public static final String FRAGMENT_PLAYER_TAG = "de.gamedots.mindlrfrontend.PostViewFragment";
-    private static final String VIDEO_ID_KEY = "video_id_tag";
+
 
     private TextView _postView;
 
     private PreviewStrategy _previewStrategy;
-
-    private boolean _fullScreen;
-    private String _videoID;
+    private View _view;
 
 
     public PostViewFragment() {
@@ -61,30 +58,6 @@ public class PostViewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if(_previewStrategy != null){
-            // Recreate preview
-        }
-
-        Log.d(LOG.AUTH, "onCreateView: postviewfragment recreated with " + (savedInstanceState != null));
-        // TODO: Move this code to strategies
-        // check if recreated due to activity configuration change and read fullscreen information
-        if(savedInstanceState != null && savedInstanceState.containsKey(FULLSCREEN_KEY)){
-            _fullScreen = savedInstanceState.getBoolean(FULLSCREEN_KEY);
-            if (_fullScreen) {
-                // create player container fragment
-                //_youtubePlayerFragment = new YouTubePlayerSupportFragment();
-
-                // dynamically add the fragment to allow nested fragments
-                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                //transaction.add(R.id.postview_video_container, _youtubePlayerFragment, FRAGMENT_PLAYER_TAG);
-                //transaction.addToBackStack(null);
-                transaction.commit();
-
-                _videoID = savedInstanceState.getString(VIDEO_ID_KEY);
-                //_youtubePlayerFragment.initialize(getActivity().getString(R.string.youtube_developer_key),this);
-            }
-        }
-
         View view;
         boolean isDetail = getArguments() != null && getArguments().containsKey(DETAIL_EXTRA);
         if (isDetail) {
@@ -93,21 +66,18 @@ public class PostViewFragment extends Fragment {
             view = inflater.inflate(R.layout.fragment_post_view, container, false);
 
         }
+        _view = view;
         _postView = (TextView) view.findViewById(R.id.postTextView);
-
-
-        //TODO: remove after testing
-        //setViewValues(new ViewPost(5, "hallo", "https://youtu.be/Y7kUG_PiTXc"));
 
         if (isDetail) {
             Intent launchIntent = getActivity().getIntent();
             if (launchIntent != null && launchIntent.getExtras().containsKey(POST_EXTRA)) {
                 ViewPost vp = launchIntent.getParcelableExtra(POST_EXTRA);
-                setViewValues(vp);
+                setViewValues(vp, savedInstanceState);
             }
         } else {
             if (PostLoader.getInstance().isInitialized()) {
-                setViewValues(PostLoader.getInstance().getCurrent());
+                setViewValues(PostLoader.getInstance().getCurrent(), savedInstanceState);
             }
         }
 
@@ -121,10 +91,13 @@ public class PostViewFragment extends Fragment {
         return view;
     }
 
-    private void setViewValues(ViewPost vp) {
-        _previewStrategy = PreviewStrategyMatcher.getInstance().matchStrategy(vp);
-        _previewStrategy.buildPreviewUI(this);
-        // set post content text
+    public void setViewValues(ViewPost vp, Bundle savedInstanceState) {
+        if(_previewStrategy != null){
+            _previewStrategy.buildPreviewUI(this, savedInstanceState);
+        } else {
+            _previewStrategy = PreviewStrategyMatcher.getInstance().matchStrategy(vp).getCopy();
+            _previewStrategy.buildPreviewUI(this, savedInstanceState);
+        }
         String postText = vp.getContentText();
         postText = postText.replaceAll(System.getProperty("line.separator"), "");
         _postView.setText(postText);
@@ -134,20 +107,10 @@ public class PostViewFragment extends Fragment {
         return _postView;
     }
 
-    public boolean isPlayerFullscreen(){
-        return _fullScreen;
-    }
-
-    public void setPlayerFullscreen(boolean fullscreen){
-        _fullScreen = fullscreen;
-    }
-
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean(FULLSCREEN_KEY, _fullScreen);
-        outState.putString(VIDEO_ID_KEY, _videoID);
+        _previewStrategy.saveInstanceState(outState);
         super.onSaveInstanceState(outState);
     }
 
@@ -253,11 +216,11 @@ public class PostViewFragment extends Fragment {
         fragmentTransaction.commit();
     }
 
-    public boolean isFullScreen(){
-        return _fullScreen;
+    public PreviewStrategy getPreviewStrategy() {
+        return _previewStrategy;
     }
 
-    public void setFullScreen(boolean fullScreen){
-        _fullScreen = fullScreen;
+    public View getView() {
+        return _view;
     }
 }

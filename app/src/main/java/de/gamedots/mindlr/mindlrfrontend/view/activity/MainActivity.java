@@ -24,6 +24,7 @@ import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.helper.IntentHelper;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.ImageUploadResult;
+import de.gamedots.mindlr.mindlrfrontend.previews.strategy.YoutubeStrategy;
 import de.gamedots.mindlr.mindlrfrontend.util.DebugUtil;
 import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
@@ -114,11 +115,13 @@ public class MainActivity extends BaseActivity implements
                     getSupportFragmentManager().findFragmentByTag("PostView");
 
             // youtube player is in fullscreen so minimize, otherwise follow normal navigation
-            if (fragment.isPlayerFullscreen()){
-                if (fragment.getPlayer() != null) {
-                    fragment.setPlayerFullscreen(false);
-                    fragment.getPlayer().setFullscreen(false);
-                    fragment.getPlayer().setPlayerStyle(YouTubePlayer.PlayerStyle.MINIMAL);
+            if(fragment.getPreviewStrategy() instanceof YoutubeStrategy){
+                YoutubeStrategy strategy = (YoutubeStrategy) fragment.getPreviewStrategy();
+                if(strategy.isFullScreen()){
+                    if(strategy.getPlayer() != null){
+                        strategy.getPlayer().setFullscreen(false);
+                        strategy.getPlayer().setPlayerStyle(YouTubePlayer.PlayerStyle.MINIMAL);
+                    }
                 }
             } else {
                 super.onBackPressed();

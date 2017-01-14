@@ -1,6 +1,8 @@
 package de.gamedots.mindlr.mindlrfrontend.previews;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +10,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
+import de.gamedots.mindlr.mindlrfrontend.previews.strategy.ImageStrategy;
 import de.gamedots.mindlr.mindlrfrontend.previews.strategy.PreviewStrategy;
+import de.gamedots.mindlr.mindlrfrontend.previews.strategy.YoutubeStrategy;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
 
 /**
@@ -23,13 +27,18 @@ public class PreviewStrategyMatcher {
     private static final String url_regex = "(http|https)://([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?";
 
     private List<PreviewStrategy> _previewStrategies;
-    private static final PreviewStrategyMatcher _instance = new PreviewStrategyMatcher();
+    private static PreviewStrategyMatcher _instance = null;
 
     private PreviewStrategyMatcher(){
         _previewStrategies = new ArrayList<>();
     }
 
     public static PreviewStrategyMatcher getInstance(){
+        if(_instance == null){
+            _instance = new PreviewStrategyMatcher();
+            _instance.registerStrategy(new YoutubeStrategy());
+            _instance.registerStrategy(new ImageStrategy());
+        }
         return _instance;
     }
 
@@ -45,14 +54,18 @@ public class PreviewStrategyMatcher {
      * @return the first matching strategy or a NoPreviewStrategy
      */
     public PreviewStrategy matchStrategy(ViewPost viewPost){
+        Log.v("Preview", "match strategy");
         if(viewPost.getContentUri() != null && !viewPost.getContentUri().isEmpty()){
+            Log.v("Preview", "ContentURL not empty");
             for(PreviewStrategy strategy : _previewStrategies){
                 if(strategy.match(viewPost.getContentUri())){
                     return strategy;
                 }
             }
         } else {
+            Log.v("Preview", "ContentURL empty");
             for(String url : findURLs(viewPost.getContentText())){
+                Log.v("Preview", "Found URL: " + url);
                 for(PreviewStrategy strategy : _previewStrategies){
                     if(strategy.match(url)){
                         return strategy;
@@ -88,7 +101,17 @@ public class PreviewStrategyMatcher {
         }
 
         @Override
-        public void buildPreviewUI(PostViewFragment fragment) {
+        public PreviewStrategy getCopy() {
+            return this;
+        }
+
+        @Override
+        public void buildPreviewUI(PostViewFragment fragment, Bundle savedInstanceState) {
+
+        }
+
+        @Override
+        public void saveInstanceState(Bundle outState) {
 
         }
     }

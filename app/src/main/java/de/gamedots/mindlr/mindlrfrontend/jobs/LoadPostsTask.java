@@ -51,14 +51,11 @@ public class LoadPostsTask extends APICallTask {
                                 post.getString("content_text"),
                                 post.getString("content_url")
                         );
+                        final boolean firstPost = !PostLoader.getInstance().isInitialized();
                         PostLoader.getInstance().addPost(viewPost);
-                        if (_fragment != null && _fragment.getPostView() != null && PostLoader.getInstance
-                                ().getPostList().size() == 1) {
-                            _fragment.getPostView().setText(viewPost.getContentText());
-                            Glide.with(_fragment).load(viewPost.getContentUri()).into(_fragment
-                                    .getImageView());
+                        if (_fragment != null && firstPost) {
+                            _fragment.setViewValues(viewPost, null);
                         }
-
                     } else {
                         Log.e(LOG.POSTS, "Post JSON invalid");
                     }
