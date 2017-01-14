@@ -188,7 +188,6 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
                 //TODO: load into player or thumbnail
             }
 
-            //TODO: utility format date Today, Yesterday, 5. Nov. + string res formatter
             // read date millis from cursor and get day and month using calendar object
             long dateMillis = cursor.getLong(UserPostsFragment.COLUMN_SUBMIT_DATE);
             String formatDate = DateFormatHelper.getFullDateString(getActivity(), dateMillis);

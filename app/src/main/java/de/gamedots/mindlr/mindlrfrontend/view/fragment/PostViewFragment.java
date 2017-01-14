@@ -71,7 +71,6 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
                 // create player container fragment
                 _youtubePlayerFragment = new YouTubePlayerSupportFragment();
 
-
                 // dynamically add the fragment to allow nested fragments
                 FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
                 transaction.add(R.id.postview_video_container, _youtubePlayerFragment, FRAGMENT_PLAYER_TAG);
@@ -274,7 +273,7 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
         }
 
         public void onSwipeRight() {
-            //toast(getActivity(), "Upvote");
+            toast(getActivity(), "Upvote");
             PostLoader.getInstance().getCurrent().ratePositive();
             Utility.updatePostVoteType(getActivity(),
                     PostLoader.getInstance().getCurrent().getServerId(),
@@ -288,7 +287,7 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
         }
 
         public void onSwipeLeft() {
-            // toast(getActivity(), "Downvote");
+            toast(getActivity(), "Downvote");
             PostLoader.getInstance().getCurrent().rateNegative();
             Utility.updatePostVoteType(getActivity(),
                     PostLoader.getInstance().getCurrent().getServerId(),

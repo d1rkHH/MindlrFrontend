@@ -36,7 +36,7 @@ public class WritePostTask extends APICallTask {
             // true: post was loaded from draft and is now send successfully
             //        delete draft and insert usercreated post
             boolean isDraft = !(_draftUri == null || _draftUri.toString().isEmpty());
-            Utility.storeUserCreatePostFromJSON(_draftUri, isDraft, _content, _context);
+            Utility.storeUserCreatePostFromJSON(_draftUri, isDraft, result, _context);
         } catch (JSONException e) {
             e.printStackTrace();
         }

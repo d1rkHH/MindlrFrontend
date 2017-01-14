@@ -55,8 +55,8 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
     public static final String JSON_CONTENT_TEXT_KEY = "content_text";
     public static final String JSON_CONTENT_URI_KEY = "content_url";
     public static final String JSONARR_CONTENT_CATEGORIES_KEY = "categories";
-    public static final String JSON_CONTENT_SERVER_ID_KEY = "server_id";
-    public static final String JSON_CONTENT_SUBMIT_DATE = "submit_date";
+    public static final String JSON_CONTENT_SERVER_ID_KEY = "item_id";
+    public static final String JSON_CONTENT_USER_CREATE_POST_SUBMIT_DATE = "submit_date";
 
     /* Unique loader id for this activity */
     public static final int WRITEPOST_DRAFT_LOADER_ID = 3;

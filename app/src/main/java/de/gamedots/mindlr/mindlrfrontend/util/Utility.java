@@ -37,6 +37,7 @@ import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserPostEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrDBHelper;
 import de.gamedots.mindlr.mindlrfrontend.helper.CategoryHelper;
+import de.gamedots.mindlr.mindlrfrontend.helper.DateFormatHelper;
 import de.gamedots.mindlr.mindlrfrontend.jobs.WritePostTask;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.ImageUploadResult;
@@ -261,6 +262,8 @@ public class Utility {
             context)
             throws JSONException {
 
+        Log.v(LOG.AUTH, content.toString());
+
         // 1. create and insert item
         ContentValues cv = new ContentValues();
         cv.put(ItemEntry.COLUMN_CONTENT_URI, content.getString(JSON_CONTENT_URI_KEY));
@@ -318,12 +321,13 @@ public class Utility {
             cv = new ContentValues();
             cv.put(UserCreatePostEntry.COLUMN_USER_KEY, MindlrApplication.User.getId());
             cv.put(UserCreatePostEntry.COLUMN_ITEM_KEY, itemId);
-            // TODO: backend return server_id as well
-            cv.put(UserCreatePostEntry.COLUMN_SERVER_ID, 7);//content.getLong(WritePostActivity
-                    //.JSON_CONTENT_SERVER_ID_KEY));
-            // TODO: server date as long or get long from string format
-            cv.put(UserCreatePostEntry.COLUMN_SUBMIT_DATE, 500); //content.getLong(WritePostActivity
-                   // .JSON_CONTENT_SUBMIT_DATE));
+            cv.put(UserCreatePostEntry.COLUMN_SERVER_ID,
+                    content.getLong(WritePostActivity.JSON_CONTENT_SERVER_ID_KEY));
+
+            long dateMillis = DateFormatHelper.getLongMillisFromDateString(
+                    content.getString(WritePostActivity.JSON_CONTENT_USER_CREATE_POST_SUBMIT_DATE));
+
+            cv.put(UserCreatePostEntry.COLUMN_SUBMIT_DATE, dateMillis);
             context.getContentResolver().insert(UserCreatePostEntry.CONTENT_URI, cv);
         }
     }

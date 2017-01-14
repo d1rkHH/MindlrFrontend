@@ -41,8 +41,8 @@ public class LoadPostsTask extends APICallTask {
     @Override
     public void onSuccess(JSONObject result) {
         try {
-            if (result.has("posts")) {
-                JSONArray posts = result.getJSONArray("posts");
+            if (result.has("items")) {
+                JSONArray posts = result.getJSONArray("items");
                 for (int i = 0; i < posts.length(); i++) {
                     JSONObject post = posts.getJSONObject(i);
                     if (post.has("id") && post.has("content_text") && post.has("content_url")) {

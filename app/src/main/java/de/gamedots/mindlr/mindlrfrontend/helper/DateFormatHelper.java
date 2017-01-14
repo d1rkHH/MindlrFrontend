@@ -3,7 +3,9 @@ package de.gamedots.mindlr.mindlrfrontend.helper;
 import android.content.Context;
 import android.content.res.Resources;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 
@@ -91,5 +93,18 @@ public class DateFormatHelper {
         SimpleDateFormat full_date_format = new SimpleDateFormat("dd MMM YYYY",
                 context.getResources().getConfiguration().locale);
         return full_date_format.format(dateMillis);
+    }
+
+    public static long getLongMillisFromDateString(String dateString){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        Date date = null;
+        try {
+            date = sdf.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return (date != null) ?
+                date.getTime()
+                : System.currentTimeMillis();
     }
 }

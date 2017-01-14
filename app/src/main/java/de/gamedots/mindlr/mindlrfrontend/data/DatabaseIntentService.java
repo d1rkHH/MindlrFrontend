@@ -109,7 +109,7 @@ public class DatabaseIntentService extends IntentService {
         // TODO: define json contract backend
         try {
             JSONObject result = new JSONObject(jsonString);
-            JSONArray posts = result.getJSONArray("posts");
+            JSONArray posts = result.getJSONArray("items");
 
             ContentValues cv = new ContentValues();
             for (int i = 0; i < posts.length(); ++i) {
