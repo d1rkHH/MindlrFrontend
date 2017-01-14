@@ -13,7 +13,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.NestedScrollView;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -24,7 +23,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,22 +34,26 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.R;
-import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.CategoryEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.DraftEntry;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemCategoryEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemEntry;
 import de.gamedots.mindlr.mindlrfrontend.helper.IntentHelper;
 import de.gamedots.mindlr.mindlrfrontend.helper.UriHelper;
 import de.gamedots.mindlr.mindlrfrontend.jobs.ImgurUploadService;
 import de.gamedots.mindlr.mindlrfrontend.jobs.WritePostTask;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
+import de.gamedots.mindlr.mindlrfrontend.view.customview.MultiSelectionSpinner;
 
 import static de.gamedots.mindlr.mindlrfrontend.helper.IntentHelper.PICK_IMAGE_REQUEST;
 
 public class WritePostActivity extends AppCompatActivity implements TextWatcher, LoaderManager
-        .LoaderCallbacks<Cursor>, RequestListener<Uri, Bitmap>{
+        .LoaderCallbacks<Cursor>, RequestListener<Uri, Bitmap> {
 
     public static final String DRAFT_EXTRA = "draftextra";
     public static final String JSON_CONTENT_TEXT_KEY = "content_text";
@@ -67,13 +69,13 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
     private static final int POST_CHAR_LIMIT = 500;
 
     private EditText _postEditText;
-    private Spinner _categorySpinner;
     private TextView _charCounter;
     private ImageView _postImageView;
     private ImageButton _closeImageButton;
     private Uri _postContentUri;
 
-    private SimpleCursorAdapter _categoryAdapter;
+    private MultiSelectionSpinner _multiSelectionSpinner;
+
     /* Uri passed from DraftsActivity to determine which draft to populate */
     private Uri _loadUri;
 
@@ -111,16 +113,20 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
         // disable background because the root layout already draw its white background
         getWindow().setBackgroundDrawable(null);
 
-        // setup spinner from cursor using a simpleadapter
-        _categorySpinner = (Spinner) findViewById(R.id.category_spinner);
-        _categoryAdapter = new SimpleCursorAdapter(this,
-                android.R.layout.simple_spinner_item,
-                getContentResolver().query(CategoryEntry.CONTENT_URI, null, null,
-                        null, null), new String[]{CategoryEntry.COLUMN_NAME},
-                new int[]{android.R.id.text1},
-                0);
-        _categoryAdapter.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
-        _categorySpinner.setAdapter(_categoryAdapter);
+        // Fetch all categories from db and store display names for selection
+        Cursor categoriesCursor = getContentResolver().query(CategoryEntry.CONTENT_URI, null,null,null,null);
+        ArrayList<String> catArray = new ArrayList<>();
+        if (categoriesCursor != null){
+            while (categoriesCursor.moveToNext()){
+                String name = categoriesCursor.getString(categoriesCursor.getColumnIndex(CategoryEntry
+                        .COLUMN_DISPLAY_NAME));
+                Log.v(LOG.AUTH, "CAT NAME: " + name);
+                catArray.add(name);
+            }
+            categoriesCursor.close();
+        }
+        _multiSelectionSpinner = (MultiSelectionSpinner) findViewById(R.id.cat_spinner);
+        _multiSelectionSpinner.setItems(catArray.toArray(new String[catArray.size()]));
 
         // write post button to kick off posting
         Button button = (Button) findViewById(R.id.postSubmit);
@@ -205,20 +211,6 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
         Log.v(LOG.AUTH, "launched from exisiting onnewintent()");
     }
 
-    @Override
-    protected void onResume() {
-        _categoryAdapter.swapCursor(getContentResolver()
-                .query(CategoryEntry.CONTENT_URI, null, null, null, null));
-        _categoryAdapter.notifyDataSetChanged();
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        _categoryAdapter.swapCursor(null);
-        super.onPause();
-    }
-
     //endregion
 
     @Override
@@ -259,8 +251,18 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
     }
 
     private JSONObject composeContent(){
-        Cursor cursor = (Cursor) _categorySpinner.getSelectedItem();
-        String catString = cursor.getString(cursor.getColumnIndex(CategoryEntry.COLUMN_NAME));
+        JSONArray categories = new JSONArray();
+        for (String displayName : _multiSelectionSpinner.getSelectedStrings()) {
+            Cursor cat = getContentResolver().query(CategoryEntry.CONTENT_URI, null,
+                    CategoryEntry.COLUMN_DISPLAY_NAME + " = ? ",
+                    new String[]{displayName}, null);
+            if (cat != null && cat.moveToNext()) {
+                String uniqueName = cat.getString(cat.getColumnIndex(CategoryEntry.COLUMN_NAME));
+                categories.put(uniqueName);
+                cat.close();
+            }
+        }
+
         String contentUri = UriHelper.isYoutube(_postContentUri) ? _postContentUri.toString() : "";
         String postText = _postEditText.getText().toString();
 
@@ -270,9 +272,6 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
 
         JSONObject content = new JSONObject();
         try {
-            JSONArray categories = new JSONArray();
-            // TODO: multi selectable categories  + insert values in JSON arr
-            categories.put(catString);
             content.put(JSON_CONTENT_TEXT_KEY, postText);
             content.put(JSON_CONTENT_URI_KEY, contentUri);
             content.put(JSONARR_CONTENT_CATEGORIES_KEY, categories);
@@ -389,27 +388,49 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
                             getContentResolver().update(ItemEntry.CONTENT_URI, cv,
                                     ItemEntry.TABLE_NAME + "." + ItemEntry._ID + " = ? ",
                                     new String[]{String.valueOf(draftItemId)});
+                            itemId = draftItemId;
                         }
                     }
 
                     // 2. store item category reations
                     // TODO: multi categories + identify categories by unique name instead of id
+                    /*
                     Cursor c = _categoryAdapter.getCursor();
                     c.moveToPosition(_categorySpinner.getSelectedItemPosition());
-                    long catID = c.getLong(c.getColumnIndex(CategoryEntry._ID));
+                    long catID = c.getLong(c.getColumnIndex(CategoryEntry._ID));*/
+                    if (itemId >= 0){
+                        // delete old category relations
+                        getContentResolver().delete(ItemCategoryEntry.CONTENT_URI,
+                                ItemCategoryEntry.COLUMN_ITEM_KEY + " = ? ",
+                                new String[]{String.valueOf(itemId)});
 
-                    cv = new ContentValues();
-                    cv.put(MindlrContract.ItemCategoryEntry.COLUMN_ITEM_KEY, itemId);
-                    cv.put(MindlrContract.ItemCategoryEntry.COLUMN_CATEGORY_KEY, catID);
-                    getContentResolver().insert(MindlrContract.ItemCategoryEntry.CONTENT_URI, cv);
+                        // insert current category selections
+                        for (String catDN : _multiSelectionSpinner.getSelectedStrings()){
+                            Cursor cat = getContentResolver().query(CategoryEntry.CONTENT_URI, null,
+                                    CategoryEntry.COLUMN_DISPLAY_NAME + " = ? ",
+                                    new String[]{catDN}, null);
+                            if (cat != null && cat.moveToNext()) {
+                                long catId = cat.getLong(cat.getColumnIndex(CategoryEntry._ID));
+                                if (catId >= 0){
+                                    cv = new ContentValues();
+                                    cv.put(ItemCategoryEntry.COLUMN_ITEM_KEY, itemId);
+                                    cv.put(ItemCategoryEntry.COLUMN_CATEGORY_KEY, catId);
+                                    getContentResolver().insert(
+                                            ItemCategoryEntry.CONTENT_URI, cv);
+                                }
+                                cat.close();
+                            }
+                        }
+                    }
+                    if (_loadUri == null) {
+                        // 3. store draft
+                        cv = new ContentValues();
+                        cv.put(DraftEntry.COLUMN_USER_KEY, MindlrApplication.User.getId());
+                        cv.put(DraftEntry.COLUMN_ITEM_KEY, itemId);
+                        cv.put(DraftEntry.COLUMN_SUBMIT_DATE, System.currentTimeMillis());
 
-                    // 3. store draft
-                    cv = new ContentValues();
-                    cv.put(DraftEntry.COLUMN_USER_KEY, MindlrApplication.User.getId());
-                    cv.put(DraftEntry.COLUMN_ITEM_KEY, itemId);
-                    cv.put(DraftEntry.COLUMN_SUBMIT_DATE, System.currentTimeMillis());
-
-                    getContentResolver().insert(DraftEntry.CONTENT_URI, cv);
+                        getContentResolver().insert(DraftEntry.CONTENT_URI, cv);
+                    }
 
                     dialog.dismiss();
                     // if we come from drafts activity return to it otherwise process normal
@@ -459,10 +480,34 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
         }
         _postEditText.setText(cursor.getString(COLUMN_CONTENT_TEXT));
         _postContentUri = Uri.parse(cursor.getString(COLUMN_CONTENT_URI));
-        // because the spinner is based on db the id is equal to the spinner row selection id
-        //Log.v(LOG.AUTH, "categorie loaded " + (int) cursor.getLong(COLUMN_CATEGORY_KEY));
-        // TODO: load categories from item x category and set multi selection
-        //_categorySpinner.setSelection((int) cursor.getLong(COLUMN_CATEGORY_KEY), true);
+
+        /* Load selection querying the db item x category table using the item id from the draft entry */
+        Cursor catIds = getContentResolver().query(
+                ItemCategoryEntry.CONTENT_URI,
+                new String[]{ItemCategoryEntry.COLUMN_CATEGORY_KEY},
+                ItemCategoryEntry.COLUMN_ITEM_KEY + " = ? ",
+                new String[]{String.valueOf(cursor.getLong(COLUMN_ITEM_ID))},
+                null
+        );
+        List<String> selections = new ArrayList<>();
+        if (catIds != null){
+            while (catIds.moveToNext()){
+                Cursor category = getContentResolver().query(CategoryEntry.CONTENT_URI,
+                        null, CategoryEntry.TABLE_NAME + "." + CategoryEntry._ID + " = ?",
+                        new String[]{
+                                String.valueOf(catIds.getLong(
+                                        catIds.getColumnIndex(ItemCategoryEntry.COLUMN_CATEGORY_KEY)))
+                        },
+                        null);
+                if (category != null && category.moveToNext()){
+                    selections.add(category.getString(category.getColumnIndex(CategoryEntry.COLUMN_DISPLAY_NAME)));
+                    category.close();
+                }
+            }
+            catIds.close();
+        }
+        // set selected categories from draft
+        _multiSelectionSpinner.setSelection(selections);
 
         // initially the image is not in the layout because the additional content
         // may not be an image

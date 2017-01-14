@@ -113,5 +113,19 @@
     <string name="sign_in_skip">Sign In</string>
     <string name="change_layout_order">Change Layout Order</string>
 
-
+    <!-- Category display names-->
+    <string name="art_culture">Kunst &amp; Kultur</string>
+    <string name="funny_fascinating">Lustig &amp; Faszinierend</string>
+    <string name="gaming">Spiele</string>
+    <string name="lifestyle_male">Man Lifestyle</string>
+    <string name="lifestyle_female">Women Lifestyle</string>
+    <string name="news">Nachrichten</string>
+    <string name="personal">Persönlich</string>
+    <string name="politics_economics">Politik &amp; Wirtschaft</string>
+    <string name="popculture">Popkultur</string>
+    <string name="quotes_motivation">Motivation</string>
+    <string name="science_nature">Naturwissenschaften</string>
+    <string name="sports">Sport</string>
+    <string name="technology">Technologie</string>
+    <string name="select_categories">Select Categories</string>
 </resources>

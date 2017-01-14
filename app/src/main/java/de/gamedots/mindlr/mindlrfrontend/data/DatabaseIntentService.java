@@ -100,9 +100,23 @@ public class DatabaseIntentService extends IntentService {
         for (int i = 0; i < Category.allCategories.size(); i++) {
             ContentValues cv = new ContentValues();
             cv.put(CategoryEntry.COLUMN_NAME, Category.allCategories.get(i).getName());
+            cv.put(CategoryEntry.COLUMN_DISPLAY_NAME, getStringResourceByName(
+                    Category.allCategories.get(i).getName()));
             categories[i] = cv;
         }
         getContentResolver().bulkInsert(CategoryEntry.CONTENT_URI, categories);
+    }
+
+    private String getStringResourceByName(String aString) {
+        String result = "";
+        try {
+            String packageName = getPackageName();
+            int resId = getResources().getIdentifier(aString, "string", packageName);
+            result = getString(resId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     private void updateUserPostsVotes(String jsonString) {

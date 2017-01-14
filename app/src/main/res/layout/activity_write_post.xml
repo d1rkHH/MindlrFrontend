@@ -103,15 +103,13 @@
         android:paddingBottom="8dp"
         android:paddingTop="8dp">
 
-        <android.support.v7.widget.AppCompatSpinner
-            android:id="@+id/category_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <de.gamedots.mindlr.mindlrfrontend.view.customview.MultiSelectionSpinner
+            android:id="@+id/cat_spinner"
             android:layout_gravity="center"
             android:gravity="center_horizontal"
-            android:spinnerMode="dialog"
             app:backgroundTint="@color/accent"
-            />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/wp_imageselect"

@@ -25,6 +25,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <FrameLayout
+                android:id="@+id/postview_video_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
             <ImageView
                 android:id="@+id/postImageView"
                 android:layout_width="match_parent"
@@ -50,12 +55,6 @@
                 android:textIsSelectable="false"
                 android:textSize="20sp"
                 tools:text="my simple text that displaymy simple text that displaymy simple text that displaymy simple text that display"/>
-
-            <FrameLayout
-                android:id="@+id/postview_video_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"/>
 
         </LinearLayout>
 

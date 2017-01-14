@@ -2,33 +2,35 @@
 
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              xmlns:tools="http://schemas.android.com/tools"
               android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/postImageView"
-            android:scaleType="centerCrop"
-            android:layout_width="match_parent"
-            android:layout_height="250dp"/>
+    <FrameLayout
+        android:id="@+id/postview_video_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
-        <TextView
-            android:id="@+id/postTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:autoLink="web"
-            android:fontFamily="sans-serif-light"
-            android:isScrollContainer="false"
-            android:lineSpacingMultiplier="1.16"
-            android:padding="16dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColorLink="@color/accent"
-            android:textIsSelectable="false"
-            android:textSize="18sp"
-            tools:text="my simple text that display"/>
+    <ImageView
+        android:id="@+id/postImageView"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:scaleType="centerCrop"/>
 
-        <!-- Youtube Player TODO: insert player fragment-->
-
-    </LinearLayout>
+    <TextView
+        android:id="@+id/postTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:autoLink="web"
+        android:fontFamily="sans-serif-light"
+        android:isScrollContainer="false"
+        android:lineSpacingMultiplier="1.16"
+        android:padding="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColorLink="@color/accent"
+        android:textIsSelectable="false"
+        android:textSize="18sp"
+        tools:text="my simple text that display"/>
+</LinearLayout>
