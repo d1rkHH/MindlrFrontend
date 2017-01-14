@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.helper.DateFormatHelper;
@@ -81,9 +82,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostAdapterVie
         Uri uri = Uri.parse(_cursor.getString(PostFragment.COLUMN_CONTENT_URI));
         if (UriHelper.isImgur(uri)){
             // TODO: placeholder
-            Glide.with(_context).load(uri).fitCenter().into(viewHolder.postImageView);
+            Glide.with(_context).load(uri).diskCacheStrategy(DiskCacheStrategy.RESULT)
+            .into(viewHolder.postImageView);
         } else {
-            viewHolder.postImageView.setVisibility(View.GONE);
+            //viewHolder.postImageView.setVisibility(View.GONE);
         }
 
         if (UriHelper.isYoutube(uri)){

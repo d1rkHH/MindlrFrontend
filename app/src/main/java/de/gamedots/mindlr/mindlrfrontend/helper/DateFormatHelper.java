@@ -55,11 +55,13 @@ public class DateFormatHelper {
         if ((daysFromEpochToToday - daysFromEpochToProvidedDate) < 2) {
             if (daysFromEpochToProvidedDate == daysFromEpochToToday) {
                 if (underMinute) {
-                    String secFormatted = res.getQuantityString(R.plurals.seconds, (int) secDifference);
+                    String secFormatted = res.getQuantityString(R.plurals.seconds, (int) secDifference,
+                            (int)secDifference);
                     // Liked 30 second(s) ago
                     out = res.getString(R.string.time_ago, formatStart, secFormatted);
                 } else if (underHour) {
-                    String minFormatted = res.getQuantityString(R.plurals.minutes, (int) minDifference);
+                    String minFormatted = res.getQuantityString(R.plurals.minutes, (int) minDifference,
+                            (int)minDifference);
                     // Liked 1 minute ago
                     out = res.getString(R.string.time_ago, formatStart, minFormatted);
                 } else {
@@ -70,7 +72,7 @@ public class DateFormatHelper {
             } else {
                 // Liked Yesterday
                 String yesterday = res.getString(R.string.yesterday);
-                out = res.getString(R.string.time_ago, formatStart, yesterday);
+                out = res.getString(R.string.time_day, formatStart, yesterday);
             }
 
         } else if (daysFromEpochToProvidedDate < daysFromEpochToToday + 7) {

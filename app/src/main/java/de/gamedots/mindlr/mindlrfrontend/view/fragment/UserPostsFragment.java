@@ -77,7 +77,7 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        setHasOptionsMenu(false);
     }
 
     @Override

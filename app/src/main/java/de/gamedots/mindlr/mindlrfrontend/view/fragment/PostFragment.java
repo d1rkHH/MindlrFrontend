@@ -10,6 +10,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -25,24 +26,29 @@ import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.adapter.PostAdapter;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserPostEntry;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrProvider;
 
 
 public class PostFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     // unique id for the loader
     public static final int POST_LOADER_ID = 1;
+    public static final String SEARCH_QUERY_KEY = "search_key";
 
     private RecyclerView _recyclerView;
     private PostAdapter _postAdapter;
     private TextView _emptyView;
 
+    private boolean _isInGridLayout;
+
     // define post column projection and constants
     public static final String[] POST_COLUMNS = {
             MindlrContract.PostEntry.TABLE_NAME + "." + MindlrContract.PostEntry._ID,
             MindlrContract.PostEntry.COLUMN_SERVER_ID,
-            MindlrContract.ItemEntry.COLUMN_CONTENT_TEXT,
-            MindlrContract.ItemEntry.COLUMN_CONTENT_URI,
+            ItemEntry.COLUMN_CONTENT_TEXT,
+            ItemEntry.COLUMN_CONTENT_URI,
             UserPostEntry.COLUMN_VOTE_DATE
     };
 
@@ -58,22 +64,28 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     // TODO: fill with POJO or query DB
-    final static SearchView.OnQueryTextListener searchListener = new SearchView.OnQueryTextListener() {
+    final SearchView.OnQueryTextListener searchListener = new SearchView.OnQueryTextListener() {
 
         @Override
         public boolean onQueryTextChange(String newSearchText) {
-            //final List<UserPostCardItem> filteredPCL = Filter.filter(_items, newSearchText);
-            //_rvAdapter.setFilter(filteredPCL);
+            reloadAndApplyData(newSearchText);
             return true;
         }
 
         @Override
         public boolean onQueryTextSubmit(String query) {
-            return false;
+            reloadAndApplyData(query);
+            return true;
         }
     };
 
-    final static MenuItemCompat.OnActionExpandListener menuListener = new MenuItemCompat
+    private void reloadAndApplyData(String newSearchText) {
+        Bundle args = new Bundle();
+        args.putString(SEARCH_QUERY_KEY, newSearchText);
+        getLoaderManager().restartLoader(POST_LOADER_ID, args, this);
+    }
+
+    final MenuItemCompat.OnActionExpandListener menuListener = new MenuItemCompat
             .OnActionExpandListener() {
         @Override
         public boolean onMenuItemActionCollapse(MenuItem item) {
@@ -112,6 +124,7 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
         StaggeredGridLayoutManager layoutManager =
                 new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         _recyclerView.setLayoutManager(layoutManager);
+        _isInGridLayout = true;
         // set to true when content changes in adapter do not change
         // the layout size of the recycler view to increase performance
         _recyclerView.setHasFixedSize(true);
@@ -136,15 +149,61 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_layout:
+                return handleLayoutChange();
+            case R.id.action_layout_back:
+                return handleLayoutChange();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private boolean handleLayoutChange(){
+        if (_isInGridLayout) {
+            _recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            _isInGridLayout = false;
+            getActivity().invalidateOptionsMenu();
+        } else{
+            _recyclerView.setLayoutManager(
+                    new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+            _isInGridLayout = true;
+            getActivity().invalidateOptionsMenu();
+
+        }
+        _recyclerView.setAdapter(_postAdapter);
+        return true;
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.action_layout).setVisible(!_isInGridLayout);
+        menu.findItem(R.id.action_layout_back).setVisible(_isInGridLayout);
+    }
+
+    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         long userId = MindlrApplication.User.getId();
         Uri userPostForUserUri = UserPostEntry.buildUserPostWithUserId(userId);
+        String selection = MindlrProvider.sUserPostForIdSelection;
+        String[] selArgs = null;
+        if (args != null && !args.getString(SEARCH_QUERY_KEY).isEmpty()){
+            String query = args.getString(SEARCH_QUERY_KEY);
+            selection += " AND " + ItemEntry.COLUMN_CONTENT_TEXT + " LIKE ?";
+            selArgs = new String[]{
+                    Long.toString(userId),
+                    Integer.toString(UserPostEntry.VOTE_LIKED),
+                    "%" + query + "%"
+            };
+        }
 
         return new CursorLoader(getActivity(),
                 userPostForUserUri,
                 POST_COLUMNS,
-                null,
-                null,
+                selection,
+                selArgs,
                 null);
     }
 
