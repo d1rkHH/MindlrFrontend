@@ -3,6 +3,8 @@ package de.gamedots.mindlr.mindlrfrontend.helper;
 import android.net.Uri;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,6 +13,7 @@ import java.util.regex.Pattern;
  */
 
 public class UriHelper {
+    private static final String url_regex = "(http|https)://([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?";
     private static final String imgur_authority = "i.imgur.com";
     private static final String youtube_authority = "youtu.be";
 
@@ -20,6 +23,16 @@ public class UriHelper {
 
     public static boolean isYoutube(Uri uri){
         return isAuthority(youtube_authority, uri);
+    }
+
+
+    public static List<String> extractURLsFromContentText(String contentText){
+        List<String> foundURLs = new ArrayList<>();
+        Matcher matcher = Pattern.compile(url_regex).matcher(contentText);
+        while(matcher.find()){
+            foundURLs.add(matcher.group(0));
+        }
+        return foundURLs;
     }
 
     public static String extractVideoPathFromYoutubeUrl(String videoURL){
