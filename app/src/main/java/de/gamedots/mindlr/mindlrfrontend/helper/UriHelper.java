@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
  */
 
 public class UriHelper {
-    private static final String url_regex = "(http|https)://([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])?";
     private static final String imgur_authority = "i.imgur.com";
     private static final String youtube_authority = "youtu.be";
 
@@ -26,23 +25,6 @@ public class UriHelper {
     }
 
 
-    public static List<String> extractURLsFromContentText(String contentText){
-        List<String> foundURLs = new ArrayList<>();
-        Matcher matcher = Pattern.compile(url_regex).matcher(contentText);
-        while(matcher.find()){
-            foundURLs.add(matcher.group(0));
-        }
-        return foundURLs;
-    }
-
-    public static String extractVideoPathFromYoutubeUrl(String videoURL){
-        String videoID = null;
-        Matcher matcher = Pattern.compile("https://youtu\\.be/([\\w-_]+)" ).matcher(videoURL);
-        if(matcher.find()){
-            videoID = matcher.group(1);
-        }
-        return videoID;
-    }
 
     private static boolean isAuthority(String toCheckAuthority, Uri uri){
         boolean matched = false;

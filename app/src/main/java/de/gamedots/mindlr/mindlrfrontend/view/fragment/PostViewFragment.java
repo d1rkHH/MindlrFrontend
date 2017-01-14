@@ -19,7 +19,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
@@ -29,6 +28,8 @@ import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
 import de.gamedots.mindlr.mindlrfrontend.helper.UriHelper;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
+import de.gamedots.mindlr.mindlrfrontend.previews.PreviewStrategyMatcher;
+import de.gamedots.mindlr.mindlrfrontend.previews.strategy.PreviewStrategy;
 import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 
 import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.toast;
@@ -37,22 +38,18 @@ import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.toast;
  * This class displays a post to the user. Furthermore it handles the
  * swipe interaction and the fragment transaction together with the PostLoader class.
  */
-public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitializedListener {
+public class PostViewFragment extends Fragment {
 
     public static final String DETAIL_EXTRA = "detail_extra";
     public static final String POST_EXTRA = "post_extra";
-    public static final String FULLSCREEN_KEY = "fullscreen_key";
     /* Unique identifier for the current player fragment */
     public static final String FRAGMENT_PLAYER_TAG = "de.gamedots.mindlrfrontend.PostViewFragment";
-    private static final String VIDEO_ID_KEY = "video_id_tag";
+
 
     private TextView _postView;
-    private ImageView _postImageView;
 
-    private YouTubePlayerSupportFragment _youtubePlayerFragment;
-    private YouTubePlayer _player;
-    private boolean _fullScreen;
-    private String _videoID;
+    private PreviewStrategy _previewStrategy;
+    private View _view;
 
 
     public PostViewFragment() {
@@ -61,53 +58,26 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(LOG.AUTH, "onCreateView: postviewfragment recreated with " + (savedInstanceState != null));
-
-        // check if recreated due to activity configuration change and read fullscreen information
-        if(savedInstanceState != null && savedInstanceState.containsKey(FULLSCREEN_KEY)){
-            _fullScreen = savedInstanceState.getBoolean(FULLSCREEN_KEY);
-            if (_fullScreen) {
-                // create player container fragment
-                _youtubePlayerFragment = new YouTubePlayerSupportFragment();
-
-                // dynamically add the fragment to allow nested fragments
-                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                transaction.add(R.id.postview_video_container, _youtubePlayerFragment, FRAGMENT_PLAYER_TAG);
-                //transaction.addToBackStack(null);
-                transaction.commit();
-
-                _videoID = savedInstanceState.getString(VIDEO_ID_KEY);
-                _youtubePlayerFragment.initialize(
-                        getActivity().getString(R.string.youtube_developer_key),
-                        this);
-            }
-        }
-
         View view;
         boolean isDetail = getArguments() != null && getArguments().containsKey(DETAIL_EXTRA);
         if (isDetail) {
-            Log.v(LOG.AUTH, "inflate detail layout");
             view = inflater.inflate(R.layout.fragment_detail_post_view, container, false);
         } else {
             view = inflater.inflate(R.layout.fragment_post_view, container, false);
 
         }
+        _view = view;
         _postView = (TextView) view.findViewById(R.id.postTextView);
-        _postImageView = (ImageView) view.findViewById(R.id.postImageView);
-
-        //TODO: remove after testing
-        //setViewValues(new ViewPost(5, "hallo", "https://youtu.be/Y7kUG_PiTXc"));
 
         if (isDetail) {
             Intent launchIntent = getActivity().getIntent();
-            if (launchIntent != null && launchIntent.getExtras() != null
-                    && launchIntent.getExtras().containsKey(POST_EXTRA)) {
+            if (launchIntent != null && launchIntent.getExtras().containsKey(POST_EXTRA)) {
                 ViewPost vp = launchIntent.getParcelableExtra(POST_EXTRA);
-                setViewValues(vp);
+                setViewValues(vp, savedInstanceState);
             }
         } else {
             if (PostLoader.getInstance().isInitialized()) {
-                setViewValues(PostLoader.getInstance().getCurrent());
+                setViewValues(PostLoader.getInstance().getCurrent(), savedInstanceState);
             }
         }
 
@@ -121,96 +91,26 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
         return view;
     }
 
-    private void setViewValues(ViewPost vp) {
-        if (_postView == null || _postImageView == null)
-            return;
-        Log.v(LOG.AUTH, "initial UI element values");
-        // set post content text
+    public void setViewValues(ViewPost vp, Bundle savedInstanceState) {
+        if(_previewStrategy != null){
+            _previewStrategy.buildPreviewUI(this, savedInstanceState);
+        } else {
+            _previewStrategy = PreviewStrategyMatcher.getInstance().matchStrategy(vp).getCopy();
+            _previewStrategy.buildPreviewUI(this, savedInstanceState);
+        }
         String postText = vp.getContentText();
         postText = postText.replaceAll(System.getProperty("line.separator"), "");
         _postView.setText(postText);
-
-        // load image into view or load video depending on uri type
-        String uri = vp.getContentUri();
-        if (!uri.isEmpty()) {
-            Uri mediaUri = Uri.parse(uri);
-
-            if (UriHelper.isImgur(mediaUri)) {
-                Log.v(LOG.AUTH, "loaded imgur image");
-                _postImageView.setVisibility(View.VISIBLE);
-                Glide.with(getActivity()).load(mediaUri).into(_postImageView);
-            } else {
-                Log.v(LOG.AUTH, "was NO imgur image");
-                _postImageView.setVisibility(View.GONE);
-            }
-
-            if (UriHelper.isYoutube(mediaUri)) {
-                // create player container fragment
-                _youtubePlayerFragment = new YouTubePlayerSupportFragment();
-
-                // dynamically add the fragment to allow nested fragments
-                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                transaction.add(R.id.postview_video_container, _youtubePlayerFragment, FRAGMENT_PLAYER_TAG);
-                //transaction.addToBackStack(null);
-                transaction.commit();
-
-                _videoID = UriHelper.extractVideoPathFromYoutubeUrl(mediaUri.toString());
-                _youtubePlayerFragment.initialize(
-                        getActivity().getString(R.string.youtube_developer_key),
-                        this);
-            } else {
-                // maybe disable video player view
-            }
-        }
     }
 
     public TextView getPostView() {
         return _postView;
     }
 
-    public boolean isPlayerFullscreen(){
-        return _fullScreen;
-    }
-
-    public void setPlayerFullscreen(boolean fullscreen){
-        _fullScreen = fullscreen;
-    }
-
-    public YouTubePlayer getPlayer(){
-        return _player;
-    }
-
-    // region youtube handling
-    @Override
-    public void onInitializationSuccess(YouTubePlayer.Provider provider,
-                                        YouTubePlayer youTubePlayer,
-                                        boolean wasRestored) {
-        _player = youTubePlayer;
-        if (!wasRestored) {
-            _player.setOnFullscreenListener(new YouTubePlayer.OnFullscreenListener() {
-                @Override
-                public void onFullscreen(boolean isFullscreen) {
-                    _fullScreen = isFullscreen;
-                    _player.setPlayerStyle(YouTubePlayer.PlayerStyle.DEFAULT);
-                }
-            });
-        }
-        youTubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.DEFAULT);
-        youTubePlayer.cueVideo(_videoID);
-    }
-
-    @Override
-    public void
-    onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult errorReason) {
-            String errorMessage = errorReason.toString();
-            Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
-    }
-    // endregion
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean(FULLSCREEN_KEY, _fullScreen);
-        outState.putString(VIDEO_ID_KEY, _videoID);
+        _previewStrategy.saveInstanceState(outState);
         super.onSaveInstanceState(outState);
     }
 
@@ -218,10 +118,6 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
     public void onDestroy() {
         super.onDestroy();
         Log.v(LOG.AUTH, "postview fragment destroyed");
-    }
-
-    public ImageView getImageView() {
-        return _postImageView;
     }
 
     // region touch handler
@@ -318,5 +214,13 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
         fragmentTransaction.replace(R.id.main_content, new PostViewFragment());
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+    }
+
+    public PreviewStrategy getPreviewStrategy() {
+        return _previewStrategy;
+    }
+
+    public View getView() {
+        return _view;
     }
 }
