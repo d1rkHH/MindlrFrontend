@@ -19,7 +19,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
@@ -29,6 +28,8 @@ import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
 import de.gamedots.mindlr.mindlrfrontend.helper.UriHelper;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
+import de.gamedots.mindlr.mindlrfrontend.previews.PreviewStrategyMatcher;
+import de.gamedots.mindlr.mindlrfrontend.previews.strategy.PreviewStrategy;
 import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 
 import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.toast;
@@ -37,7 +38,7 @@ import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.toast;
  * This class displays a post to the user. Furthermore it handles the
  * swipe interaction and the fragment transaction together with the PostLoader class.
  */
-public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitializedListener {
+public class PostViewFragment extends Fragment {
 
     public static final String DETAIL_EXTRA = "detail_extra";
     public static final String POST_EXTRA = "post_extra";
@@ -47,10 +48,9 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
     private static final String VIDEO_ID_KEY = "video_id_tag";
 
     private TextView _postView;
-    private ImageView _postImageView;
 
-    private YouTubePlayerSupportFragment _youtubePlayerFragment;
-    private YouTubePlayer _player;
+    private PreviewStrategy _previewStrategy;
+
     private boolean _fullScreen;
     private String _videoID;
 
@@ -61,26 +61,27 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        if(_previewStrategy != null){
+            // Recreate preview
+        }
 
         Log.d(LOG.AUTH, "onCreateView: postviewfragment recreated with " + (savedInstanceState != null));
-
+        // TODO: Move this code to strategies
         // check if recreated due to activity configuration change and read fullscreen information
         if(savedInstanceState != null && savedInstanceState.containsKey(FULLSCREEN_KEY)){
             _fullScreen = savedInstanceState.getBoolean(FULLSCREEN_KEY);
             if (_fullScreen) {
                 // create player container fragment
-                _youtubePlayerFragment = new YouTubePlayerSupportFragment();
+                //_youtubePlayerFragment = new YouTubePlayerSupportFragment();
 
                 // dynamically add the fragment to allow nested fragments
                 FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                transaction.add(R.id.postview_video_container, _youtubePlayerFragment, FRAGMENT_PLAYER_TAG);
+                //transaction.add(R.id.postview_video_container, _youtubePlayerFragment, FRAGMENT_PLAYER_TAG);
                 //transaction.addToBackStack(null);
                 transaction.commit();
 
                 _videoID = savedInstanceState.getString(VIDEO_ID_KEY);
-                _youtubePlayerFragment.initialize(
-                        getActivity().getString(R.string.youtube_developer_key),
-                        this);
+                //_youtubePlayerFragment.initialize(getActivity().getString(R.string.youtube_developer_key),this);
             }
         }
 
@@ -93,7 +94,7 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
 
         }
         _postView = (TextView) view.findViewById(R.id.postTextView);
-        _postImageView = (ImageView) view.findViewById(R.id.postImageView);
+
 
         //TODO: remove after testing
         //setViewValues(new ViewPost(5, "hallo", "https://youtu.be/Y7kUG_PiTXc"));
@@ -121,43 +122,12 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
     }
 
     private void setViewValues(ViewPost vp) {
+        _previewStrategy = PreviewStrategyMatcher.getInstance().matchStrategy(vp);
+        _previewStrategy.buildPreviewUI(this);
         // set post content text
         String postText = vp.getContentText();
         postText = postText.replaceAll(System.getProperty("line.separator"), "");
         _postView.setText(postText);
-
-        // load image into view or load video depending on uri type
-        String uri = vp.getContentUri();
-        if (!uri.isEmpty()) {
-            Uri mediaUri = Uri.parse(uri);
-
-            if (UriHelper.isImgur(mediaUri)) {
-                Log.v(LOG.AUTH, "loaded imgur image");
-                _postImageView.setVisibility(View.VISIBLE);
-                Glide.with(this).load(mediaUri).fitCenter().into(_postImageView);
-            } else {
-                Log.v(LOG.AUTH, "was NO imgur image");
-                _postImageView.setVisibility(View.GONE);
-            }
-
-            if (UriHelper.isYoutube(mediaUri)) {
-                // create player container fragment
-                _youtubePlayerFragment = new YouTubePlayerSupportFragment();
-
-                // dynamically add the fragment to allow nested fragments
-                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                transaction.add(R.id.postview_video_container, _youtubePlayerFragment, FRAGMENT_PLAYER_TAG);
-                //transaction.addToBackStack(null);
-                transaction.commit();
-
-                _videoID = UriHelper.extractVideoPathFromYoutubeUrl(mediaUri.toString());
-                _youtubePlayerFragment.initialize(
-                        getActivity().getString(R.string.youtube_developer_key),
-                        this);
-            } else {
-                // maybe disable video player view
-            }
-        }
     }
 
     public TextView getPostView() {
@@ -172,36 +142,7 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
         _fullScreen = fullscreen;
     }
 
-    public YouTubePlayer getPlayer(){
-        return _player;
-    }
 
-    // region youtube handling
-    @Override
-    public void onInitializationSuccess(YouTubePlayer.Provider provider,
-                                        YouTubePlayer youTubePlayer,
-                                        boolean wasRestored) {
-        _player = youTubePlayer;
-        if (!wasRestored) {
-            _player.setOnFullscreenListener(new YouTubePlayer.OnFullscreenListener() {
-                @Override
-                public void onFullscreen(boolean isFullscreen) {
-                    _fullScreen = isFullscreen;
-                    _player.setPlayerStyle(YouTubePlayer.PlayerStyle.DEFAULT);
-                }
-            });
-        }
-        youTubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.DEFAULT);
-        youTubePlayer.cueVideo(_videoID);
-    }
-
-    @Override
-    public void
-    onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult errorReason) {
-            String errorMessage = errorReason.toString();
-            Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
-    }
-    // endregion
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -214,10 +155,6 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
     public void onDestroy() {
         super.onDestroy();
         Log.v(LOG.AUTH, "postview fragment destroyed");
-    }
-
-    public ImageView getImageView() {
-        return _postImageView;
     }
 
     // region touch handler
@@ -314,5 +251,13 @@ public class PostViewFragment extends Fragment implements YouTubePlayer.OnInitia
         fragmentTransaction.replace(R.id.main_content, new PostViewFragment());
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+    }
+
+    public boolean isFullScreen(){
+        return _fullScreen;
+    }
+
+    public void setFullScreen(boolean fullScreen){
+        _fullScreen = fullScreen;
     }
 }
