@@ -34,6 +34,7 @@
         </activity>
         <activity
             android:name=".view.activity.WritePostActivity"
+            android:launchMode="singleTask"
             android:label="@string/title_activity_write_post"
             android:parentActivityName=".view.activity.MainActivity"
             android:theme="@style/AppTheme"

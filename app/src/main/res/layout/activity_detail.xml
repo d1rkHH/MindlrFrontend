@@ -2,21 +2,29 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
              android:orientation="vertical">
 
 
     <FrameLayout
         android:id="@+id/detail_post_container"
-        android:layout_marginTop="?attr/actionBarSize"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+    <View
+        android:background="@drawable/scrim_gradient"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        />
 
     <!-- main toolbar -->
     <android.support.v7.widget.Toolbar
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/toolbar"
+        style="@style/ToolbarStyle"
+        app:elevation="@dimen/appbar_elevation"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@android:color/white"
+        android:background="@android:color/transparent"
         />
 </FrameLayout>

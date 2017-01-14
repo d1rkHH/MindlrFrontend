@@ -195,5 +195,8 @@ public class MainActivity extends BaseActivity implements
     }
 
     public void showDetail(View view) {
+        Log.v(LOG.AUTH, "cardpost clicked event");
+        startActivity(new Intent(this, DetailActivity.class)
+        .putExtra(PostViewFragment.POST_EXTRA, PostLoader.getInstance().getCurrent()));
     }
 }

@@ -190,7 +190,7 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
 
             // read date millis from cursor and get day and month using calendar object
             long dateMillis = cursor.getLong(UserPostsFragment.COLUMN_SUBMIT_DATE);
-            String formatDate = DateFormatHelper.getFullDateString(getActivity(), dateMillis);
+            String formatDate = DateFormatHelper.getFullDateString(dateMillis);
             ((TextView) getActivity().findViewById(R.id.usercreatepost_date_textview))
                     .setText(formatDate);
 
