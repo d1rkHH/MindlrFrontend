@@ -93,7 +93,13 @@ public class AuthFragment extends Fragment implements IdentityProvider.IdpCallba
 
         Utility.insertUserCategories(getActivity());
 
+        // Sync user selected categories
+        if (Utility.isNetworkAvailable(getActivity())) {
+            Utility.sendInitialUserCategories(getActivity());
+        }
+
         // user was successfully verified and account was created
         IntentHelper.buildNewClearTask(getActivity(), MainActivity.class);
     }
+
 }

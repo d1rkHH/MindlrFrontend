@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -38,6 +39,7 @@ import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserPostEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrDBHelper;
 import de.gamedots.mindlr.mindlrfrontend.helper.CategoryHelper;
 import de.gamedots.mindlr.mindlrfrontend.helper.DateFormatHelper;
+import de.gamedots.mindlr.mindlrfrontend.jobs.SendInitialCategoriesTask;
 import de.gamedots.mindlr.mindlrfrontend.jobs.WritePostTask;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.ImageUploadResult;
@@ -45,6 +47,8 @@ import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 import de.gamedots.mindlr.mindlrfrontend.view.activity.WritePostActivity;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
+import static de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserCategoryEntry.COLUMN_CATEGORY_KEY;
+import static de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserCategoryEntry.CONTENT_URI;
 import static de.gamedots.mindlr.mindlrfrontend.view.activity.WritePostActivity.JSON_CONTENT_URI_KEY;
 
 public class Utility {
@@ -459,6 +463,82 @@ public class Utility {
             cv.put(UserCategoryEntry.COLUMN_CATEGORY_KEY, categoryId);
 
             context.getContentResolver().insert(UserCategoryEntry.CONTENT_URI, cv);
+        }
+    }
+
+    public static void sendInitialUserCategories(Context context) {
+        Cursor query = context.getContentResolver().query(CONTENT_URI,
+                new String[]{COLUMN_CATEGORY_KEY},
+                MindlrContract.UserCategoryEntry.COLUMN_USER_KEY + " = ?",
+                new String[]{String.valueOf(MindlrApplication.User.getId())},
+                null);
+
+        List<String> ratedCategories = new ArrayList<>();
+        List<String> unratedCategories = new ArrayList<>();
+        if(query != null){
+            while (query.moveToNext()){
+                Cursor cursor = context.getContentResolver().query(CategoryEntry.CONTENT_URI,
+                        null,
+                        CategoryEntry.TABLE_NAME + "." + CategoryEntry._ID + " = ? ",
+                        new String[]{String.valueOf(
+                                query.getLong(query.getColumnIndex(COLUMN_CATEGORY_KEY)))},
+                        null
+                );
+                if (cursor != null && cursor.moveToFirst()){
+                    ratedCategories.add(cursor.getString(cursor.getColumnIndex(CategoryEntry.COLUMN_NAME)));
+                    Log.v(LOG.AUTH, "POSITIVE CAT : " + cursor.getString(cursor.getColumnIndex
+                            (CategoryEntry.COLUMN_NAME)));
+                    cursor.close();
+                }
+            }
+            query.close();
+
+            String selection = "";
+            for (int i = 0; i < ratedCategories.size(); ++i){
+                if (i==0){
+                    selection += CategoryEntry.COLUMN_NAME + "!= '" + ratedCategories.get(i) + "'";
+                } else {
+                    selection += " AND " + CategoryEntry.COLUMN_NAME + "!= '" + ratedCategories.get(i) + "'";
+                }
+            }
+            Cursor unratedCursor = context.getContentResolver().query(CategoryEntry.CONTENT_URI,
+                    new String[]{CategoryEntry.COLUMN_NAME},
+                    selection,
+                    null,
+                    null
+            );
+            if (unratedCursor != null){
+                while (unratedCursor.moveToNext()){
+                    unratedCategories.add(unratedCursor.getString(unratedCursor.getColumnIndex
+                            (CategoryEntry.COLUMN_NAME)));
+                    Log.v(LOG.AUTH, "NEGATIVE CAT : " + unratedCursor.getString(unratedCursor.getColumnIndex
+                            (CategoryEntry.COLUMN_NAME)));
+                }
+                unratedCursor.close();
+            }
+
+        }
+
+        JSONObject content = new JSONObject();
+        JSONArray categories = new JSONArray();
+        try {
+            for (String rated : ratedCategories) {
+                JSONObject ratedObj = new JSONObject();
+                ratedObj.put("name", rated);
+                ratedObj.put("vote", 1);
+                categories.put(ratedObj);
+            }
+            for (String urated : unratedCategories) {
+                JSONObject unratedObj = new JSONObject();
+                unratedObj.put("name", urated);
+                unratedObj.put("vote", -1);
+                categories.put(unratedObj);
+            }
+            content.put("categories", categories);
+
+            new SendInitialCategoriesTask(null, content, true).execute();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 }

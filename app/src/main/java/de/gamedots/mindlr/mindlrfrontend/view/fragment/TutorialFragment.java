@@ -130,6 +130,10 @@ public class TutorialFragment extends Fragment {
                                 View.VISIBLE : View.GONE;
                         googleLoginButton.setVisibility(visibility);
                         twitterLoginButton.setVisibility(visibility);
+
+                        int skipVisibility = (visibility == View.VISIBLE) ? View.GONE : View.VISIBLE;
+                        skipInfoTV.setVisibility(skipVisibility);
+                        skippSelectionTV.setVisibility(skipVisibility);
                     }
                 }
             });
