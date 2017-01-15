@@ -1,11 +1,13 @@
 package de.gamedots.mindlr.mindlrfrontend.previews.strategy;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
 import java.util.regex.Matcher;
@@ -13,9 +15,6 @@ import java.util.regex.Pattern;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
-
-import com.google.android.youtube.player.YouTubeInitializationResult;
-import com.google.android.youtube.player.YouTubePlayer;
 
 
 /**
@@ -90,6 +89,10 @@ public class YoutubeStrategy implements PreviewStrategy{
                             @Override
                             public void onFullscreen(boolean isFullscreen) {
                                 _fullScreen = isFullscreen;
+                                if (!_fullScreen){
+                                    _fragment.getActivity()
+                                            .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                                }
                                 _currentTimeMillis = _player.getCurrentTimeMillis();
                                 Log.v("YouTube", "Current Time Millis: " + _currentTimeMillis);
                             }

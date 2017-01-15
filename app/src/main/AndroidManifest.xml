@@ -72,6 +72,7 @@
         <activity
             android:name=".view.activity.ProfileActivity"
             android:label="@string/title_activity_profile_actvitiy"
+            android:screenOrientation="portrait"
             android:parentActivityName=".view.activity.MainActivity"
             android:theme="@style/AppTheme">
             <meta-data

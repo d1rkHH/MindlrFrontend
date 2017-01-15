@@ -27,6 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
+            android:padding="16dp"
             android:maxLines="3"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             tools:text="hallo this is a previo of the main text really big thig 214 dad etwzh wg adafagha"/>
@@ -38,7 +39,8 @@
         <TextView
             android:id="@+id/post_preview_liked_date"
             android:layout_width="match_parent"
-            android:paddingTop="8dp"
+            android:paddingLeft="16dp"
+            android:paddingBottom="8dp"
             tools:text="Liked 2 Days ago"
             android:layout_height="wrap_content"/>
 
