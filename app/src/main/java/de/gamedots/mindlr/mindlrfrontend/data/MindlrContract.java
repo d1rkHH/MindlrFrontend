@@ -169,8 +169,8 @@ public class MindlrContract {
         public static final String COLUMN_VOTE = "vote";
 
         public static final int VOTE_LIKED = 1;
-        public static final int VOTE_DISLIKED = 0;
-        public static final int VOTE_UNDEFINED = -1;
+        public static final int VOTE_DISLIKED = -1;
+        public static final int VOTE_UNDEFINED = 0;
         public static final String SYNCED = "1";
         public static final String UNSYNCED = "0";
 
