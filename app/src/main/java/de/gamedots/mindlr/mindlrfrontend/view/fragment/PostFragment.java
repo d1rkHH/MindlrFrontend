@@ -1,6 +1,7 @@
 package de.gamedots.mindlr.mindlrfrontend.view.fragment;
 
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,6 +31,7 @@ import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserPostEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrProvider;
+import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 
 
 public class PostFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -36,6 +39,7 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
     // unique id for the loader
     public static final int POST_LOADER_ID = 1;
     public static final String SEARCH_QUERY_KEY = "search_key";
+    public static final String LAYOUT_KEY = "layout_key";
 
     private RecyclerView _recyclerView;
     private PostAdapter _postAdapter;
@@ -113,29 +117,54 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        Log.v(LOG.AUTH, " layout grid : " + _isInGridLayout);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_post, container, false);
-        setHasOptionsMenu(true);
-
         _recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerviewfavor);
 
         // set a layout manager
-        StaggeredGridLayoutManager layoutManager =
-                new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        _recyclerView.setLayoutManager(layoutManager);
-        _isInGridLayout = true;
+        Intent launchIntent = getActivity().getIntent();
+        if (launchIntent != null && launchIntent.hasExtra(LAYOUT_KEY)){
+            _isInGridLayout = launchIntent.getBooleanExtra(LAYOUT_KEY, false);
+        } else {
+            _isInGridLayout = true;
+        }
+        setLayoutManagerFromFlag();
+
         // set to true when content changes in adapter do not change
         // the layout size of the recycler view to increase performance
         _recyclerView.setHasFixedSize(true);
 
         _emptyView = (TextView) rootView.findViewById(R.id.recyclerview_post_empty);
-        _postAdapter = new PostAdapter(getActivity(), _emptyView);
+        _postAdapter = new PostAdapter(getActivity(), _emptyView, new PostAdapter.PostOnClickHandler() {
+            @Override
+            public void onClick(Intent intent) {
+                intent.putExtra(LAYOUT_KEY, _isInGridLayout);
+                startActivity(intent);
+            }
+        });
 
         // set the adapter onto recycler view
         _recyclerView.setAdapter(_postAdapter);
 
         return rootView;
+    }
+
+    private void setLayoutManagerFromFlag(){
+        if (_isInGridLayout) {
+            StaggeredGridLayoutManager layoutManager =
+                    new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+            _recyclerView.setLayoutManager(layoutManager);
+        } else {
+            _recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        }
     }
 
     @Override

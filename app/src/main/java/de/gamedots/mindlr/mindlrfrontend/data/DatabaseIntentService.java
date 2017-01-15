@@ -123,14 +123,14 @@ public class DatabaseIntentService extends IntentService {
         // TODO: define json contract backend
         try {
             JSONObject result = new JSONObject(jsonString);
-            JSONArray posts = result.getJSONArray("items");
+            JSONArray posts = result.getJSONArray("user_items");
 
             ContentValues cv = new ContentValues();
             for (int i = 0; i < posts.length(); ++i) {
                 cv.clear();
 
                 JSONObject post = posts.getJSONObject(i);
-                long server_id = post.getLong("id");
+                long server_id = post.getLong("item_id");
                 int upvotes = post.getInt("upvotes");
                 int downvotes = post.getInt("downvotes");
 

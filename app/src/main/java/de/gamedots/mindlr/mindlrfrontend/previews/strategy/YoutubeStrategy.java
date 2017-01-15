@@ -134,6 +134,10 @@ public class YoutubeStrategy implements PreviewStrategy{
         _videoID = videoID;
     }
 
+    public String getVideoID(){
+        return _videoID;
+    }
+
     public boolean isFullScreen() {
         return _fullScreen;
     }

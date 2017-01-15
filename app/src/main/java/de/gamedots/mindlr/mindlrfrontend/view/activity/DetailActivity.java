@@ -17,6 +17,8 @@ import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.UserPostsFragment;
 
+import static de.gamedots.mindlr.mindlrfrontend.view.fragment.PostFragment.LAYOUT_KEY;
+
 /**
  * Created by Dirk on 08.01.17.
  */
@@ -27,6 +29,7 @@ public class DetailActivity extends AppCompatActivity {
     public static final String LIKED_EXTRA = "liked_extra";
     private boolean upToMainActivity;
     private int tapSelectionOnNavigation;
+    private boolean profileWasInGridLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class DetailActivity extends AppCompatActivity {
         } else {
             fragment = new PostViewFragment();
             upToMainActivity = !getIntent().hasExtra(LIKED_EXTRA);
+            profileWasInGridLayout = getIntent().getBooleanExtra(LAYOUT_KEY, false);
             if (!upToMainActivity){
                 tapSelectionOnNavigation = ProfileActivity.TAP_LIKED;
             }
@@ -81,6 +85,7 @@ public class DetailActivity extends AppCompatActivity {
         Class dest = (upToMainActivity)? MainActivity.class : ProfileActivity.class;
         Intent intent = new Intent(this, dest);
         intent.putExtra(ProfileActivity.TAP_SELECT_KEY, tapSelectionOnNavigation);
+        intent.putExtra(LAYOUT_KEY, profileWasInGridLayout);
         return intent;
     }
 }

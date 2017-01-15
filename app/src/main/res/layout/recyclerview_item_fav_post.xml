@@ -16,6 +16,26 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/post_preview_yt_thumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/gray_light"
+                android:adjustViewBounds="true"/>
+
+            <ImageView
+                android:id="@+id/post_thumbnail_button_overlay"
+                android:layout_width="48dp"
+                android:visibility="gone"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:background="@drawable/ic_play_arrow_black_24dp"/>
+        </FrameLayout>
+
         <ImageView
             android:id="@+id/post_preview_imageview"
             android:layout_width="match_parent"
@@ -32,16 +52,13 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             tools:text="hallo this is a previo of the main text really big thig 214 dad etwzh wg adafagha"/>
 
-
-
-        <!--TODO: video preview thumbnail or only link-->
-
         <TextView
             android:id="@+id/post_preview_liked_date"
             android:layout_width="match_parent"
             android:paddingLeft="16dp"
             android:paddingBottom="8dp"
             tools:text="Liked 2 Days ago"
+            android:textColor="@color/accent"
             android:layout_height="wrap_content"/>
 
     </LinearLayout>
