@@ -4,8 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.bumptech.glide.Glide;
-
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +12,7 @@ import org.json.JSONObject;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.data.DatabaseIntentService;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
+import de.gamedots.mindlr.mindlrfrontend.model.PostLoadedEvent;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 import de.gamedots.mindlr.mindlrfrontend.util.Global;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
@@ -60,6 +60,7 @@ public class LoadPostsTask extends APICallTask {
                         Log.e(LOG.POSTS, "Post JSON invalid");
                     }
                 }
+                EventBus.getDefault().post(new PostLoadedEvent(true));
 
                 // insert posts into database
                 Intent intent = new Intent(_context, DatabaseIntentService.class);

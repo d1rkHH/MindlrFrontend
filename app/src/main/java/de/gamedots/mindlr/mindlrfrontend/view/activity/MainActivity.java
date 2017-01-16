@@ -27,6 +27,7 @@ import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.helper.IntentHelper;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.ImageUploadResult;
+import de.gamedots.mindlr.mindlrfrontend.model.PostLoadedEvent;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 import de.gamedots.mindlr.mindlrfrontend.previews.strategy.YoutubeStrategy;
 import de.gamedots.mindlr.mindlrfrontend.util.DebugUtil;
@@ -78,6 +79,17 @@ public class MainActivity extends BaseActivity implements
     public void onImageUploadResultEvent(ImageUploadResult event) {
         Log.v(LOG.AUTH, "received upload event from BUS");
         Utility.handleImageResult(event, this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPostLoadedEvent(PostLoadedEvent event) {
+        Log.v(LOG.AUTH, "received upload event from BUS");
+        if (event.success){
+            if (adapter != null) {
+                adapter.clear();
+                adapter.addItems(PostLoader.getInstance().getPostList());
+            }
+        }
     }
 
     @Override
