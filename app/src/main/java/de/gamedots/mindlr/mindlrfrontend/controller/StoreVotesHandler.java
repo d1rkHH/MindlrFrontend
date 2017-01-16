@@ -81,6 +81,7 @@ public class StoreVotesHandler {
             while (unsyncedPostsCursor.moveToNext()){
                 ViewPost post = ViewPost.fromCursor(unsyncedPostsCursor);
                 post.setVoteDate(unsyncedPostsCursor.getLong(PostFragment.COLUMN_VOTE_DATE));
+                postsToSync.add(post);
             }
         }
 
@@ -102,6 +103,7 @@ public class StoreVotesHandler {
                 item_fb.put("used_detail_view", false);
                 //TODO: Add report option here if item was reported
                 item_fb.put("local_date", post.getVoteDate());
+                feedback.put(item_fb);
             } catch (JSONException e) {
                 Log.e(LOG.POSTS, "JSON Exception while sending feedback", e);
             }
@@ -109,6 +111,7 @@ public class StoreVotesHandler {
         try {
             content.put("feedback", feedback);
             Log.d(LOG.POSTS, "Sending votes to server");
+            Log.d(LOG.POSTS, feedback.toString());
             new StoreVotesTask(MindlrApplication.getInstance(), content).execute();
         } catch (JSONException e) {
             Log.e(LOG.JSON, "Could not send votes to server!");
