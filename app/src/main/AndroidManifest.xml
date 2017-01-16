@@ -23,6 +23,7 @@
             android:name=".view.activity.MainActivity"
             android:screenOrientation="portrait"
             android:label="Mindlr"
+            android:launchMode="singleTask"
             android:theme="@style/AppTheme"/>
         <activity
             android:name=".view.activity.SettingsActivity"

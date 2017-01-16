@@ -58,6 +58,22 @@
             android:paddingTop="156dp"
             tools:context=".view.activity.BaseNavActivity">
         </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <in.arjsna.swipecardlib.SwipeCardView
+                android:id="@+id/viewposts_swipe_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:max_visible="1"
+                app:min_adapter_stack="2"
+                app:rotation_degrees="15.5"
+                app:top_swipe_detect="false"
+                app:bottom_swipe_detect="false"
+                tools:context=".view.activity.MainActivity" />
+        </FrameLayout>
     </FrameLayout>
 
     <android.support.design.widget.NavigationView

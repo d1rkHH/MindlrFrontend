@@ -12,22 +12,27 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
-import com.google.android.youtube.player.YouTubePlayer;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.LinkedList;
+
 import de.gamedots.mindlr.mindlrfrontend.R;
+import de.gamedots.mindlr.mindlrfrontend.adapter.FlingAdapter;
+import de.gamedots.mindlr.mindlrfrontend.adapter.ViewPostCardAdapter;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.helper.IntentHelper;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.ImageUploadResult;
+import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 import de.gamedots.mindlr.mindlrfrontend.previews.strategy.YoutubeStrategy;
 import de.gamedots.mindlr.mindlrfrontend.util.DebugUtil;
 import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
+import in.arjsna.swipecardlib.SwipeCardView;
 
 public class MainActivity extends BaseActivity implements
         NavigationView.OnNavigationItemSelectedListener {
@@ -43,6 +48,10 @@ public class MainActivity extends BaseActivity implements
     private NavigationView _navigationView;
     private boolean _saveInstanceStateAvailable;
 
+    /* Swipe control views for card stack */
+    private ViewPostCardAdapter adapter;
+    private SwipeCardView swipeCardView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +64,8 @@ public class MainActivity extends BaseActivity implements
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
+        adapter.clear();
+        adapter.addItems(PostLoader.getInstance().getPostList());
     }
 
     @Override
@@ -155,6 +166,52 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void initializeUI() {
+        LinkedList<ViewPost> posts;
+        if (PostLoader.getInstance().getPostList().isEmpty()) {
+            posts = new LinkedList<>();
+            posts.add(new ViewPost(-1, null, null));
+        }else {
+            posts = new LinkedList<> ();
+            posts.addAll(PostLoader.getInstance().getPostList());
+        }
+            adapter = new ViewPostCardAdapter(this, posts);
+
+            swipeCardView = (SwipeCardView) findViewById(R.id.viewposts_swipe_container);
+            swipeCardView.setAdapter(adapter);
+            swipeCardView.setFlingListener(new FlingAdapter() {
+                @Override
+                public void onCardExitLeft(Object dataObject) {
+                    Toast.makeText(MainActivity.this, "LEFT", Toast.LENGTH_SHORT).show();
+                    PostLoader.getInstance().next();
+                    //adapter.popNotify();
+                }
+
+                @Override
+                public void onCardExitRight(Object dataObject) {
+                    PostLoader.getInstance().next();
+                    //adapter.popNotify();
+                    Toast.makeText(MainActivity.this, "RIGHT", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onAdapterAboutToEmpty(int itemsInAdapter) {
+                }
+            });
+
+            swipeCardView.setOnItemClickListener(
+                    new SwipeCardView.OnItemClickListener() {
+                        @Override
+                        public void onItemClicked(int itemPosition, Object dataObject) {
+                            ViewPost card = (ViewPost) dataObject;
+                            Toast.makeText(MainActivity.this, "clicked und nicht swiped", Toast.LENGTH_SHORT)
+                                    .show();
+                            startActivity(new Intent(MainActivity.this, DetailActivity.class)
+                                    .putExtra(PostViewFragment.POST_EXTRA, card));
+
+                        }
+                    });
+
+
         PostViewFragment fragment = (_saveInstanceStateAvailable)
                 ? (PostViewFragment) getSupportFragmentManager().findFragmentByTag("PostView")
                 : new PostViewFragment();

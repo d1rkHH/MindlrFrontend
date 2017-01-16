@@ -62,6 +62,9 @@ dependencies {
     // eventbus
     compile 'org.greenrobot:eventbus:3.0.0'
 
+    // card stack
+    compile 'in.arjsna:swipecardlib:1.0.2'
+
     //youtube
     compile files('libs/YouTubeAndroidPlayerApi.jar')
 

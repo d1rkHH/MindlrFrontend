@@ -3,7 +3,6 @@ package de.gamedots.mindlr.mindlrfrontend.view.fragment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -13,19 +12,12 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.bumptech.glide.Glide;
-import com.google.android.youtube.player.YouTubePlayer;
-import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
-import de.gamedots.mindlr.mindlrfrontend.helper.UriHelper;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 import de.gamedots.mindlr.mindlrfrontend.previews.PreviewStrategyMatcher;
@@ -82,7 +74,7 @@ public class PostViewFragment extends Fragment {
         if (linearLayout != null) {
             linearLayout.setOnTouchListener(new OnSwipeTouchListener(getActivity()));
         } else {
-            Toast.makeText(getActivity(), "was null", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity(), "was null", Toast.LENGTH_SHORT).show();
         }
 
         return view;
