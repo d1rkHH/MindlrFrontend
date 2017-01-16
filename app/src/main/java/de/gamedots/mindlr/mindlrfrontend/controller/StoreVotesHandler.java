@@ -9,7 +9,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -79,7 +78,8 @@ public class StoreVotesHandler {
         Set<ViewPost> postsToSync = new HashSet<>();
         if (unsyncedPostsCursor != null){
             while (unsyncedPostsCursor.moveToNext()){
-                postsToSync.add(ViewPost.fromCursor(unsyncedPostsCursor));
+                ViewPost post = ViewPost.fromCursor(unsyncedPostsCursor);
+                post.setVoteDate(unsyncedPostsCursor.getLong(PostFragment.COLUMN_VOTE_DATE));
             }
         }
 
@@ -100,7 +100,7 @@ public class StoreVotesHandler {
                 //TODO: Check if detail view was used, store here
                 item_fb.put("used_detail_view", false);
                 //TODO: Add report option here if item was reported
-                item_fb.put("local_date", System.currentTimeMillis());
+                item_fb.put("local_date", post.getVoteDate());
             } catch (JSONException e) {
                 Log.e(LOG.POSTS, "JSON Exception while sending feedback", e);
             }

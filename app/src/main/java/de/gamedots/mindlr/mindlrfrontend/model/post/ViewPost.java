@@ -23,6 +23,7 @@ public class ViewPost implements Parcelable {
     private long server_id;
     private String contentText;
     private String contentUri;
+    private long voteDate;
 
     //Values the reader generated
     int vote;
@@ -57,6 +58,14 @@ public class ViewPost implements Parcelable {
 
     public void rateNegative() {
         this.vote = VOTE_DISLIKE;
+    }
+
+    public long getVoteDate() {
+        return voteDate;
+    }
+
+    public void setVoteDate(long voteDate) {
+        this.voteDate = voteDate;
     }
 
     @Override
