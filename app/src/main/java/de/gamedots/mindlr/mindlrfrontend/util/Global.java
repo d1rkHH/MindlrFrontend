@@ -19,7 +19,7 @@ public final class Global {
     public static final String BACKEND_METHOD_SEND_VOTES = "store_feedback";
     public static final String BACKEND_METHOD_DELETE_POST = "delete_post";
     public static final String BACKEND_METHOD_SHOW_PROFILE = "show_profile";
-    public static final String BACKD_METHOD_INITIAL_USER_CAT = "initial_categorie_values";
+    public static final String BACKEND_METHOD_INITIAL_USER_CAT = "store_initial_categories";
     public static final String BACKEND_METHOD_SIGN_IN = "sign_in";
     public static final String BACKEND_METHOD_SYNC_USERPOSTS = "sync_user_posts";
     public static final String BACKEND_METHOD_GET_CATEGORIES = "get_categories";

@@ -9,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -87,19 +88,25 @@ public class StoreVotesHandler {
 
         /* Prepare data to sync with server */
         JSONObject content = new JSONObject();
-        JSONArray upvotes = new JSONArray();
-        JSONArray downvotes = new JSONArray();
+        JSONArray feedback = new JSONArray();
 
         for (ViewPost post : _postsInSending) {
-            if (post.getVote() == ViewPost.VOTE_LIKE) {
-                upvotes.put(Long.toString(post.getServerId()));
-            } else {
-                downvotes.put(Long.toString(post.getServerId()));
+            JSONObject item_fb = new JSONObject();
+            try {
+                item_fb.put("item_id", post.getServerId());
+                item_fb.put("vote", post.getVote());
+                //TODO: Add / count time viewed
+                item_fb.put("time_viewed", 0);
+                //TODO: Check if detail view was used, store here
+                item_fb.put("used_detail_view", false);
+                //TODO: Add report option here if item was reported
+                item_fb.put("local_date", System.currentTimeMillis());
+            } catch (JSONException e) {
+                Log.e(LOG.POSTS, "JSON Exception while sending feedback", e);
             }
         }
         try {
-            content.put("upvotes", upvotes);
-            content.put("downvotes", downvotes);
+            content.put("feedback", feedback);
             Log.d(LOG.POSTS, "Sending votes to server");
             new StoreVotesTask(MindlrApplication.getInstance(), content).execute();
         } catch (JSONException e) {
