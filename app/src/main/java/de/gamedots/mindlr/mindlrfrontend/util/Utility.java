@@ -75,11 +75,16 @@ public class Utility {
     public static void createUserEntryIfNotExists(
             Context context, long userServerId, String email, String provider) {
 
-        String selection = UserEntry.TABLE_NAME + "." + UserEntry.COLUMN_EMAIL + " = ? ";
+        String selection = UserEntry.COLUMN_SERVER_ID + " = ?";
 
         // check if user already exists
         Cursor cursor = context.getContentResolver()
-                .query(UserEntry.CONTENT_URI, null, selection, new String[]{email}, null);
+                .query(UserEntry.CONTENT_URI,
+                        null,
+                        selection,
+                        new String[]{String.valueOf(userServerId)},
+                        null
+                );
 
         // no existing user
         if (cursor == null || !cursor.moveToFirst()) {
@@ -103,7 +108,8 @@ public class Utility {
             cv.put(UserEntry.COLUMN_IS_ACTIVE, 1);
             // activate user
             context.getContentResolver().update(
-                    UserEntry.CONTENT_URI, cv, UserEntry.COLUMN_EMAIL + " = ?", new String[]{email});
+                    UserEntry.CONTENT_URI, cv, UserEntry.COLUMN_SERVER_ID + " = ? ",
+                    new String[]{String.valueOf(userServerId)});
             // load activated user into app user
             loadUserFromDB(context);
         }

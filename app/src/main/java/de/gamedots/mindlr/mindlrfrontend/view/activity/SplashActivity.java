@@ -27,10 +27,6 @@ public class SplashActivity extends AppCompatActivity {
 
         new GetCategoriesTask(this, null).execute();
 
-        if (!PostLoader.getInstance().isInitialized()) {
-            PostLoader.getInstance().initialize();
-        }
-
         if (firstStart) {
             // fill categories
             Intent intent = new Intent(this, DatabaseIntentService.class);
@@ -41,6 +37,9 @@ public class SplashActivity extends AppCompatActivity {
         } else {
             if (authenticated) {
                 Utility.loadUserFromDB(this);
+                if (!PostLoader.getInstance().isInitialized()) {
+                    PostLoader.getInstance().initialize();
+                }
                 finishAndRedirect(MainActivity.class);
             } else {
                 // no user signedIn earlier, so launch LoginActivity and try to authenticate him
