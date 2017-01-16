@@ -14,7 +14,7 @@ public class SendInitialCategoriesTask extends APICallTask {
 
     public SendInitialCategoriesTask(Context context, JSONObject content, boolean authenticated) {
         super(context, content, true);
-        _apiMethod = Global.BACKD_METHOD_INITIAL_USER_CAT;
+        _apiMethod = Global.BACKEND_METHOD_INITIAL_USER_CAT;
     }
 
     @Override

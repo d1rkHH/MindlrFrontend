@@ -16,7 +16,7 @@ import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostFragment;
  */
 public class ViewPost implements Parcelable {
 
-    public static final int VOTE_DISLIKE = -1;
+    public static final int VOTE_DISLIKE = 0;
     public static final int VOTE_LIKE = 1;
 
     //Values from the post itself
