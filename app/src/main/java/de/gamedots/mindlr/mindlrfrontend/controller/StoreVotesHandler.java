@@ -57,6 +57,7 @@ public class StoreVotesHandler {
     }
 
     private void prepareAndStartSending(){
+        Log.v(LOG.POSTS, "prepare sending to votes");
         /* Get all unsynced user posts that have been voted */
         long userId = MindlrApplication.User.getId();
         Uri userPostForUserUri = UserPostEntry.buildUserPostWithUserId(userId);

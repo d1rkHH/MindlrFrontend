@@ -13,21 +13,20 @@
         android:layout_width="match_parent"
         android:layout_height="400dp"
         app:cardElevation="4dp">
-
-        <ImageView
-            android:id="@+id/viewpost_imageview"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:visibility="gone"/>
-
         <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/viewpost_imageview"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:visibility="gone"/>
+
             <TextView
                 android:id="@+id/viewpost_textview"
                 android:layout_width="match_parent"

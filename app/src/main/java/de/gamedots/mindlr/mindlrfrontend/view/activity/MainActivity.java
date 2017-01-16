@@ -201,6 +201,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onCardExitRight(Object dataObject) {
                 Toast.makeText(MainActivity.this, "RIGHT", Toast.LENGTH_SHORT).show();
+                PostLoader.getInstance().next();
                 PostLoader.getInstance().getCurrent().rateNegative();
                 Utility.updatePostVoteType(
                         MainActivity.this,
