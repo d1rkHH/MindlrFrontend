@@ -1,8 +1,10 @@
 package de.gamedots.mindlr.mindlrfrontend.previews.strategy;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
 
-import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
+import java.util.List;
 
 /**
  * Created by max on 14.01.17.
@@ -14,7 +16,5 @@ public interface PreviewStrategy {
 
     PreviewStrategy getCopy();
 
-    void buildPreviewUI(PostViewFragment fragment, Bundle savedInstanceState);
-
-    void saveInstanceState(Bundle outState);
+    void buildPreviewUI(Context context, List<View> availableVies, Bundle savedInstanceState);
 }

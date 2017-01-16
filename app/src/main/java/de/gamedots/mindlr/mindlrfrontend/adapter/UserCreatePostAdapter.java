@@ -61,7 +61,6 @@ public class UserCreatePostAdapter extends RecyclerView.Adapter<UserCreatePostAd
             long id = _cursor.getLong(UserPostsFragment.COLUMN_USERCREATEPOST_ID);
             Uri uri = MindlrContract.UserCreatePostEntry.buildUserCreatePostUri(id);
             Intent intent = new Intent(_context, DetailActivity.class);
-            intent.putExtra(DetailActivity.FRAGMENT_EXTRA, true);
             intent.setData(uri);
             _context.startActivity(intent);
         }

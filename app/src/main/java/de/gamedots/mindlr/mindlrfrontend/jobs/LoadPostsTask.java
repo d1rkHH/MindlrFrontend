@@ -9,33 +9,26 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
+
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.data.DatabaseIntentService;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.PostLoadedEvent;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 import de.gamedots.mindlr.mindlrfrontend.util.Global;
-import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
-
-import static de.gamedots.mindlr.mindlrfrontend.util.DebugUtil.toast;
 
 /**
  * Created by Max Wiechmann on 23.07.16.
  */
 public class LoadPostsTask extends APICallTask {
 
-    private PostViewFragment _fragment;
-    private Context _context;
+    private WeakReference<Context> _context;
 
     public LoadPostsTask(Context context, JSONObject content) {
         super(context, content, true);
-        _context = context;
+        _context = new WeakReference<>(context);
         _apiMethod = Global.BACKEND_METHOD_LOAD_POSTS;
-    }
-
-    public LoadPostsTask setFragment(PostViewFragment fragment) {
-        _fragment = fragment;
-        return this;
     }
 
     @Override
@@ -51,11 +44,7 @@ public class LoadPostsTask extends APICallTask {
                                 post.getString("content_text"),
                                 post.getString("content_url")
                         );
-                        final boolean firstPost = !PostLoader.getInstance().isInitialized();
                         PostLoader.getInstance().addPost(viewPost);
-                        if (_fragment != null && firstPost) {
-                            _fragment.setViewValues(viewPost, null);
-                        }
                     } else {
                         Log.e(LOG.POSTS, "Post JSON invalid");
                     }
@@ -63,9 +52,12 @@ public class LoadPostsTask extends APICallTask {
                 EventBus.getDefault().post(new PostLoadedEvent(true));
 
                 // insert posts into database
-                Intent intent = new Intent(_context, DatabaseIntentService.class);
-                intent.setAction(DatabaseIntentService.INSERT_POST_ACTION);
-                _context.startService(intent);
+
+                if (_context.get() != null) {
+                    Intent intent = new Intent(_context.get(), DatabaseIntentService.class);
+                    intent.setAction(DatabaseIntentService.INSERT_POST_ACTION);
+                    _context.get().startService(intent);
+                }
 
             } else {
                 Log.e(LOG.POSTS, "Posts JSON invalid");
@@ -79,7 +71,7 @@ public class LoadPostsTask extends APICallTask {
     public void onFailure(JSONObject result) {
         try {
             String text = result.getString("ERROR");
-            toast(_context, text);
+            Log.v(LOG.JSON, text);
         } catch (JSONException e) {
             Log.e(LOG.JSON, Log.getStackTraceString(e));
         }

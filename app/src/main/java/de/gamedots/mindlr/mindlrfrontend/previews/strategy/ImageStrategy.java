@@ -1,21 +1,16 @@
 package de.gamedots.mindlr.mindlrfrontend.previews.strategy;
 
-import android.net.Uri;
+import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-
-import de.gamedots.mindlr.mindlrfrontend.R;
-import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
 
 /**
  * Created by max on 14.01.17.
@@ -27,10 +22,6 @@ public class ImageStrategy implements PreviewStrategy {
     private final static String log_tag = "ImagePreview";
 
     private String _imageURL;
-
-    private PostViewFragment _fragment;
-    private ImageView _postImageView;
-
 
     @Override
     public boolean match(String url) {
@@ -52,16 +43,21 @@ public class ImageStrategy implements PreviewStrategy {
     }
 
     @Override
-    public void buildPreviewUI(PostViewFragment fragment, Bundle savedInstanceState) {
-        _fragment = fragment;
-        _postImageView = (ImageView) _fragment.getView().findViewById(R.id.postImageView);
-        _postImageView.setVisibility(View.VISIBLE);
-        Glide.with(_fragment).load(_imageURL).into(_postImageView);
-    }
-
-    @Override
-    public void saveInstanceState(Bundle outState) {
-
+    public void buildPreviewUI(Context context, List<View> views, Bundle savedInstanceState) {
+        /**
+         * Loop through all available views and take the first view that is
+         * of type ImageView and use it to display the preview.
+         */
+        ImageView imageView = null;
+        for (View view : views){
+            if (view instanceof ImageView){
+                imageView = (ImageView)view;
+            }
+        }
+        if (imageView != null) {
+            imageView.setVisibility(View.VISIBLE);
+            Glide.with(context).load(_imageURL).into(imageView);
+        }
     }
 
     public void setImageURL(String imageURL) {

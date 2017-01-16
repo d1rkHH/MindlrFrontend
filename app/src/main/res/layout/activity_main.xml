@@ -52,14 +52,6 @@
             app:pressedTranslationZ="12dp"/>
 
         <FrameLayout
-            android:id="@+id/main_content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="156dp"
-            tools:context=".view.activity.BaseNavActivity">
-        </FrameLayout>
-
-        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -68,7 +60,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:max_visible="5"
-                app:min_adapter_stack="4"
+                app:min_adapter_stack="0"
                 app:rotation_degrees="15.5"
                 app:top_swipe_detect="false"
                 app:bottom_swipe_detect="false"

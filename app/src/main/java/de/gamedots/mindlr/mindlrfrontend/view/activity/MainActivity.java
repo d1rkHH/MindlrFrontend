@@ -4,10 +4,13 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,41 +27,41 @@ import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.adapter.FlingAdapter;
 import de.gamedots.mindlr.mindlrfrontend.adapter.ViewPostCardAdapter;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
 import de.gamedots.mindlr.mindlrfrontend.helper.IntentHelper;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.ImageUploadResult;
 import de.gamedots.mindlr.mindlrfrontend.model.PostLoadedEvent;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
-import de.gamedots.mindlr.mindlrfrontend.previews.strategy.YoutubeStrategy;
 import de.gamedots.mindlr.mindlrfrontend.util.DebugUtil;
 import de.gamedots.mindlr.mindlrfrontend.util.Utility;
-import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
 import in.arjsna.swipecardlib.SwipeCardView;
 
-public class MainActivity extends BaseActivity implements
+import static de.gamedots.mindlr.mindlrfrontend.R.id.fab;
+
+public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener {
 
-    protected int getLayoutResourceId() {
-        return R.layout.activity_main;
-    }
-
-    /*R.string.LoginStatePreference, R.string.UserLoginState)*/
-    private static final String PREF_NAME = "";
     private ActionBarDrawerToggle _drawerToggle;
     private DrawerLayout _drawerLayout;
     private NavigationView _navigationView;
-    private boolean _saveInstanceStateAvailable;
 
     /* Swipe control views for card stack */
     private ViewPostCardAdapter adapter;
     private SwipeCardView swipeCardView;
+    private Toolbar _toolbar;
+    private FloatingActionButton _fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        _saveInstanceStateAvailable = (savedInstanceState != null);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        initializeUI();
+        setContentView(R.layout.activity_main);
+
+        // initialize all UI components
+        setupToolbar();
+        setupFab();
+        setupNavDrawer();
+        setupCardAdapter();
     }
 
     @Override
@@ -67,6 +70,7 @@ public class MainActivity extends BaseActivity implements
         EventBus.getDefault().register(this);
         adapter.clear();
         adapter.addItems(PostLoader.getInstance().getPostList());
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -83,7 +87,7 @@ public class MainActivity extends BaseActivity implements
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPostLoadedEvent(PostLoadedEvent event) {
-        Log.v(LOG.AUTH, "received upload event from BUS");
+        Log.v(LOG.AUTH, "New loaded post received");
         if (event.success){
             if (adapter != null) {
                 adapter.clear();
@@ -97,7 +101,6 @@ public class MainActivity extends BaseActivity implements
         super.onPostCreate(savedInstanceState);
         if (_drawerToggle != null) _drawerToggle.syncState();
     }
-
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -125,7 +128,6 @@ public class MainActivity extends BaseActivity implements
                 DebugUtil.toast(this, "Reported");
                 break;
         }
-        //TODO: put in the current post text and category
         return super.onOptionsItemSelected(item);
     }
 
@@ -134,20 +136,7 @@ public class MainActivity extends BaseActivity implements
         if (_drawerLayout.isDrawerOpen(GravityCompat.START)) {
             _drawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            PostViewFragment fragment = (PostViewFragment)
-                    getSupportFragmentManager().findFragmentByTag("PostView");
-
-            // youtube player is in fullscreen so minimize, otherwise follow normal navigation
-            if(fragment.getPreviewStrategy() instanceof YoutubeStrategy){
-                YoutubeStrategy strategy = (YoutubeStrategy) fragment.getPreviewStrategy();
-                if(strategy.isFullScreen()){
-                    if(strategy.getPlayer() != null){
-                        strategy.getPlayer().setFullscreen(false);
-                    }
-                }
-            } else {
-                super.onBackPressed();
-            }
+            super.onBackPressed();
         }
     }
 
@@ -177,76 +166,90 @@ public class MainActivity extends BaseActivity implements
         return true;
     }
 
-    private void initializeUI() {
-        LinkedList<ViewPost> posts;
-        if (PostLoader.getInstance().getPostList().isEmpty()) {
-            posts = new LinkedList<>();
-            posts.add(new ViewPost(-1, null, null));
-        }else {
-            posts = new LinkedList<> ();
-            posts.addAll(PostLoader.getInstance().getPostList());
+    // region UI setup
+    private void setupCardAdapter(){
+        // TODO: check empty/ network error
+        LinkedList<ViewPost> posts = new LinkedList<>();
+        posts.addAll(PostLoader.getInstance().getPostList());
+
+        adapter = new ViewPostCardAdapter(this, posts);
+
+        swipeCardView = (SwipeCardView) findViewById(R.id.viewposts_swipe_container);
+        swipeCardView.setAdapter(adapter);
+        swipeCardView.setFlingListener(new FlingAdapter() {
+            @Override
+            public void onCardExitLeft(Object dataObject) {
+                Toast.makeText(MainActivity.this, "LEFT", Toast.LENGTH_SHORT).show();
+                PostLoader.getInstance().next();
+                PostLoader.getInstance().getCurrent().ratePositive();
+                Utility.updatePostVoteType(
+                        MainActivity.this,
+                        PostLoader.getInstance().getCurrent().getServerId(),
+                        MindlrContract.UserPostEntry.VOTE_LIKED
+                );
+                //adapter.popNotify();
+            }
+
+            @Override
+            public void onCardExitRight(Object dataObject) {
+                Toast.makeText(MainActivity.this, "RIGHT", Toast.LENGTH_SHORT).show();
+                PostLoader.getInstance().getCurrent().rateNegative();
+                Utility.updatePostVoteType(
+                        MainActivity.this,
+                        PostLoader.getInstance().getCurrent().getServerId(),
+                        MindlrContract.UserPostEntry.VOTE_DISLIKED);
+                //adapter.popNotify();
+
+            }
+
+            @Override
+            public void onAdapterAboutToEmpty(int itemsInAdapter) {
+            }
+        });
+
+        swipeCardView.setOnItemClickListener(
+                new SwipeCardView.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(int itemPosition, Object dataObject) {
+                        ViewPost card = (ViewPost) dataObject;
+                        startActivity(new Intent(MainActivity.this, DetailActivity.class)
+                                .putExtra(DetailActivity.POST_EXTRA, card));
+                    }
+                });
+    }
+
+    private void setupToolbar() {
+        _toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(_toolbar);
+        // back arrow navigation
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
-            adapter = new ViewPostCardAdapter(this, posts);
+    }
 
-            swipeCardView = (SwipeCardView) findViewById(R.id.viewposts_swipe_container);
-            swipeCardView.setAdapter(adapter);
-            swipeCardView.setFlingListener(new FlingAdapter() {
+    private void setupFab(){
+        _fab = (FloatingActionButton) findViewById(fab);
+        if (_fab != null)
+            _fab.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCardExitLeft(Object dataObject) {
-                    Toast.makeText(MainActivity.this, "LEFT", Toast.LENGTH_SHORT).show();
-                    PostLoader.getInstance().next();
-                    //adapter.popNotify();
-                }
-
-                @Override
-                public void onCardExitRight(Object dataObject) {
-                    PostLoader.getInstance().next();
-                    //adapter.popNotify();
-                    Toast.makeText(MainActivity.this, "RIGHT", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onAdapterAboutToEmpty(int itemsInAdapter) {
+                public void onClick(View view) {
+                    startActivity(new Intent(MainActivity.this, WritePostActivity.class));
+                    overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
                 }
             });
+    }
 
-            swipeCardView.setOnItemClickListener(
-                    new SwipeCardView.OnItemClickListener() {
-                        @Override
-                        public void onItemClicked(int itemPosition, Object dataObject) {
-                            ViewPost card = (ViewPost) dataObject;
-                            Toast.makeText(MainActivity.this, "clicked und nicht swiped", Toast.LENGTH_SHORT)
-                                    .show();
-                            startActivity(new Intent(MainActivity.this, DetailActivity.class)
-                                    .putExtra(PostViewFragment.POST_EXTRA, card));
-
-                        }
-                    });
-
-
-        PostViewFragment fragment = (_saveInstanceStateAvailable)
-                ? (PostViewFragment) getSupportFragmentManager().findFragmentByTag("PostView")
-                : new PostViewFragment();
-
-        if (!PostLoader.getInstance().isInitialized()) {
-            PostLoader.getInstance().initialize(fragment);
-        }
-
-        //add PostViewFragment dynamically
-        if (!_saveInstanceStateAvailable)
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.main_content, fragment, "PostView")
-                    .commit();
-
+    private void setupNavDrawer(){
         // navigation drawer setup
         _drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         _drawerToggle = new ActionBarDrawerToggle(
                 this,
                 _drawerLayout,
-                getToolbar(),
+                _toolbar,
                 R.string.navigation_drawer_open,
                 R.string
-                .navigation_drawer_close
+                        .navigation_drawer_close
         );
 
         if (_drawerLayout != null) {
@@ -259,15 +262,5 @@ public class MainActivity extends BaseActivity implements
             _navigationView.setNavigationItemSelectedListener(this);
         }
     }
-
-    @Override
-    protected boolean isFABenabled() {
-        return true;
-    }
-
-    public void showDetail(View view) {
-        Log.v(LOG.AUTH, "cardpost clicked event");
-        startActivity(new Intent(this, DetailActivity.class)
-        .putExtra(PostViewFragment.POST_EXTRA, PostLoader.getInstance().getCurrent()));
-    }
+    // endregion
 }

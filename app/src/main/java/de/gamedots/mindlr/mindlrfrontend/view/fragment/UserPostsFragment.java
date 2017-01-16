@@ -85,10 +85,11 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
                              Bundle savedInstanceState) {
 
         View view;
-        if (getArguments() != null && getArguments().containsKey(PostViewFragment.DETAIL_EXTRA)) {
+        if (getArguments() != null) {
             view = inflater.inflate(R.layout.fragment_user_posts_detail, container, false);
             isDetailed = true;
             setHasOptionsMenu(false);
+            // tODO: remove if check, create updetail activity
         } else {
             view = inflater.inflate(R.layout.fragment_user_posts, container, false);
             _recyclerView = (RecyclerView) view.findViewById(R.id.usercreatepost_recyclerview);

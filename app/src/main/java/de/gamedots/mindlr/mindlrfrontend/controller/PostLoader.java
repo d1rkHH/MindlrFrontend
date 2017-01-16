@@ -13,7 +13,6 @@ import de.gamedots.mindlr.mindlrfrontend.jobs.LoadPostsTask;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 import de.gamedots.mindlr.mindlrfrontend.util.Utility;
-import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
 
 /**
  * Created by Max Wiechmann on 26.09.15.
@@ -46,14 +45,12 @@ public class PostLoader {
         return !_postList.isEmpty();
     }
 
-    public void initialize(PostViewFragment fragment) {
-
+    public void initialize() {
         int postsLoaded = Utility.loadUnvotedPostsOrNothing(MindlrApplication.getInstance());
         // loaded unvoted posts size below threshold so try to load more
         if(postsLoaded < MIN_SIZE_THRESHOLD){
             Log.d(LOG.AUTH, "Load posts from the server for the first time");
             new LoadPostsTask(MindlrApplication.getInstance(), new JSONObject())
-                    .setFragment(fragment)
                     .execute();
         }
     }

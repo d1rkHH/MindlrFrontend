@@ -1,8 +1,9 @@
 package de.gamedots.mindlr.mindlrfrontend.previews;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,6 @@ import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 import de.gamedots.mindlr.mindlrfrontend.previews.strategy.ImageStrategy;
 import de.gamedots.mindlr.mindlrfrontend.previews.strategy.PreviewStrategy;
 import de.gamedots.mindlr.mindlrfrontend.previews.strategy.YoutubeStrategy;
-import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment;
 
 /**
  * This singleton holds a list of all supported preview stategies. When a post gets displayed,
@@ -106,12 +106,7 @@ public class PreviewStrategyMatcher {
         }
 
         @Override
-        public void buildPreviewUI(PostViewFragment fragment, Bundle savedInstanceState) {
-
-        }
-
-        @Override
-        public void saveInstanceState(Bundle outState) {
+        public void buildPreviewUI(Context context, List<View> views, Bundle savedInstanceState) {
 
         }
     }

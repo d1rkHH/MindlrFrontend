@@ -120,7 +120,6 @@ public class DatabaseIntentService extends IntentService {
     }
 
     private void updateUserPostsVotes(String jsonString) {
-        // TODO: define json contract backend
         try {
             JSONObject result = new JSONObject(jsonString);
             JSONArray posts = result.getJSONArray("user_items");

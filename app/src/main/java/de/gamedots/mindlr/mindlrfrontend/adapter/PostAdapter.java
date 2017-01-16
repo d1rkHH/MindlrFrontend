@@ -26,8 +26,8 @@ import de.gamedots.mindlr.mindlrfrontend.previews.strategy.YoutubeStrategy;
 import de.gamedots.mindlr.mindlrfrontend.view.activity.DetailActivity;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.PostFragment;
 
+import static de.gamedots.mindlr.mindlrfrontend.view.activity.DetailActivity.LAUNCHED_FROM_ATTACHEMENT_KEY;
 import static de.gamedots.mindlr.mindlrfrontend.view.activity.DetailActivity.LIKED_EXTRA;
-import static de.gamedots.mindlr.mindlrfrontend.view.fragment.PostViewFragment.POST_EXTRA;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostAdapterViewHolder> {
 
@@ -71,7 +71,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostAdapterVie
             ViewPost vp = ViewPost.fromCursor(_cursor);
             Intent intent = new Intent(_context, DetailActivity.class);
             intent.putExtra(LIKED_EXTRA, true);
-            intent.putExtra(POST_EXTRA, vp);
+            intent.putExtra(LAUNCHED_FROM_ATTACHEMENT_KEY, 1);
+            intent.putExtra(DetailActivity.POST_EXTRA, vp);
             _clickHandler.onClick(intent);
         }
     }

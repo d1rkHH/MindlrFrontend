@@ -1,20 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:orientation="vertical">
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-
-    <FrameLayout
-        android:id="@+id/detail_post_container"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/detail_video_container"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <fragment
+                android:name="com.google.android.youtube.player.YouTubePlayerFragment"
+                android:id="@+id/detail_youtubeplayer_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </FrameLayout>
+
+
+        <ImageView
+            android:id="@+id/detail_imageview"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:visibility="gone"
+            android:scaleType="centerCrop"/>
+
+        <TextView
+            android:id="@+id/detail_content_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:autoLink="web"
+            android:fontFamily="sans-serif-light"
+            android:isScrollContainer="false"
+            android:lineSpacingMultiplier="1.16"
+            android:padding="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColorLink="@color/accent"
+            android:textIsSelectable="false"
+            android:textSize="18sp"
+            tools:text="my simple text that display"/>
+    </LinearLayout>
 
     <View
-        android:background="@drawable/scrim_gradient"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        android:background="@drawable/scrim_gradient"
         />
 
     <!-- main toolbar -->
@@ -22,9 +59,9 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/toolbar"
         style="@style/ToolbarStyle"
-        app:elevation="@dimen/appbar_elevation"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@android:color/transparent"
+        app:elevation="@dimen/appbar_elevation"
         />
 </FrameLayout>
