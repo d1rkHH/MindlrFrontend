@@ -1,7 +1,6 @@
 package de.gamedots.mindlr.mindlrfrontend.previews.strategy;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -43,7 +42,7 @@ public class ImageStrategy implements PreviewStrategy {
     }
 
     @Override
-    public void buildPreviewUI(Context context, List<View> views, Bundle savedInstanceState) {
+    public void buildPreviewUI(Context context, List<View> views) {
         /**
          * Loop through all available views and take the first view that is
          * of type ImageView and use it to display the preview.

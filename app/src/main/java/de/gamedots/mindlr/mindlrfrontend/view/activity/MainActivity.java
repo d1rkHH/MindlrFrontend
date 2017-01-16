@@ -27,6 +27,7 @@ import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.adapter.FlingAdapter;
 import de.gamedots.mindlr.mindlrfrontend.adapter.ViewPostCardAdapter;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
+import de.gamedots.mindlr.mindlrfrontend.data.DatabaseIntentService;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
 import de.gamedots.mindlr.mindlrfrontend.helper.IntentHelper;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
@@ -56,6 +57,10 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (!PostLoader.getInstance().isInitialized()){
+            PostLoader.getInstance().initialize();
+        }
 
         // initialize all UI components
         setupToolbar();
@@ -93,6 +98,9 @@ public class MainActivity extends AppCompatActivity implements
                 adapter.clear();
                 adapter.addItems(PostLoader.getInstance().getPostList());
             }
+            Intent intent = new Intent(this, DatabaseIntentService.class);
+            intent.setAction(DatabaseIntentService.INSERT_POST_ACTION);
+            startService(intent);
         }
     }
 

@@ -62,7 +62,7 @@ public class TutorialFragment extends Fragment {
             if (catCursor != null) {
                 while (catCursor.moveToNext()) {
                     long id = catCursor.getLong(catCursor.getColumnIndex(CategoryEntry._ID));
-                    String name = catCursor.getString(catCursor.getColumnIndex(CategoryEntry.COLUMN_NAME));
+                    String name = catCursor.getString(catCursor.getColumnIndex(CategoryEntry.COLUMN_DISPLAY_NAME));
                     items.add(new Item(Long.toString(id), name));
                 }
                 catCursor.close();

@@ -38,13 +38,9 @@ public class GetCategoriesTask extends APICallTask{
                 Category.allCategories = new ArrayList<>();
                 JSONArray categories = result.getJSONArray("categories");
                 for (int i = 0; i < categories.length(); i++) {
-                    JSONObject category = categories.getJSONObject(i);
-                    if (category.has("name")) {
-                        Category cat = new Category(category.getString("name"));
+                    String category = categories.getString(i);
+                        Category cat = new Category(category);
                         Category.allCategories.add(cat);
-                    } else {
-                        Log.e(LOG.JSON, "Post JSON invalid");
-                    }
                 }
                 // insert posts into database
                 Intent intent = new Intent(_context, DatabaseIntentService.class);

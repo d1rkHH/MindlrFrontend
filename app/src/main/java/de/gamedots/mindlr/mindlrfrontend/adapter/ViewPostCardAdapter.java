@@ -1,7 +1,6 @@
 package de.gamedots.mindlr.mindlrfrontend.adapter;
 
 import android.content.Context;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,14 +8,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
-import de.gamedots.mindlr.mindlrfrontend.helper.UriHelper;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
+import de.gamedots.mindlr.mindlrfrontend.previews.PreviewStrategyMatcher;
 
 /**
  * Created by Dirk on 16.01.17.
@@ -43,16 +41,13 @@ public class ViewPostCardAdapter extends ArrayAdapter<ViewPost> {
         ((TextView)convertView.findViewById(R.id.viewpost_textview)).setText(viewPost.getContentText());
 
         ImageView image = (ImageView) convertView.findViewById(R.id.viewpost_imageview);
-        // TODO: use preview strategie for video and image
-        try {
-            if (UriHelper.isImgur(Uri.parse(viewPost.getContentUri()))) {
-                image.setVisibility(View.VISIBLE);
-                Glide.with(getContext()).load(viewPost.getContentUri()).into(image);
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-            image.setVisibility(View.GONE);
-        }
+        List<View> availablePreviewViews = new ArrayList<>();
+        availablePreviewViews.add(image);
+        PreviewStrategyMatcher
+                .getInstance()
+                .matchStrategy(viewPost)
+                .buildPreviewUI(getContext(), availablePreviewViews);
+
         return convertView;
     }
 

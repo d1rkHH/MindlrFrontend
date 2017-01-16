@@ -141,11 +141,12 @@ public class MindlrProvider extends ContentProvider {
                 sortOrder);
     }
 
-    private Cursor getDraftsWithJoinedContent(String[] projection, String sortOrder) {
+    private Cursor getDraftsWithJoinedContent(String[] projection, String selection, String[] selArgs, String
+                                              sortOrder) {
         return sDraftsQueryBuilder.query(_dbOpenHelper.getReadableDatabase(),
                 projection,
-                null,
-                null,
+                selection,
+                selArgs,
                 null,
                 null,
                 sortOrder);
@@ -234,7 +235,7 @@ public class MindlrProvider extends ContentProvider {
                         projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case DRAFT:
-                resultCursor = getDraftsWithJoinedContent(projection, sortOrder);
+                resultCursor = getDraftsWithJoinedContent(projection,selection, selectionArgs, sortOrder);
                 break;
             case LOADED_DRAFT:
                 resultCursor = getSingleDraftWithJoinedContent(uri, projection, sortOrder);

@@ -54,14 +54,12 @@ public class DetailActivity extends AppCompatActivity implements YoutubeStrategy
     private YouTubePlayerFragment _playerFragment;
     private FrameLayout _detailVideoContainer;
     private String _videoID;
-    private Bundle _saveStateAvailable;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        _saveStateAvailable = savedInstanceState;
 
         setupToolbar();
         bindViews();
@@ -111,10 +109,10 @@ public class DetailActivity extends AppCompatActivity implements YoutubeStrategy
             availableViews.add(_detailContentText);
 
             if(_previewStrategy != null){
-                _previewStrategy.buildPreviewUI(this, availableViews, _saveStateAvailable );
+                _previewStrategy.buildPreviewUI(this, availableViews);
             } else {
                 _previewStrategy = PreviewStrategyMatcher.getInstance().matchStrategy(vp).getCopy();
-                _previewStrategy.buildPreviewUI(this, availableViews, _saveStateAvailable);
+                _previewStrategy.buildPreviewUI(this, availableViews);
             }
         }
     }

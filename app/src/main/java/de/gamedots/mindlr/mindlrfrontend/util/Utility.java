@@ -1,6 +1,5 @@
 package de.gamedots.mindlr.mindlrfrontend.util;
 
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -89,20 +88,27 @@ public class Utility {
         // no existing user
         if (cursor == null || !cursor.moveToFirst()) {
 
-            // create auth provider entry for relation to user
-            ContentValues cv = new ContentValues();
-            cv.put(AuthProviderEntry.COLUMN_NAME, provider);
-            Uri resultUri = context.getContentResolver().insert(AuthProviderEntry.CONTENT_URI, cv);
+            // get auth provider entry by name for relation to user
+            Cursor authproviderCursor = context.getContentResolver().query(AuthProviderEntry.CONTENT_URI,
+                    null, AuthProviderEntry.COLUMN_NAME + " = ?",
+                    new String[]{provider},null);
 
-            // no active user, so create local user entry
-            ContentValues ucv = new ContentValues();
-            ucv.put(UserEntry.COLUMN_EMAIL, email);
-            ucv.put(UserEntry.COLUMN_SERVER_ID, userServerId);
-            ucv.put(UserEntry.COLUMN_IS_ACTIVE, 1);
-            ucv.put(UserEntry.COLUMN_AUTH_PROVIDER_KEY, ContentUris.parseId(resultUri));
-            context.getContentResolver().insert(UserEntry.CONTENT_URI, ucv);
+            if (authproviderCursor != null && authproviderCursor.moveToFirst()) {
 
-            loadUserFromDB(context);
+                long authprovider_key = authproviderCursor.getLong(authproviderCursor.getColumnIndex(AuthProviderEntry
+                        .TABLE_NAME + "." + AuthProviderEntry._ID));
+                authproviderCursor.close();
+
+                // no active user, so create local user entry
+                ContentValues ucv = new ContentValues();
+                ucv.put(UserEntry.COLUMN_EMAIL, email);
+                ucv.put(UserEntry.COLUMN_SERVER_ID, userServerId);
+                ucv.put(UserEntry.COLUMN_IS_ACTIVE, 1);
+                ucv.put(UserEntry.COLUMN_AUTH_PROVIDER_KEY, authprovider_key);
+                context.getContentResolver().insert(UserEntry.CONTENT_URI, ucv);
+
+                loadUserFromDB(context);
+            }
         } else {
             ContentValues cv = new ContentValues();
             cv.put(UserEntry.COLUMN_IS_ACTIVE, 1);
@@ -216,9 +222,10 @@ public class Utility {
                         ItemEntry.COLUMN_CONTENT_TEXT,
                         ItemEntry.COLUMN_CONTENT_URI
                 },
-                UserPostEntry.COLUMN_VOTE + " = ? AND " + UserPostEntry.COLUMN_USER_KEY + " = ?",
+                UserPostEntry.COLUMN_VOTE + " = ? AND " + UserPostEntry.COLUMN_USER_KEY + " = ?" + " AND " +
+                UserPostEntry.COLUMN_SYNC_FLAG + " = ? ",
                 new String[]{Integer.toString(UserPostEntry.VOTE_UNDEFINED), Long.toString
-                        (MindlrApplication.User.getId())},
+                        (MindlrApplication.User.getId()), UserPostEntry.UNSYNCED},
                 null,
                 null,
                 null);
@@ -367,11 +374,13 @@ public class Utility {
 
             if (draftCursor != null && draftCursor.moveToFirst()) {
                 itemId = draftCursor.getLong(draftCursor.getColumnIndex(DraftEntry.COLUMN_ITEM_KEY));
-                context.getContentResolver()
-                        .update(ItemEntry.CONTENT_URI, cv,
-                                ItemEntry.TABLE_NAME + "." + ItemEntry._ID + " = ? ",
-                                new String[]{String.valueOf(itemId)}
-                        );
+                if (itemId >= 0) {
+                    context.getContentResolver()
+                            .update(ItemEntry.CONTENT_URI, cv,
+                                    ItemEntry.TABLE_NAME + "." + ItemEntry._ID + " = ? ",
+                                    new String[]{String.valueOf(itemId)}
+                            );
+                }
                 draftCursor.close();
             }
         }
@@ -464,6 +473,7 @@ public class Utility {
 
         ContentValues cv = new ContentValues();
         for(long categoryId : CategoryHelper.getCategories()){
+            Log.v(LOG.AUTH, ""+categoryId);
             cv.clear();
             cv.put(UserCategoryEntry.COLUMN_USER_KEY, userId);
             cv.put(UserCategoryEntry.COLUMN_CATEGORY_KEY, categoryId);

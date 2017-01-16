@@ -1,7 +1,6 @@
 package de.gamedots.mindlr.mindlrfrontend.previews;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
@@ -106,7 +105,7 @@ public class PreviewStrategyMatcher {
         }
 
         @Override
-        public void buildPreviewUI(Context context, List<View> views, Bundle savedInstanceState) {
+        public void buildPreviewUI(Context context, List<View> views) {
 
         }
     }

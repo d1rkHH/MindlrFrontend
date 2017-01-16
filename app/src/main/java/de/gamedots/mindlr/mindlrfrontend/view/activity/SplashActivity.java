@@ -1,12 +1,15 @@
 package de.gamedots.mindlr.mindlrfrontend.view.activity;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.data.DatabaseIntentService;
+import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
 import de.gamedots.mindlr.mindlrfrontend.jobs.GetCategoriesTask;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.util.Utility;
@@ -28,6 +31,15 @@ public class SplashActivity extends AppCompatActivity {
         new GetCategoriesTask(this, null).execute();
 
         if (firstStart) {
+            // create auth provider
+            ContentValues cv = new ContentValues();
+            cv.put(MindlrContract.AuthProviderEntry.COLUMN_NAME, getString(R.string.google_provider));
+            getContentResolver().insert(MindlrContract.AuthProviderEntry.CONTENT_URI, cv);
+
+            cv = new ContentValues();
+            cv.put(MindlrContract.AuthProviderEntry.COLUMN_NAME, getString(R.string.twitter_provider));
+            getContentResolver().insert(MindlrContract.AuthProviderEntry.CONTENT_URI, cv);
+
             // fill categories
             Intent intent = new Intent(this, DatabaseIntentService.class);
             intent.setAction(DatabaseIntentService.INSERT_CATEGORIES_ACTION);

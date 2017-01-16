@@ -1,7 +1,6 @@
 package de.gamedots.mindlr.mindlrfrontend.previews.strategy;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.view.View;
 
 import java.util.List;
@@ -16,5 +15,5 @@ public interface PreviewStrategy {
 
     PreviewStrategy getCopy();
 
-    void buildPreviewUI(Context context, List<View> availableVies, Bundle savedInstanceState);
+    void buildPreviewUI(Context context, List<View> availableVies);
 }

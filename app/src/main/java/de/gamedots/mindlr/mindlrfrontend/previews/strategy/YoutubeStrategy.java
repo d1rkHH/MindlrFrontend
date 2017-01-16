@@ -1,10 +1,11 @@
 package de.gamedots.mindlr.mindlrfrontend.previews.strategy;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.youtube.player.YouTubePlayer;
 
 import java.util.List;
@@ -55,23 +56,41 @@ public class YoutubeStrategy implements PreviewStrategy{
     }
 
     @Override
-    public void buildPreviewUI(Context context, List<View> views, Bundle savedInstanceState) {
+    public void buildPreviewUI(Context context, List<View> views) {
         /*
          * We can only load content for those Activities that handle Player initialization.
          */
-        if (!(context instanceof YoutubeHandler)) {
-            return;
-        }
-        YoutubeHandler handler = (YoutubeHandler) context;
-        handler.setVideoID(_videoID);
-        if (handler.getYouTubePlayerProvider() != null) {
-            handler.getYouTubePlayerProvider()
-                    .initialize(context.getString(R.string.youtube_developer_key), handler);
+        if (context instanceof YoutubeHandler) {
+            YoutubeHandler handler = (YoutubeHandler) context;
+            handler.setVideoID(_videoID);
+            if (handler.getYouTubePlayerProvider() != null) {
+                handler.getYouTubePlayerProvider()
+                        .initialize(context.getString(R.string.youtube_developer_key), handler);
+            }
+        } else {
+            /**
+             * Context does not handle video loading so check if we can display
+             * a video thumbnail
+             */
+            ImageView thumbnail = null;
+            for (View view : views){
+                if (view instanceof ImageView){
+                    thumbnail = (ImageView)view;
+                }
+            }
+            if (thumbnail != null) {
+                thumbnail.setVisibility(View.VISIBLE);
+                Glide.with(context).load(getThumbnailUrl()).into(thumbnail);
+            }
         }
     }
 
     private void setVideoID(String videoID){
         _videoID = videoID;
+    }
+
+    private String getThumbnailUrl(){
+        return "https://img.youtube.com/vi/" + getVideoID() + "/0.jpg";
     }
 
     public String getVideoID(){

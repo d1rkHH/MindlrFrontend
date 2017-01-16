@@ -3,6 +3,7 @@ package de.gamedots.mindlr.mindlrfrontend.data;
 import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import org.json.JSONArray;
@@ -55,19 +56,30 @@ public class DatabaseIntentService extends IntentService {
         for (int i = 0; i < posts.size(); i++) {
             ViewPost p = posts.get(i);
 
-            // 1. create and insert item
-            ContentValues cv = new ContentValues();
-            cv.put(ItemEntry.COLUMN_CONTENT_TEXT, p.getContentText());
-            cv.put(ItemEntry.COLUMN_CONTENT_URI, p.getContentUri());
+            Cursor dbPost = getContentResolver().query(PostEntry.CONTENT_URI,
+                    null,
+                    PostEntry.COLUMN_SERVER_ID + " = ?",
+                    new String[]{String.valueOf(p.getServerId())},
+                    null);
+            // do not insert item entry another time if post already exist
+            if (dbPost == null || !dbPost.moveToFirst()) {
+                // 1. create and insert item
+                ContentValues cv = new ContentValues();
+                cv.put(ItemEntry.COLUMN_CONTENT_TEXT, p.getContentText());
+                cv.put(ItemEntry.COLUMN_CONTENT_URI, p.getContentUri());
 
-            long itemId = db.insert(ItemEntry.TABLE_NAME, null, cv);
+                long itemId = db.insert(ItemEntry.TABLE_NAME, null, cv);
 
-            // 2. add post content values using received item id
-            if(itemId > 0 ){
-                ContentValues postcv = new ContentValues();
-                postcv.put(PostEntry.COLUMN_ITEM_KEY, itemId);
-                postcv.put(PostEntry.COLUMN_SERVER_ID, p.getServerId());
-                values.add(postcv);
+                // 2. add post content values using received item id
+                if (itemId > 0) {
+                    ContentValues postcv = new ContentValues();
+                    postcv.put(PostEntry.COLUMN_ITEM_KEY, itemId);
+                    postcv.put(PostEntry.COLUMN_SERVER_ID, p.getServerId());
+                    values.add(postcv);
+                }
+            }
+            if (dbPost != null) {
+                dbPost.close();
             }
         }
         ContentValues[] cvArray = new ContentValues[values.size()];
