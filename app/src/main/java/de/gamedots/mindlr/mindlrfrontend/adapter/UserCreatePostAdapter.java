@@ -1,9 +1,15 @@
 package de.gamedots.mindlr.mindlrfrontend.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,7 +27,7 @@ import de.gamedots.mindlr.mindlrfrontend.helper.DateFormatHelper;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 import de.gamedots.mindlr.mindlrfrontend.previews.PreviewStrategyMatcher;
-import de.gamedots.mindlr.mindlrfrontend.view.activity.DetailActivity;
+import de.gamedots.mindlr.mindlrfrontend.view.activity.UserPostDetailActivity;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.UserPostsFragment;
 
 /**
@@ -64,9 +70,22 @@ public class UserCreatePostAdapter extends RecyclerView.Adapter<UserCreatePostAd
             _cursor.moveToPosition(getAdapterPosition());
             long id = _cursor.getLong(UserPostsFragment.COLUMN_USERCREATEPOST_ID);
             Uri uri = MindlrContract.UserCreatePostEntry.buildUserCreatePostUri(id);
-            Intent intent = new Intent(_context, DetailActivity.class);
+            Intent intent = new Intent(_context, UserPostDetailActivity.class);
             intent.setData(uri);
-            _context.startActivity(intent);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                View sharedElement = ((AppCompatActivity) _context).findViewById(R.id.usercreatepost_imageview);
+                View sharedText = ((AppCompatActivity) _context).findViewById(R.id
+                        .usercreatepost_content_textview);
+                Pair<View, String> p1 = Pair.create(sharedElement, "usercreate_image");
+                Pair<View, String> p2 = Pair.create(sharedText, "usercreate_text");
+                ActivityOptionsCompat compat = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        (Activity) _context, p1, p2);
+
+                ActivityCompat.startActivity(_context, intent, compat.toBundle());
+            } else {
+                _context.startActivity(intent);
+            }
         }
     }
 

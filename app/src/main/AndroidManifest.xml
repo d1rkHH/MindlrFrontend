@@ -21,9 +21,9 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".view.activity.MainActivity"
-            android:screenOrientation="portrait"
             android:label="Mindlr"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme"/>
         <activity
             android:name=".view.activity.SettingsActivity"
@@ -36,20 +36,21 @@
         </activity>
         <activity
             android:name=".view.activity.WritePostActivity"
-            android:launchMode="singleTask"
             android:label="@string/title_activity_write_post"
+            android:launchMode="singleTask"
             android:parentActivityName=".view.activity.MainActivity"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize">
-
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.gamedots.mindlr.mindlrfrontend.view.activity.MainActivity"/>
 
             <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="text/plain" />
+                <action android:name="android.intent.action.SEND"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+
+                <data android:mimeType="text/plain"/>
             </intent-filter>
         </activity>
         <activity
@@ -73,15 +74,16 @@
         <activity
             android:name=".view.activity.ProfileActivity"
             android:label="@string/title_activity_profile_actvitiy"
-            android:screenOrientation="portrait"
             android:parentActivityName=".view.activity.MainActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.gamedots.mindlr.mindlrfrontend.view.activity.MainActivity"/>
         </activity>
-        <activity android:name=".view.activity.TutorialActivity"
-                  android:theme="@style/TutorialTheme">
+        <activity
+            android:name=".view.activity.TutorialActivity"
+            android:theme="@style/TutorialTheme">
         </activity>
         <activity
             android:name=".view.activity.DetailActivity"
@@ -100,7 +102,11 @@
 
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="071d87e6fc1a50ab0c0ae7555c2bdd2c04208430" />
+            android:value="071d87e6fc1a50ab0c0ae7555c2bdd2c04208430"/>
+
+        <activity android:name=".view.activity.UserPostDetailActivity"
+            android:parentActivityName=".view.activity.ProfileActivity">
+        </activity>
     </application>
 
 </manifest>

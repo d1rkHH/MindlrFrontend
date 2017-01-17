@@ -76,6 +76,7 @@
 
         <ImageView
             android:id="@+id/usercreatepost_imageview"
+            android:transitionName="usercreate_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxHeight="200dp"
@@ -88,6 +89,7 @@
 
         <TextView
             android:id="@+id/usercreatepost_content_textview"
+            android:transitionName="usercreate_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"

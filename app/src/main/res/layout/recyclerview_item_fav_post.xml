@@ -18,6 +18,7 @@
 
         <ImageView
             android:id="@+id/post_preview_imageview"
+            android:transitionName="likeimage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"/>

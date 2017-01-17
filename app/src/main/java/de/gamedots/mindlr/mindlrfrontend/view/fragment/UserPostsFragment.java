@@ -2,27 +2,18 @@ package de.gamedots.mindlr.mindlrfrontend.view.fragment;
 
 
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
@@ -31,11 +22,8 @@ import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.adapter.UserCreatePostAdapter;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserCreatePostEntry;
-import de.gamedots.mindlr.mindlrfrontend.helper.DateFormatHelper;
-import de.gamedots.mindlr.mindlrfrontend.helper.UriHelper;
 
-public class UserPostsFragment extends Fragment implements SearchView.OnQueryTextListener, LoaderManager
-        .LoaderCallbacks<Cursor> {
+public class UserPostsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private RecyclerView _recyclerView;
     private UserCreatePostAdapter _adapter;
@@ -84,59 +72,18 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view;
-        if (getArguments() != null) {
-            view = inflater.inflate(R.layout.fragment_user_posts_detail, container, false);
-            isDetailed = true;
-            setHasOptionsMenu(false);
-            // tODO: remove if check, create updetail activity
-        } else {
-            view = inflater.inflate(R.layout.fragment_user_posts, container, false);
-            _recyclerView = (RecyclerView) view.findViewById(R.id.usercreatepost_recyclerview);
-            _emptyText = (TextView) view.findViewById(R.id.recyclerview_usercreatepost_empty);
+        View view = inflater.inflate(R.layout.fragment_user_posts, container, false);
+        _recyclerView = (RecyclerView) view.findViewById(R.id.usercreatepost_recyclerview);
+        _emptyText = (TextView) view.findViewById(R.id.recyclerview_usercreatepost_empty);
 
-            LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-            _recyclerView.setLayoutManager(layoutManager);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        _recyclerView.setLayoutManager(layoutManager);
 
-            _adapter = new UserCreatePostAdapter(getActivity(), _emptyText);
-            _recyclerView.setAdapter(_adapter);
-        }
+        _adapter = new UserCreatePostAdapter(getActivity(), _emptyText);
+        _recyclerView.setAdapter(_adapter);
+
         return view;
     }
-
-    // region search setup and listener
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_user_posts_fragment, menu);
-
-        final MenuItem item = menu.findItem(R.id.action_search);
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
-        searchView.setOnQueryTextListener(this);
-
-        MenuItemCompat.setOnActionExpandListener(item,
-                new MenuItemCompat.OnActionExpandListener() {
-                    @Override
-                    public boolean onMenuItemActionCollapse(MenuItem item) {
-                        return true; // Return true to collapse action view
-                    }
-
-                    @Override
-                    public boolean onMenuItemActionExpand(MenuItem item) {
-                        return true; // Return true to expand action view
-                    }
-                });
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newSearchText) {
-        return true;
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        return false;
-    }
-    //endregion
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -144,13 +91,6 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
         String selection = UserCreatePostEntry.COLUMN_USER_KEY + " = ? ";
         ArrayList<String> selArgs = new ArrayList<>();
         selArgs.add(Long.toString(MindlrApplication.User.getId()));
-
-        // if we got launched to show a detail add ID parameter to selection
-        Uri data = getActivity().getIntent().getData();
-        if (data != null) {
-            selection += " AND " + UserCreatePostEntry.TABLE_NAME + "." + UserCreatePostEntry._ID + " = ? ";
-            selArgs.add(UserCreatePostEntry.getIdPathFromUri(data));
-        }
 
         return new CursorLoader(getActivity(),
                 UserCreatePostEntry.CONTENT_URI,
@@ -163,59 +103,14 @@ public class UserPostsFragment extends Fragment implements SearchView.OnQueryTex
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-
-        if (isDetailed) {
-            if (cursor == null || !cursor.moveToFirst()) {
-                return;
-            }
-
-            // read data from cursor and apply to post text content
-            ((TextView) getActivity().findViewById(R.id.usercreatepost_content_textview)).setText(cursor
-                    .getString(UserPostsFragment.COLUMN_CONTENT_TEXT));
-
-            // read uri from cursor
-            Uri uri = Uri.parse(cursor.getString(UserPostsFragment.COLUMN_CONTENT_URI));
-            ImageView postImage = (ImageView) getActivity().findViewById(R.id.usercreatepost_imageview);
-            if(UriHelper.isImgur(uri)){
-                Glide.with(getActivity())
-                        .load(uri)
-                        .fitCenter()
-                        .into(postImage);
-            } else {
-                postImage.setVisibility(View.GONE);
-            }
-
-            if (UriHelper.isYoutube(uri)){
-                //TODO: load into player or thumbnail
-            }
-
-            // read date millis from cursor and get day and month using calendar object
-            long dateMillis = cursor.getLong(UserPostsFragment.COLUMN_SUBMIT_DATE);
-            String formatDate = DateFormatHelper.getFullDateString(dateMillis);
-            ((TextView) getActivity().findViewById(R.id.usercreatepost_date_textview))
-                    .setText(formatDate);
-
-            // read uppercent from cursor
-            ((TextView) getActivity().findViewById(R.id.usercreatepost_uppercent_textview))
-                    .setText(String.format(getActivity().getString(R.string.format_vote_percentage),
-                            cursor.getFloat(UserPostsFragment.COLUMN_UPVOTES)));
-
-            // read downpercent from cursor
-            ((TextView) getActivity().findViewById(R.id.usercreatepost_downpercent_textview))
-                    .setText(String.format(getActivity().getString(R.string.format_vote_percentage),
-                            cursor.getFloat(UserPostsFragment.COLUMN_DOWNVOTES)));
-        } else {
-            _adapter.swapCursor(cursor);
-            if (_adapter.getItemCount() == 0) {
-                _emptyText.setText("You have not written any posts yet.");
-            }
+        _adapter.swapCursor(cursor);
+        if (_adapter.getItemCount() == 0) {
+            _emptyText.setText("You have not written any posts yet.");
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        if(!isDetailed) {
-            _adapter.swapCursor(null);
-        }
+        _adapter.swapCursor(null);
     }
 }

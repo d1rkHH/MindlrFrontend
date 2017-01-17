@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -147,9 +148,13 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
         _emptyView = (TextView) rootView.findViewById(R.id.recyclerview_post_empty);
         _postAdapter = new PostAdapter(getActivity(), _emptyView, new PostAdapter.PostOnClickHandler() {
             @Override
-            public void onClick(Intent intent) {
+            public void onClick(Intent intent, Bundle bundle) {
                 intent.putExtra(LAYOUT_KEY, _isInGridLayout);
-                startActivity(intent);
+                if (bundle == null){
+                    startActivity(intent);
+                } else {
+                    ActivityCompat.startActivity(getActivity(), intent, bundle);
+                }
             }
         });
 

@@ -1,8 +1,14 @@
 package de.gamedots.mindlr.mindlrfrontend.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +36,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostAdapterVie
     private final Context _context;
 
     public interface PostOnClickHandler{
-        void onClick(Intent intent);
+        void onClick(Intent intent, Bundle bundle);
     }
     private PostOnClickHandler _clickHandler;
 
@@ -63,7 +69,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostAdapterVie
             intent.putExtra(LIKED_EXTRA, true);
             intent.putExtra(LAUNCHED_FROM_ATTACHEMENT_KEY, 1);
             intent.putExtra(DetailActivity.POST_EXTRA, vp);
-            _clickHandler.onClick(intent);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                View sharedElement = ((AppCompatActivity) _context).findViewById(R.id.post_preview_imageview);
+                Pair<View, String> p1 = Pair.create(sharedElement, "likeimage");
+                ActivityOptionsCompat compat = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        (Activity) _context, p1);
+                _clickHandler.onClick(intent, compat.toBundle());
+            } else {
+                _clickHandler.onClick(intent, null);
+            }
         }
     }
 

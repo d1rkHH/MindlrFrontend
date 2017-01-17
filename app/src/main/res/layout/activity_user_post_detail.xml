@@ -32,7 +32,7 @@
 
             <ImageView
                 android:id="@+id/detail_imageview"
-                android:transitionName="likeimage"
+                android:transitionName="usercreate_image"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
                 android:scaleType="centerCrop"
@@ -40,6 +40,7 @@
 
             <TextView
                 android:id="@+id/detail_content_text"
+                android:transitionName="usercreate_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
@@ -53,6 +54,61 @@
                 android:textIsSelectable="false"
                 android:textSize="18sp"
                 tools:text="my simple text that display"/>
+
+            <TextView
+                android:id="@+id/usercreatepost_date_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
+                android:textSize="16sp"
+                android:padding="16dp"
+                tools:text="25. Nov."/>
+
+            <!-- up down votes layout -->
+            <LinearLayout
+                android:id="@+id/stats_container"
+                android:layout_width="wrap_content"
+                android:layout_gravity="left"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginLeft="16dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:adjustViewBounds="true"
+                    android:visibility="visible"
+                    app:srcCompat="@drawable/thumb_up_black"/>
+
+                <TextView
+                    android:id="@+id/usercreatepost_uppercent_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="center"
+                    android:paddingLeft="8dp"
+                    android:textSize="24sp"
+                    tools:text="25%"/>
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="16dp"
+                    android:adjustViewBounds="true"
+                    android:visibility="visible"
+                    app:srcCompat="@drawable/thumb_down_black"/>
+
+                <TextView
+                    android:id="@+id/usercreatepost_downpercent_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-light"
+                    android:gravity="center"
+                    android:paddingLeft="8dp"
+                    android:textSize="24sp"
+                    tools:text="7%"/>
+            </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 

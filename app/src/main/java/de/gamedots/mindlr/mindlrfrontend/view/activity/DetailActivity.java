@@ -1,11 +1,13 @@
 package de.gamedots.mindlr.mindlrfrontend.view.activity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -113,6 +115,21 @@ public class DetailActivity extends AppCompatActivity implements YoutubeStrategy
             } else {
                 _previewStrategy = PreviewStrategyMatcher.getInstance().matchStrategy(vp).getCopy();
                 _previewStrategy.buildPreviewUI(this, availableViews);
+            }
+            
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                // delay enter transition until image loaded with glide
+                supportPostponeEnterTransition();
+                _detailImage.getViewTreeObserver().addOnPreDrawListener(
+                        new ViewTreeObserver.OnPreDrawListener() {
+                            @Override
+                            public boolean onPreDraw() {
+                                _detailImage.getViewTreeObserver().removeOnPreDrawListener(this);
+                                supportStartPostponedEnterTransition();
+                                return true;
+                            }
+                        }
+                );
             }
         }
     }
