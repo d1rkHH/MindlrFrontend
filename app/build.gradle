@@ -53,6 +53,7 @@ dependencies {
     compile 'com.android.support:gridlayout-v7:25.1.0'
     compile 'com.android.support:support-vector-drawable:25.1.0'
     compile 'com.android.support:animated-vector-drawable:25.1.0'
+    compile 'com.android.support:percent:25.1.0'
 
     // retrofit dependencies
     compile 'com.google.code.gson:gson:2.6.2'
