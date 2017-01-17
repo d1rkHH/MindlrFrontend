@@ -116,7 +116,7 @@ public class DetailActivity extends AppCompatActivity implements YoutubeStrategy
                 _previewStrategy = PreviewStrategyMatcher.getInstance().matchStrategy(vp).getCopy();
                 _previewStrategy.buildPreviewUI(this, availableViews);
             }
-            
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 // delay enter transition until image loaded with glide
                 supportPostponeEnterTransition();

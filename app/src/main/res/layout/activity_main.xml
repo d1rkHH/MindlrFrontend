@@ -13,29 +13,25 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
-    <FrameLayout
+    <android.support.percent.PercentFrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <android.support.v7.widget.Toolbar
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/toolbar"
             style="@style/ToolbarStyle"
             android:layout_width="match_parent"
+            app:layout_heightPercent="55%"
+            app:elevation="0dp"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:elevation="0dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="76dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="178dp"
-                android:src="@drawable/ic_logo"/>
-        </android.support.v7.widget.Toolbar>
-
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:src="@drawable/ic_logo"/>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
@@ -60,7 +56,7 @@
                 app:top_swipe_detect="false"
                 app:bottom_swipe_detect="false"
                 tools:context=".view.activity.MainActivity" />
-    </FrameLayout>
+    </android.support.percent.PercentFrameLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
