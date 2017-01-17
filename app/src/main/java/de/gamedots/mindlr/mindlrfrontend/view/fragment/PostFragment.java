@@ -53,7 +53,8 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
             MindlrContract.PostEntry.COLUMN_SERVER_ID,
             ItemEntry.COLUMN_CONTENT_TEXT,
             ItemEntry.COLUMN_CONTENT_URI,
-            UserPostEntry.COLUMN_VOTE_DATE
+            UserPostEntry.COLUMN_VOTE_DATE,
+            UserPostEntry.COLUMN_VOTE
     };
 
     // Constant for column indices used by the cursor that are tied to the POST_COLUMNS
@@ -62,6 +63,7 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
     public static final int COLUMN_CONTENT_TEXT = 2;
     public static final int COLUMN_CONTENT_URI = 3;
     public static final int COLUMN_VOTE_DATE = 4;
+    public static final int COLUMN_VOTE = 5;
 
 
     public PostFragment() {

@@ -64,7 +64,7 @@ public class MindlrDBHelper extends SQLiteOpenHelper {
                 CategoryEntry.COLUMN_NAME + " TEXT NOT NULL, " +
                 CategoryEntry.COLUMN_DISPLAY_NAME + " TEXT DEFAULT '', " +
 
-                " UNIQUE (" + CategoryEntry.COLUMN_NAME + ") ON CONFLICT REPLACE);";
+                " UNIQUE (" + CategoryEntry.COLUMN_NAME + ") ON CONFLICT IGNORE);";
         // endregion
 
         // region auth provider

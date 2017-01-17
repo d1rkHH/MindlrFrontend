@@ -5,18 +5,22 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import java.util.ArrayList;
+import java.util.List;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
 import de.gamedots.mindlr.mindlrfrontend.helper.DateFormatHelper;
-import de.gamedots.mindlr.mindlrfrontend.helper.UriHelper;
+import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
+import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
+import de.gamedots.mindlr.mindlrfrontend.previews.PreviewStrategyMatcher;
 import de.gamedots.mindlr.mindlrfrontend.view.activity.DetailActivity;
 import de.gamedots.mindlr.mindlrfrontend.view.fragment.UserPostsFragment;
 
@@ -83,32 +87,42 @@ public class UserCreatePostAdapter extends RecyclerView.Adapter<UserCreatePostAd
         // read data from cursor and apply to post text content
         viewHolder.postTextView.setText(_cursor.getString(UserPostsFragment.COLUMN_CONTENT_TEXT));
 
-        // read uri from cursor
-        Uri uri = Uri.parse(_cursor.getString(UserPostsFragment.COLUMN_CONTENT_URI));
-        if(UriHelper.isImgur(uri)){
-            viewHolder.postContentImage.setVisibility(View.VISIBLE);
-            Glide.with(_context)
-                    .load(uri)
-                    .fitCenter()
-                    .into(viewHolder.postContentImage);
-        } else {
-            viewHolder.postContentImage.setVisibility(View.GONE);
-        }
+        // create ViewPost form cursor and determine and apply preview strategy
+        List<View> availablePreviewViews = new ArrayList<>();
+        availablePreviewViews.add(viewHolder.postContentImage);
+        PreviewStrategyMatcher
+                .getInstance()
+                .matchStrategy(ViewPost.fromCursor(_cursor))
+                .buildPreviewUI(_context, availablePreviewViews);
 
-        //TODO: utility format date Today, Yesterday, 5. Nov. + string res formatter
         // read date millis from cursor and get day and month using calendar object
         long dateMillis = _cursor.getLong(UserPostsFragment.COLUMN_SUBMIT_DATE);
         String dateFormat = DateFormatHelper.getFormattedDateString(
                 _context, dateMillis, DateFormatHelper.WRITE_FORMAT);
         viewHolder.submitDate.setText(dateFormat);
 
+        // format upvote/downvote percentage
+        int upvotes = _cursor.getInt(UserPostsFragment.COLUMN_UPVOTES);
+        int downvotes = _cursor.getInt(UserPostsFragment.COLUMN_DOWNVOTES);
+        Log.v(LOG.AUTH, "UP: " +  upvotes + " DOWN: " + downvotes);
+        int total = upvotes + downvotes;
+        float uppercent;
+        float downpercent;
+        if (total == 0){
+            uppercent = 0;
+            downpercent = 0;
+        } else {
+            uppercent = (int)((upvotes/(total * 1.0)) * 100);
+            downpercent = (int)((downvotes/(total * 1.0)) * 100);
+        }
+        Log.v(LOG.AUTH, "UP: " +  uppercent + " DOWN: " + downpercent);
         // read uppercent from cursor
         viewHolder.upvotes.setText(String.format(_context.getString(R.string.format_vote_percentage),
-                _cursor.getFloat(UserPostsFragment.COLUMN_UPVOTES)));
+                uppercent));
 
         // read downpercent from cursor
         viewHolder.downvotes.setText(String.format(_context.getString(R.string.format_vote_percentage),
-                _cursor.getFloat(UserPostsFragment.COLUMN_DOWNVOTES)));
+                downpercent));
     }
 
     @Override

@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements
                 IntentHelper.showShareIntent(PostLoader.getInstance().getCurrent().getContentText(), this);
                 break;
             case R.id.action_report:
+                // TODO: report dialog with report options store in user post entry
                 DebugUtil.toast(this, "Reported");
                 break;
         }
@@ -178,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements
     private void setupCardAdapter(){
         // TODO: check empty/ network error
         LinkedList<ViewPost> posts = new LinkedList<>();
-        posts.addAll(PostLoader.getInstance().getPostList());
+        //posts.addAll(PostLoader.getInstance().getPostList());
 
         adapter = new ViewPostCardAdapter(this, posts);
 
@@ -188,27 +189,26 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onCardExitLeft(Object dataObject) {
                 Toast.makeText(MainActivity.this, "LEFT", Toast.LENGTH_SHORT).show();
-                PostLoader.getInstance().next();
                 PostLoader.getInstance().getCurrent().ratePositive();
                 Utility.updatePostVoteType(
                         MainActivity.this,
                         PostLoader.getInstance().getCurrent().getServerId(),
                         MindlrContract.UserPostEntry.VOTE_LIKED
                 );
+                PostLoader.getInstance().next();
                 //adapter.popNotify();
             }
 
             @Override
             public void onCardExitRight(Object dataObject) {
                 Toast.makeText(MainActivity.this, "RIGHT", Toast.LENGTH_SHORT).show();
-                PostLoader.getInstance().next();
                 PostLoader.getInstance().getCurrent().rateNegative();
                 Utility.updatePostVoteType(
                         MainActivity.this,
                         PostLoader.getInstance().getCurrent().getServerId(),
                         MindlrContract.UserPostEntry.VOTE_DISLIKED);
+                PostLoader.getInstance().next();
                 //adapter.popNotify();
-
             }
 
             @Override

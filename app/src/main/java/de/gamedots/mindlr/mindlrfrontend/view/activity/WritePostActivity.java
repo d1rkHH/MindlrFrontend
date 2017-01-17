@@ -35,7 +35,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 
 import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.R;
@@ -48,6 +48,7 @@ import de.gamedots.mindlr.mindlrfrontend.helper.UriHelper;
 import de.gamedots.mindlr.mindlrfrontend.jobs.ImgurUploadService;
 import de.gamedots.mindlr.mindlrfrontend.jobs.WritePostTask;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
+import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 import de.gamedots.mindlr.mindlrfrontend.view.customview.MultiSelectionSpinner;
 
 import static de.gamedots.mindlr.mindlrfrontend.helper.IntentHelper.PICK_IMAGE_REQUEST;
@@ -102,6 +103,12 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
         Log.v(LOG.AUTH, "writepost recreated");
         setContentView(R.layout.activity_write_post);
 
+        // cant handle writing for non authenticated user
+        if (!Utility.getAuthStateFromPreference(this)){
+            startActivity(new Intent(this, TutorialActivity.class));
+            finish();
+        }
+
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -120,7 +127,6 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
             while (categoriesCursor.moveToNext()){
                 String name = categoriesCursor.getString(categoriesCursor.getColumnIndex(CategoryEntry
                         .COLUMN_DISPLAY_NAME));
-                Log.v(LOG.AUTH, "CAT NAME: " + name);
                 catArray.add(name);
             }
             categoriesCursor.close();
@@ -191,24 +197,25 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
             }
         }
 
-        // check if launched from share event and set uri if app was youtube
-        final String action = getIntent().getAction();
+        checkForActionSend(getIntent());
+    }
+
+    private void checkForActionSend(Intent intent){
+        // check if launched from share event
+        // at this point we do not differ between content types and just append the text
+        final String action = intent.getAction();
         if(action != null && action.equals(Intent.ACTION_SEND)) {
-            String url = getIntent().getStringExtra(Intent.EXTRA_TEXT);
-            Uri uri = Uri.parse(url);
-            if (UriHelper.isYoutube(uri)){
-                _postContentUri = uri;
-                _postEditText.append("\n");
-                _postEditText.append(uri.toString());
-                //TODO: disable button and handle only 1 content for post
-            }
+            String shareText = intent.getStringExtra(Intent.EXTRA_TEXT);
+            _postEditText.append(" ");
+            _postEditText.append(shareText);
         }
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Log.v(LOG.AUTH, "launched from exisiting onnewintent()");
+        Log.v(LOG.AUTH, "writepost onNewIntent called");
+        checkForActionSend(intent);
     }
 
     //endregion
@@ -378,7 +385,7 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
                     } else { // update item entry if already exist
                         Cursor c = getContentResolver().query(DraftEntry.CONTENT_URI,
                                 new String[]{DraftEntry.COLUMN_ITEM_KEY},
-                                DraftEntry._ID + " = ?",
+                                DraftEntry.TABLE_NAME + "." + DraftEntry._ID + " = ?",
                                 new String[]{_loadUri.getPathSegments().get(1)}, null);
                         if (c != null && c.moveToFirst()) {
                             draftItemId = c.getLong(c.getColumnIndex(DraftEntry.COLUMN_ITEM_KEY));
@@ -489,7 +496,7 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
                 new String[]{String.valueOf(cursor.getLong(COLUMN_ITEM_ID))},
                 null
         );
-        List<String> selections = new ArrayList<>();
+        LinkedList<String> selections = new LinkedList<>();
         if (catIds != null){
             while (catIds.moveToNext()){
                 Cursor category = getContentResolver().query(CategoryEntry.CONTENT_URI,
@@ -507,28 +514,29 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
             catIds.close();
         }
         // set selected categories from draft
-        _multiSelectionSpinner.setSelection(selections);
-
-        // initially the image is not in the layout because the additional content
-        // may not be an image
-        _postImageView.setVisibility(View.GONE);
-
-        // check between content uri types
-        if (UriHelper.isImgur(_postContentUri)){
-            _postImageView.setVisibility(View.VISIBLE);
-            Glide.with(this)
-                    .loadFromMediaStore(_postContentUri)
-                    .asBitmap()
-                    .fitCenter()
-                    .listener(this)
-                    .into(_postImageView);
+        if (selections.size() > 0) {
+            _multiSelectionSpinner.setSelection(selections);
         }
 
-        if (UriHelper.isYoutube(_postContentUri)){
-            // TODO: maybe load video or set gone
-            _postEditText.append("\n");
-            _postEditText.append(_postContentUri.toString());
-        }
+        Glide.with(this)
+                .loadFromMediaStore(_postContentUri)
+                .asBitmap()
+                .fitCenter()
+                .listener(this)
+                .into(_postImageView);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        ArrayList<String> selections = new ArrayList<>(_multiSelectionSpinner.getSelectedStrings());
+        outState.putStringArrayList("keys", selections);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        _multiSelectionSpinner.setSelection(savedInstanceState.getStringArrayList("keys"));
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override

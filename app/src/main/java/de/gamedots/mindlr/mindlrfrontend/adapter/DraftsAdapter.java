@@ -117,14 +117,13 @@ public class DraftsAdapter extends RecyclerView.Adapter<DraftsAdapter.DraftsAdap
         viewHolder.postContentImage.setVisibility(View.GONE);
 
         Uri uri = Uri.parse(_cursor.getString(DraftsFragment.COLUMN_CONTENT_URI));
+
         if (!UriHelper.isYoutube(uri)){
             viewHolder.postContentImage.setVisibility(View.VISIBLE);
             Glide.with(_context)
                     .loadFromMediaStore(uri)
                     .asBitmap()
                     .into(viewHolder.postContentImage);
-            //TODO: add placeholder
-            //viewHolder.postContentImage.setBackgroundColor(Color.GRAY);
         }
     }
 

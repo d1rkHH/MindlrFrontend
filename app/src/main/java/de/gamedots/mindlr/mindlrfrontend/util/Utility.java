@@ -298,14 +298,14 @@ public class Utility {
                 itemId = draftCursor.getLong(draftCursor.getColumnIndex(DraftEntry.COLUMN_ITEM_KEY));
                 context.getContentResolver()
                         .update(ItemEntry.CONTENT_URI, cv,
-                                ItemEntry._ID + " ? ",
+                                ItemEntry._ID + " = ? ",
                                 new String[]{String.valueOf(itemId)}
                         );
 
                 // delete draft
                 context.getContentResolver()
                         .delete(DraftEntry.CONTENT_URI,
-                                DraftEntry._ID + " ? ",
+                                DraftEntry._ID + " = ? ",
                                 new String[]{String.valueOf(
                                         draftCursor.getLong(draftCursor.getColumnIndex(DraftEntry._ID)))});
 
@@ -408,7 +408,7 @@ public class Utility {
                 .query(DraftEntry.CONTENT_URI,
                         new String[]{DraftEntry.TABLE_NAME + "." + DraftEntry._ID,
                                 DraftEntry.COLUMN_ITEM_KEY},
-                        DraftEntry._ID + " = ? ",
+                        DraftEntry.TABLE_NAME + "." + DraftEntry._ID + " = ? ",
                         new String[]{DraftEntry.getIdPathFromUri(uri)},
                         null
                 );

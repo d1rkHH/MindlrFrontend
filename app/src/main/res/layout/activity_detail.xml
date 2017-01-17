@@ -6,52 +6,60 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <FrameLayout
-            android:id="@+id/detail_video_container"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <fragment
-                android:name="com.google.android.youtube.player.YouTubePlayerFragment"
-                android:id="@+id/detail_youtubeplayer_fragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </FrameLayout>
-
-
-        <ImageView
-            android:id="@+id/detail_imageview"
-            android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:visibility="gone"
-            android:scaleType="centerCrop"/>
-
-        <TextView
-            android:id="@+id/detail_content_text"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:autoLink="web"
-            android:fontFamily="sans-serif-light"
-            android:isScrollContainer="false"
-            android:lineSpacingMultiplier="1.16"
-            android:padding="16dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColorLink="@color/accent"
-            android:textIsSelectable="false"
-            android:textSize="18sp"
-            tools:text="my simple text that display"/>
-    </LinearLayout>
+            android:layout_marginTop="?attr/actionBarSize"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:id="@+id/detail_video_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <fragment
+                    android:id="@+id/detail_youtubeplayer_fragment"
+                    android:name="com.google.android.youtube.player.YouTubePlayerFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </FrameLayout>
+
+
+            <ImageView
+                android:id="@+id/detail_imageview"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:scaleType="centerCrop"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/detail_content_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:autoLink="web"
+                android:fontFamily="sans-serif-light"
+                android:isScrollContainer="false"
+                android:lineSpacingMultiplier="1.16"
+                android:padding="16dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColorLink="@color/accent"
+                android:textIsSelectable="false"
+                android:textSize="18sp"
+                tools:text="my simple text that display"/>
+        </LinearLayout>
+    </ScrollView>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@drawable/scrim_gradient"
+        android:visibility="gone"
         />
 
     <!-- main toolbar -->
@@ -61,7 +69,7 @@
         style="@style/ToolbarStyle"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@android:color/transparent"
-        app:elevation="@dimen/appbar_elevation"
+        android:background="@color/primary"
+        app:elevation="0dp"
         />
 </FrameLayout>

@@ -36,6 +36,9 @@ public class ViewPost implements Parcelable {
 
     }
 
+    public void setVote(int vote){
+        this.vote = vote;
+    }
     public int getVote() {
         return vote;
     }
@@ -100,7 +103,10 @@ public class ViewPost implements Parcelable {
         String contentText = c.getString(c.getColumnIndex(ItemEntry.COLUMN_CONTENT_TEXT));
         String contentUri = c.getString(c.getColumnIndex(ItemEntry.COLUMN_CONTENT_URI));
         long serverId = c.getLong(PostFragment.COLUMN_POST_SERVER_ID);
+        int vote = c.getInt(PostFragment.COLUMN_VOTE);
 
-        return new ViewPost(serverId, contentText, contentUri);
+        ViewPost post = new ViewPost(serverId, contentText, contentUri);
+        post.setVote(vote);
+        return post;
     }
 }
