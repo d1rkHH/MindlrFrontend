@@ -58,7 +58,7 @@ public class LoadPostsTask extends APICallTask {
                     intent.setAction(DatabaseIntentService.INSERT_POST_ACTION);
                     _context.get().startService(intent);
                 } else {
-                    Log.v(LOG.AUTH, "load task context was null");
+                    Log.v(LOG.CONNECTION, "load task context was null");
                 }
 
             } else {

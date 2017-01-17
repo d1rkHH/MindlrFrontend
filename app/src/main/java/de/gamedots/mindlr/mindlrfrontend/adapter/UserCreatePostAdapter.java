@@ -11,7 +11,6 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +23,6 @@ import java.util.List;
 import de.gamedots.mindlr.mindlrfrontend.R;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
 import de.gamedots.mindlr.mindlrfrontend.helper.DateFormatHelper;
-import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 import de.gamedots.mindlr.mindlrfrontend.previews.PreviewStrategyMatcher;
 import de.gamedots.mindlr.mindlrfrontend.view.activity.UserPostDetailActivity;
@@ -123,7 +121,6 @@ public class UserCreatePostAdapter extends RecyclerView.Adapter<UserCreatePostAd
         // format upvote/downvote percentage
         int upvotes = _cursor.getInt(UserPostsFragment.COLUMN_UPVOTES);
         int downvotes = _cursor.getInt(UserPostsFragment.COLUMN_DOWNVOTES);
-        Log.v(LOG.AUTH, "UP: " +  upvotes + " DOWN: " + downvotes);
         int total = upvotes + downvotes;
         float uppercent;
         float downpercent;
@@ -134,7 +131,6 @@ public class UserCreatePostAdapter extends RecyclerView.Adapter<UserCreatePostAd
             uppercent = (int)((upvotes/(total * 1.0)) * 100);
             downpercent = (int)((downvotes/(total * 1.0)) * 100);
         }
-        Log.v(LOG.AUTH, "UP: " +  uppercent + " DOWN: " + downpercent);
         // read uppercent from cursor
         viewHolder.upvotes.setText(String.format(_context.getString(R.string.format_vote_percentage),
                 uppercent));

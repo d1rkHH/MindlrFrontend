@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
+import de.gamedots.mindlr.mindlrfrontend.adapter.ViewPostCardAdapter;
 import de.gamedots.mindlr.mindlrfrontend.jobs.LoadPostsTask;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
@@ -45,14 +46,20 @@ public class PostLoader {
         return !_postList.isEmpty();
     }
 
-    public void initialize() {
+    public void initialize(ViewPostCardAdapter adapter) {
         int postsLoaded = Utility.loadUnvotedPostsOrNothing(MindlrApplication.getInstance());
         // loaded unvoted posts size below threshold so try to load more
         if(postsLoaded < MIN_SIZE_THRESHOLD){
             Log.d(LOG.AUTH, "Load posts from the server for the first time");
             new LoadPostsTask(MindlrApplication.getInstance(), new JSONObject())
                     .execute();
+        } else {
+            adapter.addItems(getPostList());
         }
+    }
+
+    public void clear(){
+        _postList = new LinkedList<>();
     }
 
     /**

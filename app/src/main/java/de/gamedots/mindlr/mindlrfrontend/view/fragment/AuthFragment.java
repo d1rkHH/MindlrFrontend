@@ -54,7 +54,7 @@ public class AuthFragment extends Fragment implements IdentityProvider.IdpCallba
     /* Delegate activity result to provider implementation */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.v(LOG.AUTH, "auth callback");
+        Log.v(LOG.CONNECTION, "auth callback");
         _idpProvider.onActivityResult(requestCode, resultCode, data);
     }
 

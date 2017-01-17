@@ -10,12 +10,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.DraftEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemCategoryEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemEntry;
-import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 
 import static de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.AuthProviderEntry;
 import static de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.AuthProviderEntry.buildAuthProviderUri;
@@ -550,7 +548,6 @@ public class MindlrProvider extends ContentProvider {
         } finally {
             db.endTransaction();
         }
-        Log.v(LOG.AUTH, "-------------insert post on startup " + returnCount);
         getContext().getContentResolver().notifyChange(uri, null);
         return returnCount;
     }

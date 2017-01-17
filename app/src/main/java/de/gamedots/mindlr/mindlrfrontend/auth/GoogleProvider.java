@@ -62,11 +62,11 @@ public class GoogleProvider implements IdentityProvider, GoogleApiClient.OnConne
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RC_GET_TOKEN) {
-            Log.v(LOG.AUTH, "result back from token request");
+            Log.v(LOG.CONNECTION, "result back from token request");
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result != null) {
                 if (result.isSuccess()) {
-                    Log.v(LOG.AUTH, "google provider success create response");
+                    Log.v(LOG.CONNECTION, "google provider success create response");
                     disconnect();
                     _idpCallback.onSuccess(createIDPResponse(result.getSignInAccount()));
                 } else {
@@ -124,7 +124,7 @@ public class GoogleProvider implements IdentityProvider, GoogleApiClient.OnConne
                             @Override
                             public void onResult(Status status) {
                                 if (status.isSuccess()) {
-                                    Log.v(LOG.AUTH, "---------+++++++ signout success " + _googleApiClient);
+                                    Log.v(LOG.CONNECTION, "---------+++++++ signout success " + _googleApiClient);
                                 }
                             }
                         });
@@ -149,7 +149,7 @@ public class GoogleProvider implements IdentityProvider, GoogleApiClient.OnConne
     }
 
     private void onError(String errorMessage) {
-        Log.v(LOG.AUTH, "Error logging in with Google. " + errorMessage);
+        Log.v(LOG.CONNECTION, "Error logging in with Google. " + errorMessage);
         Bundle extra = new Bundle();
         extra.putString(ERROR_KEY, errorMessage);
         _idpCallback.onFailure(extra);

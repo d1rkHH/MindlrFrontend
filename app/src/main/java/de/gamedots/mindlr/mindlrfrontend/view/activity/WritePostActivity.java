@@ -250,7 +250,8 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
 
             ImgurUploadService service = new ImgurUploadService(this, _loadUri, composeContent());
             service.start(_postContentUri);
-            IntentHelper.buildNewClearTask(this, MainActivity.class);
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
         } else {
             // no image select we can start sending right away
             composeContentAndSendToServer();
@@ -292,7 +293,8 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
     private void composeContentAndSendToServer(){
         // send post in background thread and go back to MainActivity
         new WritePostTask(this, composeContent(), _loadUri).execute();
-        IntentHelper.buildNewClearTask(this, MainActivity.class);
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
     }
 
     // endregion

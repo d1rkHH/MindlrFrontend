@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
-import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.data.DatabaseIntentService;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
 import de.gamedots.mindlr.mindlrfrontend.jobs.GetCategoriesTask;
@@ -28,7 +27,9 @@ public class SplashActivity extends AppCompatActivity {
         boolean authenticated = Utility.getAuthStateFromPreference(this);
         Log.v(LOG.AUTH, "user is authenticated " + authenticated);
 
-        new GetCategoriesTask(this, null).execute();
+        if (Utility.isNetworkAvailable(this)) {
+            new GetCategoriesTask(this, null).execute();
+        }
 
         if (firstStart) {
             // create auth provider
@@ -49,9 +50,6 @@ public class SplashActivity extends AppCompatActivity {
         } else {
             if (authenticated) {
                 Utility.loadUserFromDB(this);
-                if (!PostLoader.getInstance().isInitialized()) {
-                    PostLoader.getInstance().initialize();
-                }
                 finishAndRedirect(MainActivity.class);
             } else {
                 // no user signedIn earlier, so launch LoginActivity and try to authenticate him

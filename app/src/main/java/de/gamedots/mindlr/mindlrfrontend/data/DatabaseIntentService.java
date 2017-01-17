@@ -5,11 +5,13 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -20,6 +22,7 @@ import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.ItemEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.PostEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserCreatePostEntry;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract.UserPostEntry;
+import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.Category;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 
@@ -53,6 +56,8 @@ public class DatabaseIntentService extends IntentService {
 
         List<ViewPost> posts = PostLoader.getInstance().getPostList();
         Vector<ContentValues> values = new Vector<>(posts.size());
+        List<Long> existingPostIDs = new ArrayList<>();
+
         for (int i = 0; i < posts.size(); i++) {
             ViewPost p = posts.get(i);
 
@@ -61,7 +66,7 @@ public class DatabaseIntentService extends IntentService {
                     PostEntry.COLUMN_SERVER_ID + " = ?",
                     new String[]{String.valueOf(p.getServerId())},
                     null);
-            // do not insert item entry another time if post already exist
+            // insert item entry if post with server id not exists
             if (dbPost == null || !dbPost.moveToFirst()) {
                 // 1. create and insert item
                 ContentValues cv = new ContentValues();
@@ -77,27 +82,50 @@ public class DatabaseIntentService extends IntentService {
                     postcv.put(PostEntry.COLUMN_SERVER_ID, p.getServerId());
                     values.add(postcv);
                 }
+            } else {
+                if (dbPost.moveToFirst()){
+                    existingPostIDs.add(dbPost.getLong(dbPost.getColumnIndex(PostEntry._ID)));
+                }
             }
             if (dbPost != null) {
                 dbPost.close();
             }
         }
+
+        String exisitinglog = "GOT EXISTING: [";
+        for (long id : existingPostIDs){
+            exisitinglog += id + ", ";
+        }
+        exisitinglog+= "]";
+        Log.v(LOG.AUTH, exisitinglog);
         ContentValues[] cvArray = new ContentValues[values.size()];
         values.toArray(cvArray);
 
         db.beginTransaction();
         try {
-            for (ContentValues value : values) {
+            // insert new posts and add user post relation
+            ContentValues userPostValues = new ContentValues();
+            for (ContentValues value : cvArray) {
                 long post_id = db.insert(PostEntry.TABLE_NAME, null, value);
                 // insert post associated with current user to userpost table
                 if (post_id != -1) {
-                    ContentValues userPostValues = new ContentValues();
+                    userPostValues.clear();
                     userPostValues.put(UserPostEntry.COLUMN_USER_KEY, MindlrApplication.User.getId());
                     userPostValues.put(UserPostEntry.COLUMN_POST_KEY, post_id);
                     userPostValues.put(UserPostEntry.COLUMN_VOTE, UserPostEntry.VOTE_UNDEFINED);
                     db.insert(UserPostEntry.TABLE_NAME, null, userPostValues);
                 }
             }
+
+            // insert user post relation for existing posts, but new user
+            for (long postID : existingPostIDs){
+                userPostValues.clear();
+                userPostValues.put(UserPostEntry.COLUMN_USER_KEY, MindlrApplication.User.getId());
+                userPostValues.put(UserPostEntry.COLUMN_POST_KEY, postID);
+                userPostValues.put(UserPostEntry.COLUMN_VOTE, UserPostEntry.VOTE_UNDEFINED);
+                db.insert(UserPostEntry.TABLE_NAME, null, userPostValues);
+            }
+            // set successful or transaction will not be closed
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();

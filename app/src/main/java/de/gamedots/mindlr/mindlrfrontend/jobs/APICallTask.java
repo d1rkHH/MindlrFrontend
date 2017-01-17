@@ -65,7 +65,7 @@ abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
 
     @Override
     protected JSONObject doInBackground(Void... params) {
-        Log.v(LOG.AUTH, "inside APICALL: provider " + _authProvider);
+        Log.v(LOG.CONNECTION, "inside APICALL: provider " + _authProvider);
         JSONObject requestJSON = new JSONObject();
 
         if(_authenticated) {
@@ -75,7 +75,7 @@ abstract class APICallTask extends AsyncTask<Void, Void, JSONObject> {
             if (idpResponse == null) {
                 return null;
             }
-            Log.v(LOG.AUTH, "got response");
+            Log.v(LOG.CONNECTION, "got response");
             try {
                 requestJSON.put("auth_data", idpResponse.toAuthDataJson());
                 requestJSON.put("auth_provider", idpResponse.getProviderType());

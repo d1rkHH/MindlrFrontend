@@ -66,7 +66,7 @@ public class TwitterProvider extends Callback<TwitterSession> implements Identit
 
     @Override
     public void success(Result<TwitterSession> result) {
-        Log.v(LOG.AUTH, "twitter success");
+        Log.v(LOG.CONNECTION, "twitter success");
         _idpCallback.onSuccess(createIDPResponse(result.data));
     }
 

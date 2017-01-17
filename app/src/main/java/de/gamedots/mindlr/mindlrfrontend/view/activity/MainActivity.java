@@ -58,24 +58,24 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (!PostLoader.getInstance().isInitialized()){
-            PostLoader.getInstance().initialize();
-        }
-
         // initialize all UI components
         setupToolbar();
         setupFab();
         setupNavDrawer();
         setupCardAdapter();
+        Log.d(LOG.AUTH, "onCreate() called");
+        if (!PostLoader.getInstance().isInitialized()) {
+            Log.d(LOG.AUTH, "onCreate() called init loader");
+            PostLoader.getInstance().initialize(adapter);
+        } else {
+            adapter.addItems(PostLoader.getInstance().getPostList());
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
-        adapter.clear();
-        adapter.addItems(PostLoader.getInstance().getPostList());
-        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -179,7 +179,6 @@ public class MainActivity extends AppCompatActivity implements
     private void setupCardAdapter(){
         // TODO: check empty/ network error
         LinkedList<ViewPost> posts = new LinkedList<>();
-        //posts.addAll(PostLoader.getInstance().getPostList());
 
         adapter = new ViewPostCardAdapter(this, posts);
 
@@ -190,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements
             public void onCardExitLeft(Object dataObject) {
                 Toast.makeText(MainActivity.this, "LEFT", Toast.LENGTH_SHORT).show();
                 PostLoader.getInstance().getCurrent().ratePositive();
+                Log.v(LOG.AUTH, "about to store " +  PostLoader.getInstance().getCurrent().getContentText());
                 Utility.updatePostVoteType(
                         MainActivity.this,
                         PostLoader.getInstance().getCurrent().getServerId(),

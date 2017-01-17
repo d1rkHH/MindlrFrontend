@@ -16,6 +16,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import de.gamedots.mindlr.mindlrfrontend.MindlrApplication;
 import de.gamedots.mindlr.mindlrfrontend.R;
+import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.model.ImageUploadResult;
 import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 
@@ -84,6 +85,7 @@ public class SettingsActivity extends AppCompatActivity {
                     // set auth state to false
                     Utility.addAuthStateToPreference(getActivity(), false);
                     Utility.deactivateCurrentUser(getActivity());
+                    PostLoader.getInstance().clear();
 
                     MindlrApplication.User.getIdentityProvider().signOut();
                     // Launch LoginActivity and clear back stack

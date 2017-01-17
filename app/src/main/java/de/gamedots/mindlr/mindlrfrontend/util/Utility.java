@@ -253,6 +253,7 @@ public class Utility {
     }
 
     public static void updatePostVoteType(Context context, long post_server_id, int vote) {
+        Log.v(LOG.AUTH, "STORE " +  PostLoader.getInstance().getCurrent().getContentText());
 
         Cursor postCursor = context.getContentResolver().query(PostEntry.CONTENT_URI,
                 new String[]{PostEntry._ID},
@@ -268,8 +269,9 @@ public class Utility {
             values.put(UserPostEntry.COLUMN_VOTE_DATE, System.currentTimeMillis());
 
             context.getContentResolver().update(UserPostEntry.CONTENT_URI, values,
-                    UserPostEntry.COLUMN_POST_KEY + " = ?",
-                    new String[]{Long.toString(postCursor.getLong(postId_index))}
+                    UserPostEntry.COLUMN_POST_KEY + " = ? AND " + UserPostEntry.COLUMN_USER_KEY + " = ?",
+                    new String[]{Long.toString(postCursor.getLong(postId_index)),
+                    String.valueOf(MindlrApplication.User.getId())}
             );
             postCursor.close();
         }
@@ -502,8 +504,6 @@ public class Utility {
                 );
                 if (cursor != null && cursor.moveToFirst()){
                     ratedCategories.add(cursor.getString(cursor.getColumnIndex(CategoryEntry.COLUMN_NAME)));
-                    Log.v(LOG.AUTH, "POSITIVE CAT : " + cursor.getString(cursor.getColumnIndex
-                            (CategoryEntry.COLUMN_NAME)));
                     cursor.close();
                 }
             }
@@ -526,8 +526,6 @@ public class Utility {
             if (unratedCursor != null){
                 while (unratedCursor.moveToNext()){
                     unratedCategories.add(unratedCursor.getString(unratedCursor.getColumnIndex
-                            (CategoryEntry.COLUMN_NAME)));
-                    Log.v(LOG.AUTH, "NEGATIVE CAT : " + unratedCursor.getString(unratedCursor.getColumnIndex
                             (CategoryEntry.COLUMN_NAME)));
                 }
                 unratedCursor.close();
