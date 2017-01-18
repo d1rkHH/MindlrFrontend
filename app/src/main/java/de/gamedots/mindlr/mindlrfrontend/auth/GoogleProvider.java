@@ -152,6 +152,7 @@ public class GoogleProvider implements IdentityProvider, GoogleApiClient.OnConne
         Log.v(LOG.CONNECTION, "Error logging in with Google. " + errorMessage);
         Bundle extra = new Bundle();
         extra.putString(ERROR_KEY, errorMessage);
+        _googleApiClient.stopAutoManage((FragmentActivity)_activity);
         _idpCallback.onFailure(extra);
     }
 

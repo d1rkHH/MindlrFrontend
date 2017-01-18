@@ -15,11 +15,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONObject;
 
 import java.util.LinkedList;
 
@@ -30,6 +32,7 @@ import de.gamedots.mindlr.mindlrfrontend.controller.PostLoader;
 import de.gamedots.mindlr.mindlrfrontend.data.DatabaseIntentService;
 import de.gamedots.mindlr.mindlrfrontend.data.MindlrContract;
 import de.gamedots.mindlr.mindlrfrontend.helper.IntentHelper;
+import de.gamedots.mindlr.mindlrfrontend.jobs.LoadPostsTask;
 import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.ImageUploadResult;
 import de.gamedots.mindlr.mindlrfrontend.model.PostLoadedEvent;
@@ -52,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements
     private SwipeCardView swipeCardView;
     private Toolbar _toolbar;
     private FloatingActionButton _fab;
+    private TextView _reloadPostsTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,9 +70,14 @@ public class MainActivity extends AppCompatActivity implements
         Log.d(LOG.AUTH, "onCreate() called");
         if (!PostLoader.getInstance().isInitialized()) {
             Log.d(LOG.AUTH, "onCreate() called init loader");
-            PostLoader.getInstance().initialize(adapter);
+            PostLoader.getInstance().initialize(adapter, this);
         } else {
             adapter.addItems(PostLoader.getInstance().getPostList());
+            if (adapter.getCount() == 0){
+                _reloadPostsTextView.setVisibility(View.VISIBLE);
+            } else {
+                _reloadPostsTextView.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -95,12 +104,17 @@ public class MainActivity extends AppCompatActivity implements
         Log.v(LOG.AUTH, "New loaded post received");
         if (event.success){
             if (adapter != null) {
+                _reloadPostsTextView.setVisibility(View.GONE);
                 adapter.clear();
                 adapter.addItems(PostLoader.getInstance().getPostList());
             }
             Intent intent = new Intent(this, DatabaseIntentService.class);
             intent.setAction(DatabaseIntentService.INSERT_POST_ACTION);
             startService(intent);
+        } else {
+            if (adapter.getCount() == 0){
+               _reloadPostsTextView.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -177,6 +191,8 @@ public class MainActivity extends AppCompatActivity implements
 
     // region UI setup
     private void setupCardAdapter(){
+        _reloadPostsTextView = (TextView)findViewById(R.id.main_reload_textview);
+
         // TODO: check empty/ network error
         LinkedList<ViewPost> posts = new LinkedList<>();
 
@@ -187,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements
         swipeCardView.setFlingListener(new FlingAdapter() {
             @Override
             public void onCardExitLeft(Object dataObject) {
-                Toast.makeText(MainActivity.this, "LEFT", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "LEFT", Toast.LENGTH_SHORT).show();
                 PostLoader.getInstance().getCurrent().ratePositive();
                 Log.v(LOG.AUTH, "about to store " +  PostLoader.getInstance().getCurrent().getContentText());
                 Utility.updatePostVoteType(
@@ -201,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void onCardExitRight(Object dataObject) {
-                Toast.makeText(MainActivity.this, "RIGHT", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "RIGHT", Toast.LENGTH_SHORT).show();
                 PostLoader.getInstance().getCurrent().rateNegative();
                 Utility.updatePostVoteType(
                         MainActivity.this,
@@ -213,6 +229,10 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void onAdapterAboutToEmpty(int itemsInAdapter) {
+                Log.v(LOG.AUTH, "about to be empty " + itemsInAdapter);
+                if (itemsInAdapter == 0){
+                    _reloadPostsTextView.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -269,6 +289,15 @@ public class MainActivity extends AppCompatActivity implements
         _navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (_navigationView != null) {
             _navigationView.setNavigationItemSelectedListener(this);
+        }
+    }
+
+    public void tryPostLoading(View view) {
+        if (Utility.isNetworkAvailable(this)){
+            _reloadPostsTextView.setVisibility(View.GONE);
+            new LoadPostsTask(this, new JSONObject()).execute();
+        } else {
+            Toast.makeText(this, R.string.no_internet_available, Toast.LENGTH_SHORT).show();
         }
     }
     // endregion

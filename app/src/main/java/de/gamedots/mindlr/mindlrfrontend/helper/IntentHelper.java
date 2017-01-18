@@ -27,6 +27,7 @@ public class IntentHelper {
     }
 
     public static void showShareIntent(String shareText, Context context) {
+        //TODO: share icon and action in all detail, current text save in member
         Intent shareIntent = ShareCompat.IntentBuilder.from((AppCompatActivity)context)
                 .setType("text/plain")
                 .setText(shareText)

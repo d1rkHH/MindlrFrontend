@@ -33,6 +33,7 @@ public class LoadPostsTask extends APICallTask {
 
     @Override
     public void onSuccess(JSONObject result) {
+        Log.v(LOG.AUTH, "PostloadTask success");
         try {
             if (result.has("items")) {
                 JSONArray posts = result.getJSONArray("items");
@@ -71,6 +72,7 @@ public class LoadPostsTask extends APICallTask {
 
     @Override
     public void onFailure(JSONObject result) {
+        EventBus.getDefault().post(new PostLoadedEvent(false));
         try {
             String text = result.getString("ERROR");
             Log.v(LOG.JSON, text);

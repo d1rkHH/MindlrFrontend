@@ -129,4 +129,5 @@
     <string name="technology">Technologie</string>
     <string name="select_categories">Select Categories</string>
     <string name="error_player">There was an error initializing the YouTubePlayer (%1$s)</string>
+    <string name="no_internet_available">Kein Internet verfügbar</string>
 </resources>

@@ -1,5 +1,6 @@
 package de.gamedots.mindlr.mindlrfrontend.controller;
 
+import android.content.Context;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -46,13 +47,17 @@ public class PostLoader {
         return !_postList.isEmpty();
     }
 
-    public void initialize(ViewPostCardAdapter adapter) {
+    public void initialize(ViewPostCardAdapter adapter, Context context) {
         int postsLoaded = Utility.loadUnvotedPostsOrNothing(MindlrApplication.getInstance());
         // loaded unvoted posts size below threshold so try to load more
         if(postsLoaded < MIN_SIZE_THRESHOLD){
-            Log.d(LOG.AUTH, "Load posts from the server for the first time");
-            new LoadPostsTask(MindlrApplication.getInstance(), new JSONObject())
-                    .execute();
+            if (Utility.isNetworkAvailable(context)) {
+                Log.d(LOG.AUTH, "Load posts from the server for the first time");
+                new LoadPostsTask(MindlrApplication.getInstance(), new JSONObject())
+                        .execute();
+            } else {
+                adapter.addItems(getPostList());
+            }
         } else {
             adapter.addItems(getPostList());
         }
