@@ -70,7 +70,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostAdapterVie
             intent.putExtra(LAUNCHED_FROM_ATTACHEMENT_KEY, 1);
             intent.putExtra(DetailActivity.POST_EXTRA, vp);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                 View sharedElement = ((AppCompatActivity) _context).findViewById(R.id.post_preview_imageview);
                 Pair<View, String> p1 = Pair.create(sharedElement, "likeimage");
                 ActivityOptionsCompat compat = ActivityOptionsCompat.makeSceneTransitionAnimation(

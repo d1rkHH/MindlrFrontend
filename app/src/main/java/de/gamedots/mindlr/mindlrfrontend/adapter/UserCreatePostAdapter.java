@@ -71,7 +71,7 @@ public class UserCreatePostAdapter extends RecyclerView.Adapter<UserCreatePostAd
             Intent intent = new Intent(_context, UserPostDetailActivity.class);
             intent.setData(uri);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                 View sharedElement = ((AppCompatActivity) _context).findViewById(R.id.usercreatepost_imageview);
                 View sharedText = ((AppCompatActivity) _context).findViewById(R.id
                         .usercreatepost_content_textview);

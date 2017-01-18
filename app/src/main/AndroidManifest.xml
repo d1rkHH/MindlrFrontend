@@ -37,7 +37,6 @@
         <activity
             android:name=".view.activity.WritePostActivity"
             android:label="@string/title_activity_write_post"
-            android:launchMode="singleTask"
             android:parentActivityName=".view.activity.MainActivity"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize">
