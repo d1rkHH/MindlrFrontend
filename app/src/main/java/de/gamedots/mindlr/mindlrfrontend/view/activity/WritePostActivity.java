@@ -244,17 +244,22 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
 
     // region start send written post to server
     public void startPostSending(View view) {
-        // user added image to post content, upload it to imgur to get global URL
-        if(_postContentUri != null && !_postContentUri.toString().isEmpty()
-                && !UriHelper.isYoutube(_postContentUri)){
-
-            ImgurUploadService service = new ImgurUploadService(this, _loadUri, composeContent());
-            service.start(_postContentUri);
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
+        if (_postEditText.getText().toString().trim().isEmpty() &&
+                (_postContentUri == null || _postContentUri.toString().isEmpty())){
+            Toast.makeText(this, R.string.post_empty_not_allowed, Toast.LENGTH_SHORT).show();
         } else {
-            // no image select we can start sending right away
-            composeContentAndSendToServer();
+            // user added image to post content, upload it to imgur to get global URL
+            if (_postContentUri != null && !_postContentUri.toString().isEmpty()
+                    && !UriHelper.isYoutube(_postContentUri)) {
+
+                ImgurUploadService service = new ImgurUploadService(this, _loadUri, composeContent());
+                service.start(_postContentUri);
+                startActivity(new Intent(this, MainActivity.class));
+                finish();
+            } else {
+                // no image select we can start sending right away
+                composeContentAndSendToServer();
+            }
         }
     }
 
@@ -489,6 +494,7 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
         }
         _postEditText.setText(cursor.getString(COLUMN_CONTENT_TEXT));
         _postContentUri = Uri.parse(cursor.getString(COLUMN_CONTENT_URI));
+        Log.v(LOG.AUTH, "GOT URI: " + _postContentUri.toString());
 
         /* Load selection querying the db item x category table using the item id from the draft entry */
         Cursor catIds = getContentResolver().query(
@@ -520,12 +526,15 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
             _multiSelectionSpinner.setSelection(selections);
         }
 
-        Glide.with(this)
-                .loadFromMediaStore(_postContentUri)
-                .asBitmap()
-                .fitCenter()
-                .listener(this)
-                .into(_postImageView);
+        if (_postContentUri.getScheme().equals("content")) {
+            _postImageView.setVisibility(View.VISIBLE);
+            Glide.with(this)
+                    .loadFromMediaStore(_postContentUri)
+                    .asBitmap()
+                    .fitCenter()
+                    .listener(this)
+                    .into(_postImageView);
+        }
     }
 
     @Override
@@ -551,6 +560,7 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
     public boolean onException(Exception e, Uri model, Target<Bitmap> target, boolean isFirstResource) {
         // error in retrieving Bitmap so assume something went wrong with the Uri
         // so invalidate it
+        Log.v(LOG.AUTH, "ERROR draft image");
         _postContentUri = null;
         _postImageView.setVisibility(View.GONE);
         return false;
@@ -559,6 +569,7 @@ public class WritePostActivity extends AppCompatActivity implements TextWatcher,
     @Override
     public boolean onResourceReady(Bitmap resource, Uri model, Target<Bitmap> target, boolean
             isFromMemoryCache, boolean isFirstResource) {
+        Log.v(LOG.AUTH, "SUCCESS draft image");
         _postImageView.setVisibility(View.VISIBLE);
         _closeImageButton.setVisibility(View.VISIBLE);
         return false;
