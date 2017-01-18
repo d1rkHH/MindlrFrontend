@@ -21,8 +21,9 @@ import de.gamedots.mindlr.mindlrfrontend.R;
 
 public class YoutubeStrategy implements PreviewStrategy{
 
-    private final static String youtube_regex = "https://youtu\\.be/([\\w\\-_]+)";
-
+    private final static String youtube_regex
+            = "https://(youtu\\.be/|www\\.youtube\\.com/watch\\?v=)([\\w\\-_]+)";
+//(...|https￼/www.youtube.com/watch?v=(a-zA-Z0-9_-){11}
     private String _videoID;
 
     /**
@@ -41,7 +42,7 @@ public class YoutubeStrategy implements PreviewStrategy{
         Log.v("Preview", "Match " + url + " to Youtube Link");
         Matcher matcher = Pattern.compile(youtube_regex).matcher(url);
         if(matcher.find()) {
-            _videoID = matcher.group(1);
+            _videoID = matcher.group(2);
             Log.v("Preview", "YT ID: " + _videoID);
             return true;
         }

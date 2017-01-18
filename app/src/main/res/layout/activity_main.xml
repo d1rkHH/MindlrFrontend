@@ -17,14 +17,15 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#efefef">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             style="@style/ToolbarStyle"
             android:layout_width="match_parent"
-            app:layout_heightPercent="55%"
-            app:elevation="0dp"/>
+            app:elevation="0dp"
+            app:layout_heightPercent="55%"/>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -35,43 +36,59 @@
 
         <TextView
             android:id="@+id/main_reload_textview"
-            android:clickable="true"
-            android:padding="8dp"
-            android:text="Click To \n Get New Post"
-            android:gravity="center"
-            android:textSize="22sp"
-            android:onClick="tryPostLoading"
-            android:visibility="gone"
-            android:layout_gravity="center"
-            android:fontFamily="sans-serif-medium"
-            android:textColor="@color/blue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
-            app:elevation="6dp"
-            app:srcCompat="@drawable/ic_write_24dp"
-            android:tint="@android:color/white"
-            app:borderWidth="0dp"
-            app:fabSize="normal"
-            app:layout_anchorGravity="bottom|right|end"
-            app:pressedTranslationZ="12dp"/>
+            android:layout_gravity="center"
+            android:clickable="true"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:onClick="tryPostLoading"
+            android:padding="8dp"
+            android:text="Click To \n Get New Post"
+            android:textColor="@color/accent"
+            android:textSize="22sp"
+            android:visibility="gone"/>
 
-            <in.arjsna.swipecardlib.SwipeCardView
-                android:id="@+id/viewposts_swipe_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:max_visible="3"
-                app:min_adapter_stack="0"
-                app:rotation_degrees="15.5"
-                app:top_swipe_detect="false"
-                app:bottom_swipe_detect="false"
-                tools:context=".view.activity.MainActivity" />
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/dislike_fab"
+            android:layout_width="@dimen/fab_radius"
+            android:layout_height="@dimen/fab_radius"
+            android:layout_gravity="left|bottom"
+            android:layout_marginBottom="16dp"
+            android:onClick="animateLeft"
+            android:scaleType="centerCrop"
+            app:backgroundTint="@null"
+            app:elevation="4dp"
+            app:fabSize="normal"
+            app:layout_marginLeftPercent="25%"
+            app:pressedTranslationZ="12dp"
+            app:srcCompat="@drawable/fab_circle_dislike"/>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/like_fab"
+            android:layout_width="@dimen/fab_radius"
+            android:layout_height="@dimen/fab_radius"
+            android:layout_gravity="right|bottom"
+            android:layout_marginBottom="16dp"
+            android:onClick="animateRight"
+            android:scaleType="centerCrop"
+            app:backgroundTint="@null"
+            app:elevation="4dp"
+            app:fabSize="normal"
+            app:layout_marginRightPercent="25%"
+            app:pressedTranslationZ="12dp"
+            app:srcCompat="@drawable/fab_circle"/>
+
+        <in.arjsna.swipecardlib.SwipeCardView
+            android:id="@+id/viewposts_swipe_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:bottom_swipe_detect="false"
+            app:max_visible="3"
+            app:min_adapter_stack="0"
+            app:rotation_degrees="15.5"
+            app:top_swipe_detect="false"
+            tools:context=".view.activity.MainActivity"/>
     </android.support.percent.PercentFrameLayout>
 
     <android.support.design.widget.NavigationView
@@ -79,9 +96,9 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        tools:visibility="gone"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/activity_main_drawer"/>
+        app:menu="@menu/activity_main_drawer"
+        tools:visibility="gone"/>
 
 </android.support.v4.widget.DrawerLayout>

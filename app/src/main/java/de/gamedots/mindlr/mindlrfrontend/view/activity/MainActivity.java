@@ -41,8 +41,6 @@ import de.gamedots.mindlr.mindlrfrontend.util.DebugUtil;
 import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 import in.arjsna.swipecardlib.SwipeCardView;
 
-import static de.gamedots.mindlr.mindlrfrontend.R.id.fab;
-
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener {
 
@@ -54,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements
     private ViewPostCardAdapter adapter;
     private SwipeCardView swipeCardView;
     private Toolbar _toolbar;
-    private FloatingActionButton _fab;
     private TextView _reloadPostsTextView;
 
     @Override
@@ -64,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements
 
         // initialize all UI components
         setupToolbar();
-        setupFab();
+        setupFabs();
         setupNavDrawer();
         setupCardAdapter();
         Log.d(LOG.AUTH, "onCreate() called");
@@ -144,11 +141,22 @@ public class MainActivity extends AppCompatActivity implements
         }
         switch (item.getItemId()) {
             case R.id.action_share:
-                IntentHelper.showShareIntent(PostLoader.getInstance().getCurrent().getContentText(), this);
+                String shareContent = "";
+                if (PostLoader.getInstance().getCurrent().getContentText() != null){
+                    shareContent += PostLoader.getInstance().getCurrent().getContentText();
+                }
+                if (PostLoader.getInstance().getCurrent().getContentUri() != null){
+                    shareContent += PostLoader.getInstance().getCurrent().getContentUri();
+                }
+                IntentHelper.showShareIntent(shareContent, this);
                 break;
             case R.id.action_report:
                 // TODO: report dialog with report options store in user post entry
-                DebugUtil.toast(this, "Reported");
+                DebugUtil.toast(this, getString(R.string.post_reported_message));
+                break;
+            case R.id.action_write:
+                startActivity(new Intent(MainActivity.this, WritePostActivity.class));
+                overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -203,6 +211,18 @@ public class MainActivity extends AppCompatActivity implements
         swipeCardView.setFlingListener(new FlingAdapter() {
             @Override
             public void onCardExitLeft(Object dataObject) {
+                //Toast.makeText(MainActivity.this, "RIGHT", Toast.LENGTH_SHORT).show();
+                PostLoader.getInstance().getCurrent().rateNegative();
+                Utility.updatePostVoteType(
+                        MainActivity.this,
+                        PostLoader.getInstance().getCurrent().getServerId(),
+                        MindlrContract.UserPostEntry.VOTE_DISLIKED);
+                PostLoader.getInstance().next();
+                //adapter.popNotify();
+            }
+
+            @Override
+            public void onCardExitRight(Object dataObject) {
                 //Toast.makeText(MainActivity.this, "LEFT", Toast.LENGTH_SHORT).show();
                 PostLoader.getInstance().getCurrent().ratePositive();
                 Log.v(LOG.AUTH, "about to store " +  PostLoader.getInstance().getCurrent().getContentText());
@@ -211,18 +231,6 @@ public class MainActivity extends AppCompatActivity implements
                         PostLoader.getInstance().getCurrent().getServerId(),
                         MindlrContract.UserPostEntry.VOTE_LIKED
                 );
-                PostLoader.getInstance().next();
-                //adapter.popNotify();
-            }
-
-            @Override
-            public void onCardExitRight(Object dataObject) {
-                //Toast.makeText(MainActivity.this, "RIGHT", Toast.LENGTH_SHORT).show();
-                PostLoader.getInstance().getCurrent().rateNegative();
-                Utility.updatePostVoteType(
-                        MainActivity.this,
-                        PostLoader.getInstance().getCurrent().getServerId(),
-                        MindlrContract.UserPostEntry.VOTE_DISLIKED);
                 PostLoader.getInstance().next();
                 //adapter.popNotify();
             }
@@ -257,16 +265,22 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    private void setupFab(){
-        _fab = (FloatingActionButton) findViewById(fab);
-        if (_fab != null)
-            _fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivity(new Intent(MainActivity.this, WritePostActivity.class));
-                    overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
-                }
-            });
+    private void setupFabs(){
+        FloatingActionButton likefab = (FloatingActionButton)findViewById(R.id.like_fab);
+        likefab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                swipeCardView.throwRight();
+            }
+        });
+
+        FloatingActionButton dislike = (FloatingActionButton)findViewById(R.id.dislike_fab);
+        dislike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                swipeCardView.throwLeft();
+            }
+        });
     }
 
     private void setupNavDrawer(){
@@ -299,6 +313,9 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             Toast.makeText(this, R.string.no_internet_available, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void animateRight(View view) {
     }
     // endregion
 }
