@@ -235,12 +235,13 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
             };
         }
 
+
         return new CursorLoader(getActivity(),
                 userPostForUserUri,
                 POST_COLUMNS,
                 selection,
                 selArgs,
-                null);
+                UserPostEntry.COLUMN_VOTE_DATE + " DESC ");
     }
 
     @Override

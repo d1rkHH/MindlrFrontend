@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements
                     shareContent += PostLoader.getInstance().getCurrent().getContentText();
                 }
                 if (PostLoader.getInstance().getCurrent().getContentUri() != null){
-                    shareContent += PostLoader.getInstance().getCurrent().getContentUri();
+                    shareContent += " " + PostLoader.getInstance().getCurrent().getContentUri();
                 }
                 IntentHelper.showShareIntent(shareContent, this);
                 break;
@@ -338,9 +338,6 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             Toast.makeText(this, R.string.no_internet_available, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    public void animateRight(View view) {
     }
     // endregion
 }
