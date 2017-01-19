@@ -44,7 +44,7 @@
             android:gravity="center"
             android:onClick="tryPostLoading"
             android:padding="8dp"
-            android:text="Click To \n Get New Post"
+            android:text="@string/click_to_n_get_new_posts"
             android:textColor="@color/accent"
             android:textSize="22sp"
             android:visibility="gone"/>

@@ -71,4 +71,5 @@
     <string name="post_send_failure_msg">Senden fehlgeschlagen. Post als Entwurf gespeichert.</string>
     <string name="technology">Technologie</string>
     <string name="write">Schreiben</string>
+    <string name="click_to_n_get_new_posts">Neue Posts laden</string>
 </resources>
