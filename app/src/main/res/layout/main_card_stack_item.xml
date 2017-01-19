@@ -30,6 +30,7 @@
                 android:id="@+id/viewpost_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:elegantTextHeight="true"
                 android:background="@android:color/white"
                 android:padding="15.0dp"
                 android:textColor="@android:color/black"

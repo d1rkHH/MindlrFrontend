@@ -48,6 +48,10 @@ public class ViewPostCardAdapter extends ArrayAdapter<ViewPost> {
                 .matchStrategy(viewPost)
                 .buildPreviewUI(getContext(), availablePreviewViews);
 
+        if (image.getVisibility() == View.GONE){
+            ((TextView)convertView.findViewById(R.id.viewpost_textview)).setMaxLines(15);
+        }
+
         return convertView;
     }
 

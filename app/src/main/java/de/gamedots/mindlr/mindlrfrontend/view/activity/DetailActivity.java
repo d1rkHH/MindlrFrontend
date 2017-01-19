@@ -75,7 +75,6 @@ public class DetailActivity extends AppCompatActivity implements YoutubeStrategy
         switch (getIntent().getIntExtra(LAUNCHED_FROM_ATTACHEMENT_KEY, 0)){
             case 0:
                 upDestination = MainActivity.class;
-                animateAfterLeave = true;
                 break;
             case 1:
                 upDestination = ProfileActivity.class;
@@ -83,7 +82,7 @@ public class DetailActivity extends AppCompatActivity implements YoutubeStrategy
                 profileWasInGridLayout = getIntent().getBooleanExtra(LAYOUT_KEY, false);
                 break;
         }
-        if (animateAfterLeave){
+        if (upDestination == MainActivity.class){
             Log.v(LOG.AUTH, "setup fap");
             setupFabs();
         }
@@ -101,6 +100,7 @@ public class DetailActivity extends AppCompatActivity implements YoutubeStrategy
         likefab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                animateAfterLeave = true;
                 throwLeft = false;
                 startActivity(getSupportParentActivityIntent());
             }
@@ -110,6 +110,7 @@ public class DetailActivity extends AppCompatActivity implements YoutubeStrategy
         dislike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                animateAfterLeave = true;
                 throwLeft = true;
                 startActivity(getSupportParentActivityIntent());
             }
