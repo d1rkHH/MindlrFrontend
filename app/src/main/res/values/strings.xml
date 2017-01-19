@@ -77,15 +77,14 @@
     <string name="skip">SKIP</string>
     <string name="start">GOT IT</string>
 
-    <string name="slide_0_title">Welcome to mindlr!</string>
-    <string name="slide_0_desc">Your place to get a perfect experience and an open mind.</string>
+    <string name="slide_0_title">Explore yourself!</string>
+    <string name="slide_0_desc">We learn what you love and show tailor-made recommendations just for you!</string>
 
-    <string name="slide_1_title">Personalized</string>
-    <string name="slide_1_desc">The posts you vote build your profile, so you get stuff that is
-    truly in your interest.</string>
+    <string name="slide_1_title">Swipe to success!</string>
+    <string name="slide_1_desc">Swipe right to like a post, or swipe left if you don\'t want to see similar posts in the future.</string>
 
-    <string name="slide_2_title">Lets Go!</string>
-    <string name="slide_2_desc">Dive into the world of minds.</string>
+    <string name="slide_2_title">One more thing…</string>
+    <string name="slide_2_desc">To help us learn about your interests, please choose some topics you like on the next slide. Thanks!</string>
 
     <!-- UP/DOWN votes in % -->
     <string name="format_vote_percentage"><xliff:g id="vote">%1.0f</xliff:g> %%</string>
