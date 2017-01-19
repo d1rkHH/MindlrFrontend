@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<android.support.percent.PercentFrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -48,63 +48,44 @@
                 android:isScrollContainer="false"
                 android:lineSpacingMultiplier="1.16"
                 android:padding="16dp"
+                android:paddingBottom="@dimen/fab_radius"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColorLink="@color/accent"
                 android:textIsSelectable="false"
                 android:textSize="18sp"
                 tools:text="my simple text that display"/>
-
-            <LinearLayout
-                android:id="@+id/vote_button_container"
-                android:layout_width="match_parent"
-                android:gravity="center"
-                android:visibility="gone"
-                android:layout_marginBottom="@dimen/fab_radius"
-                android:layout_marginTop="16dp"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <android.support.v4.widget.Space
-                    android:layout_weight="0.5"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"/>
-
-                <!-- up down vote buttons-->
-                <android.support.design.widget.FloatingActionButton
-                    android:id="@+id/dislike_fab"
-                    android:layout_width="@dimen/fab_radius"
-                    android:layout_height="@dimen/fab_radius"
-                    android:layout_gravity="center_horizontal"
-                    android:scaleType="centerCrop"
-                    app:backgroundTint="@null"
-                    app:elevation="4dp"
-                    app:fabSize="normal"
-                    app:pressedTranslationZ="12dp"
-                    app:srcCompat="@drawable/fab_circle_dislike"/>
-
-                <android.support.v4.widget.Space
-                    android:layout_weight="0.5"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"/>
-
-                <android.support.design.widget.FloatingActionButton
-                    android:id="@+id/like_fab"
-                    android:layout_width="@dimen/fab_radius"
-                    android:layout_height="@dimen/fab_radius"
-                    android:scaleType="centerCrop"
-                    app:backgroundTint="@null"
-                    app:elevation="4dp"
-                    app:fabSize="normal"
-                    app:pressedTranslationZ="12dp"
-                    app:srcCompat="@drawable/fab_circle"/>
-
-                <android.support.v4.widget.Space
-                    android:layout_weight="0.5"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"/>
-            </LinearLayout>
         </LinearLayout>
     </ScrollView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/dislike_fab"
+        android:layout_width="@dimen/fab_radius"
+        android:layout_height="@dimen/fab_radius"
+        android:layout_gravity="left|bottom"
+        android:layout_marginBottom="16dp"
+        android:scaleType="centerCrop"
+        android:visibility="invisible"
+        app:backgroundTint="@null"
+        app:elevation="4dp"
+        app:fabSize="normal"
+        app:layout_marginLeftPercent="25%"
+        app:pressedTranslationZ="12dp"
+        app:srcCompat="@drawable/fab_circle_dislike"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/like_fab"
+        android:layout_width="@dimen/fab_radius"
+        android:layout_height="@dimen/fab_radius"
+        android:layout_gravity="right|bottom"
+        android:visibility="invisible"
+        android:layout_marginBottom="16dp"
+        android:scaleType="centerCrop"
+        app:backgroundTint="@null"
+        app:elevation="4dp"
+        app:fabSize="normal"
+        app:layout_marginRightPercent="25%"
+        app:pressedTranslationZ="12dp"
+        app:srcCompat="@drawable/fab_circle"/>
 
     <!-- main toolbar -->
     <android.support.v7.widget.Toolbar
@@ -116,4 +97,4 @@
         android:background="@color/primary"
         app:elevation="0dp"
         />
-</FrameLayout>
+</android.support.percent.PercentFrameLayout>

@@ -95,8 +95,8 @@ public class DetailActivity extends AppCompatActivity implements YoutubeStrategy
     }
 
     private void setupFabs() {
-        findViewById(R.id.vote_button_container).setVisibility(View.VISIBLE);
         FloatingActionButton likefab = (FloatingActionButton)findViewById(R.id.like_fab);
+        likefab.setVisibility(View.VISIBLE);
         likefab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -107,6 +107,7 @@ public class DetailActivity extends AppCompatActivity implements YoutubeStrategy
         });
 
         FloatingActionButton dislike = (FloatingActionButton)findViewById(R.id.dislike_fab);
+        dislike.setVisibility(View.VISIBLE);
         dislike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
