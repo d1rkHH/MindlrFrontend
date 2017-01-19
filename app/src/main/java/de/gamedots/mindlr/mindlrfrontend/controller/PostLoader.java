@@ -77,7 +77,7 @@ public class PostLoader {
             loadNewPosts();
         }
 
-        if (_postList.size() >= 2) {
+        if (_postList.size() > 0) {
             //Remove read post from list and increase send threshold in storevoteshandler
             _postList.poll();
             StoreVotesHandler.getInstance().increaseSendThreshold();

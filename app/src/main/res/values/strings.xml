@@ -130,4 +130,5 @@
     <string name="post_reported_message">Post reported</string>
     <string name="post_empty_not_allowed">Empty posts are not allowed</string>
     <string name="post_send_failure_msg">Sending failed, saved post in Drafts.</string>
+    <string name="click_to_n_get_new_posts">Click To \n Get New Posts</string>
 </resources>
