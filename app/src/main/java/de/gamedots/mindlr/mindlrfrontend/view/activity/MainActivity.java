@@ -56,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements
     private SwipeCardView swipeCardView;
     private Toolbar _toolbar;
     private TextView _reloadPostsTextView;
+    private FloatingActionButton likefab;
+    private FloatingActionButton dislikefab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,8 +77,12 @@ public class MainActivity extends AppCompatActivity implements
             adapter.addItems(PostLoader.getInstance().getPostList());
             if (adapter.getCount() == 0){
                 _reloadPostsTextView.setVisibility(View.VISIBLE);
+                likefab.setVisibility(View.VISIBLE);
+                dislikefab.setVisibility(View.VISIBLE);
             } else {
                 _reloadPostsTextView.setVisibility(View.GONE);
+                likefab.setVisibility(View.INVISIBLE);
+                dislikefab.setVisibility(View.INVISIBLE);
             }
         }
     }
@@ -127,6 +133,8 @@ public class MainActivity extends AppCompatActivity implements
         if (event.success){
             if (adapter != null) {
                 _reloadPostsTextView.setVisibility(View.GONE);
+                likefab.setVisibility(View.VISIBLE);
+                dislikefab.setVisibility(View.VISIBLE);
                 adapter.clear();
                 adapter.addItems(PostLoader.getInstance().getPostList());
             }
@@ -136,6 +144,8 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             if (adapter.getCount() == 0){
                _reloadPostsTextView.setVisibility(View.VISIBLE);
+                likefab.setVisibility(View.INVISIBLE);
+                dislikefab.setVisibility(View.INVISIBLE);
             }
         }
     }
@@ -237,26 +247,31 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onCardExitLeft(Object dataObject) {
                 //Toast.makeText(MainActivity.this, "RIGHT", Toast.LENGTH_SHORT).show();
-                PostLoader.getInstance().getCurrent().rateNegative();
-                Utility.updatePostVoteType(
-                        MainActivity.this,
-                        PostLoader.getInstance().getCurrent().getServerId(),
-                        MindlrContract.UserPostEntry.VOTE_DISLIKED);
-                PostLoader.getInstance().next();
+                if (PostLoader.getInstance().getCurrent() != null) {
+                    PostLoader.getInstance().getCurrent().rateNegative();
+                    Utility.updatePostVoteType(
+                            MainActivity.this,
+                            PostLoader.getInstance().getCurrent().getServerId(),
+                            MindlrContract.UserPostEntry.VOTE_DISLIKED);
+                    PostLoader.getInstance().next();
+                }
                 //adapter.popNotify();
             }
 
             @Override
             public void onCardExitRight(Object dataObject) {
                 //Toast.makeText(MainActivity.this, "LEFT", Toast.LENGTH_SHORT).show();
-                PostLoader.getInstance().getCurrent().ratePositive();
-                Log.v(LOG.AUTH, "about to store " +  PostLoader.getInstance().getCurrent().getContentText());
-                Utility.updatePostVoteType(
-                        MainActivity.this,
-                        PostLoader.getInstance().getCurrent().getServerId(),
-                        MindlrContract.UserPostEntry.VOTE_LIKED
-                );
-                PostLoader.getInstance().next();
+                if(PostLoader.getInstance().getCurrent() != null) {
+                    PostLoader.getInstance().getCurrent().ratePositive();
+                    Log.v(LOG.AUTH, "about to store " + PostLoader.getInstance().getCurrent().getContentText());
+
+                    Utility.updatePostVoteType(
+                            MainActivity.this,
+                            PostLoader.getInstance().getCurrent().getServerId(),
+                            MindlrContract.UserPostEntry.VOTE_LIKED
+                    );
+                    PostLoader.getInstance().next();
+                }
                 //adapter.popNotify();
             }
 
@@ -265,6 +280,8 @@ public class MainActivity extends AppCompatActivity implements
                 Log.v(LOG.AUTH, "about to be empty " + itemsInAdapter);
                 if (itemsInAdapter == 0){
                     _reloadPostsTextView.setVisibility(View.VISIBLE);
+                    likefab.setVisibility(View.INVISIBLE);
+                    dislikefab.setVisibility(View.INVISIBLE);
                 }
             }
         });
@@ -291,19 +308,23 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void setupFabs(){
-        FloatingActionButton likefab = (FloatingActionButton)findViewById(R.id.like_fab);
+        likefab = (FloatingActionButton)findViewById(R.id.like_fab);
         likefab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                swipeCardView.throwRight();
+                if (swipeCardView != null) {
+                    swipeCardView.throwRight();
+                }
             }
         });
 
-        FloatingActionButton dislike = (FloatingActionButton)findViewById(R.id.dislike_fab);
-        dislike.setOnClickListener(new View.OnClickListener() {
+        dislikefab = (FloatingActionButton)findViewById(R.id.dislike_fab);
+        dislikefab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                swipeCardView.throwLeft();
+                if (swipeCardView != null) {
+                    swipeCardView.throwLeft();
+                }
             }
         });
     }
