@@ -83,6 +83,7 @@ public class StoreVotesHandler {
                 post.setVoteDate(unsyncedPostsCursor.getLong(PostFragment.COLUMN_VOTE_DATE));
                 postsToSync.add(post);
             }
+            unsyncedPostsCursor.close();
         }
 
         _postsInSending.clear();
