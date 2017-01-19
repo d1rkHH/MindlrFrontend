@@ -177,13 +177,18 @@ public class MainActivity extends AppCompatActivity implements
         switch (item.getItemId()) {
             case R.id.action_share:
                 String shareContent = "";
-                if (PostLoader.getInstance().getCurrent().getContentText() != null){
-                    shareContent += PostLoader.getInstance().getCurrent().getContentText();
+                if (PostLoader.getInstance().getCurrent() != null) {
+                    if (PostLoader.getInstance().getCurrent().getContentText() != null) {
+                        shareContent += PostLoader.getInstance().getCurrent().getContentText();
+                    }
+                    if (PostLoader.getInstance().getCurrent().getContentUri() != null) {
+                        shareContent += " " + PostLoader.getInstance().getCurrent().getContentUri();
+                    }
+                    IntentHelper.showShareIntent(shareContent, this);
+                } else {
+                    Toast.makeText(this, "Kein Share Content vorhanden", Toast.LENGTH_SHORT).show();
                 }
-                if (PostLoader.getInstance().getCurrent().getContentUri() != null){
-                    shareContent += " " + PostLoader.getInstance().getCurrent().getContentUri();
-                }
-                IntentHelper.showShareIntent(shareContent, this);
+
                 break;
             case R.id.action_report:
                 // TODO: report dialog with report options store in user post entry
