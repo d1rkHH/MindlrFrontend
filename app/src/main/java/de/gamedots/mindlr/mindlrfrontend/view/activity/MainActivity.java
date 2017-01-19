@@ -3,6 +3,7 @@ package de.gamedots.mindlr.mindlrfrontend.view.activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -44,6 +45,8 @@ import in.arjsna.swipecardlib.SwipeCardView;
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener {
 
+    public static final String ANIMATE_EXTRA = "main_animate_extra";
+
     private ActionBarDrawerToggle _drawerToggle;
     private DrawerLayout _drawerLayout;
     private NavigationView _navigationView;
@@ -82,6 +85,28 @@ public class MainActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (intent.hasExtra(ANIMATE_EXTRA)){
+            Log.v(LOG.AUTH, "we have animate");
+            final boolean throwLeft = intent.getBooleanExtra(ANIMATE_EXTRA, false);
+            if (swipeCardView != null){
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (throwLeft){
+                            swipeCardView.throwLeft();
+                        } else {
+                            swipeCardView.throwRight();
+                        }
+                    }
+                }, 250);
+            }
+        }
     }
 
     @Override

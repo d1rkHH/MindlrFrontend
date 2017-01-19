@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.gamedots.mindlr.mindlrfrontend.R;
+import de.gamedots.mindlr.mindlrfrontend.logging.LOG;
 import de.gamedots.mindlr.mindlrfrontend.model.ImageUploadResult;
 import de.gamedots.mindlr.mindlrfrontend.model.post.ViewPost;
 import de.gamedots.mindlr.mindlrfrontend.previews.PreviewStrategyMatcher;
@@ -32,6 +35,7 @@ import de.gamedots.mindlr.mindlrfrontend.previews.strategy.PreviewStrategy;
 import de.gamedots.mindlr.mindlrfrontend.previews.strategy.YoutubeStrategy;
 import de.gamedots.mindlr.mindlrfrontend.util.Utility;
 
+import static de.gamedots.mindlr.mindlrfrontend.view.activity.MainActivity.ANIMATE_EXTRA;
 import static de.gamedots.mindlr.mindlrfrontend.view.fragment.PostFragment.LAYOUT_KEY;
 
 /**
@@ -56,6 +60,8 @@ public class DetailActivity extends AppCompatActivity implements YoutubeStrategy
     private YouTubePlayerFragment _playerFragment;
     private FrameLayout _detailVideoContainer;
     private String _videoID;
+    private boolean animateAfterLeave;
+    private boolean throwLeft;
 
 
     @Override
@@ -69,6 +75,7 @@ public class DetailActivity extends AppCompatActivity implements YoutubeStrategy
         switch (getIntent().getIntExtra(LAUNCHED_FROM_ATTACHEMENT_KEY, 0)){
             case 0:
                 upDestination = MainActivity.class;
+                animateAfterLeave = true;
                 break;
             case 1:
                 upDestination = ProfileActivity.class;
@@ -76,12 +83,37 @@ public class DetailActivity extends AppCompatActivity implements YoutubeStrategy
                 profileWasInGridLayout = getIntent().getBooleanExtra(LAYOUT_KEY, false);
                 break;
         }
+        if (animateAfterLeave){
+            Log.v(LOG.AUTH, "setup fap");
+            setupFabs();
+        }
 
         Intent launchIntent = getIntent();
         if (launchIntent != null && launchIntent.getExtras().containsKey(POST_EXTRA)) {
             ViewPost vp = launchIntent.getParcelableExtra(POST_EXTRA);
             initializeViews(vp);
         }
+    }
+
+    private void setupFabs() {
+        findViewById(R.id.vote_button_container).setVisibility(View.VISIBLE);
+        FloatingActionButton likefab = (FloatingActionButton)findViewById(R.id.like_fab);
+        likefab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                throwLeft = false;
+                startActivity(getSupportParentActivityIntent());
+            }
+        });
+
+        FloatingActionButton dislike = (FloatingActionButton)findViewById(R.id.dislike_fab);
+        dislike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                throwLeft = true;
+                startActivity(getSupportParentActivityIntent());
+            }
+        });
     }
 
     private void bindViews() {
@@ -157,6 +189,9 @@ public class DetailActivity extends AppCompatActivity implements YoutubeStrategy
         Intent intent = new Intent(this, upDestination);
         intent.putExtra(ProfileActivity.TAP_SELECT_KEY, tapSelectionOnNavigation);
         intent.putExtra(LAYOUT_KEY, profileWasInGridLayout);
+        if (animateAfterLeave){
+            intent.putExtra(ANIMATE_EXTRA, throwLeft);
+        }
         return intent;
     }
 

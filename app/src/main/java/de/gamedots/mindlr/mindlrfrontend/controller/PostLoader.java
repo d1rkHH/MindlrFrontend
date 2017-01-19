@@ -20,7 +20,7 @@ import de.gamedots.mindlr.mindlrfrontend.util.Utility;
  * Created by Max Wiechmann on 26.09.15.
  */
 public class PostLoader {
-    public static final int MIN_SIZE_THRESHOLD = 10;
+    public static final int MIN_SIZE_THRESHOLD = 5;
 
     private static final PostLoader LOADER = new PostLoader();
     private LinkedList<ViewPost> _postList = new LinkedList<>();
