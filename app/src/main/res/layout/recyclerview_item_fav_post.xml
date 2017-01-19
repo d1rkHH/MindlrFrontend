@@ -39,7 +39,6 @@
             android:paddingLeft="16dp"
             android:paddingBottom="8dp"
             tools:text="Liked 2 Days ago"
-            android:textColor="@color/accent"
             android:layout_height="wrap_content"/>
 
     </LinearLayout>

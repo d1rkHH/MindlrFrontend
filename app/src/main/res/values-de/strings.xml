@@ -1,4 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="select_categories">Wähle eine Kategorie!</string>
+    <string name="today">Heute</string>
+    <string name="yesterday">Gestern</string>
+    <string name="written">Geschrieben</string>
+    <string name="already_registered">Schon registriert?</string>
+    <string name="sign_in_skip">Sign In</string>
+    <string name="category_choose">Wähle 3 oder mehr Kategorien!</string>
+    <string name="alert_message">Deaktivieren dieser Einstellung wird alle lokalen Posts löschen.
+        Dies kann nicht rückgängig gemacht werden!</string>
+    <string name="alert_warning">Warnung</string>
+    <string name="alert_cancel">Abbrechen</string>
+    <string name="pref_group_notification_storage">Benachrichtungen und Speicher</string>
+
+    <!-- Settings strings -->
+    <string name="pref_notification_true">Aktiviert</string>
+    <string name="pref_notification_false">Nicht aktiviert</string>
+    <string name="pref_notification_label">Post Benachrichtungen</string>
+
+    <string name="pref_post_storage_true">Erlaubt</string>
+    <string name="pref_post_storage_false">Nicht Erlaubt</string>
+    <string name="pref_post_storage_label">Speicher Post auf dem Gerät</string>
+    <string name="pref_authentication_setting_label">Abmelden</string>
 </resources>
