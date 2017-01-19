@@ -1,5 +1,5 @@
 <resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
-    <string name="app_name">Mindlr</string>
+    <string name="app_name" translatable="false">Mindlr</string>
     <string name="server_client_id">319486160725-gksup5cr2bgric18al3q6h47h3p23dia.apps.googleusercontent.com</string>
     <string name="twitter_key">8dn7CD8mwmIqdKPRnuWiLZKaH</string>
     <string name="twitter_secret">AljLkSKcPFSC8vTV1OqeZeUoWsX7fm0i0bmdeUpCGcmrLdlBxO</string>
@@ -7,10 +7,10 @@
 
     <!-- Activity labels -->
     <string name="title_activity_main">MainActivity</string>
-    <string name="title_activity_write_post">WritePostActivity</string>
+    <string name="title_activity_write_post">Post to Mindlr</string>
     <string name="title_activity_user_posts">Posts</string>
     <string name="title_activity_post_detail">PostDetailActivity</string>
-    <string name="title_activity_profile_actvitiy">Profil</string>
+    <string name="title_activity_profile_actvitiy">Profile</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- menu action string -->
@@ -19,13 +19,11 @@
     <string name="action_search">Search</string>
     <string name="action_report">Report</string>
 
-    <string name="activity_login_welcome_message">Willkommen \n zu \n Mindlr! \n Bitte logge dich ein</string>
-
     <!-- Navigation Drawer items -->
-    <string name="profile">Profil</string>
-    <string name="drafts">Entwürfe</string>
-    <string name="settings">Einstellungen</string>
-    <string name="help">Hilfe</string>
+    <string name="profile">Profile</string>
+    <string name="drafts">Drafts</string>
+    <string name="settings">Settings</string>
+    <string name="help">Help</string>
 
     <!-- Settings strings -->
     <string name="pref_notification_key" translatable="false">notification</string>
@@ -65,17 +63,17 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <!-- Auth Provider related strings -->
-    <string name="google_provider">GOOGLE</string>
+    <string name="google_provider" translatable="false">GOOGLE</string>
     <string name="twitter_provider">TWITTER</string>
 
     <!-- error messages -->
-    <string name="auth_error_network_unavailable">Anmeldung fehlgeschlagen. Netzwerk nicht erreichbar</string>
-    <string name="auth_error_unknown">Anmeldung fehlgeschlagen</string>
+    <string name="auth_error_network_unavailable">Authentication error - network unavailable</string>
+    <string name="auth_error_unknown">Authentication error</string>
 
     <!-- Intro/Tutorial-->
-    <string name="next">NEXT</string>
-    <string name="skip">SKIP</string>
-    <string name="start">GOT IT</string>
+    <string name="next">Next</string>
+    <string name="skip">Skip</string>
+    <string name="start">Got it!</string>
 
     <string name="slide_0_title">Explore yourself!</string>
     <string name="slide_0_desc">We learn what you love and show tailor-made recommendations just for you!</string>
@@ -88,7 +86,6 @@
 
     <!-- UP/DOWN votes in % -->
     <string name="format_vote_percentage"><xliff:g id="vote">%1.0f</xliff:g> %%</string>
-    <string name="post_send_failure_msg">Senden fehlgeschlagen. Post als Entwurf gespeichert.</string>
 
     <!-- Date format for like/write [Liked 30 seconds ago, Written today, Liked 30 Feb] -->
     <string name="date_format">%1$s %2$d second %4$s</string>
@@ -108,28 +105,29 @@
     <string name="liked">Liked</string>
     <string name="written">Written</string>
     <string name="already_registered">Already registered?</string>
-    <string name="category_choose">Choose 3 or more Categories!</string>
+    <string name="category_choose">Choose 3 or more categories!</string>
     <string name="sign_in_skip">Sign In</string>
     <string name="change_layout_order">Change Layout Order</string>
 
     <!-- Category display names-->
-    <string name="art_culture">Kunst &amp; Kultur</string>
-    <string name="funny_fascinating">Lustig &amp; Faszinierend</string>
-    <string name="gaming">Spiele</string>
-    <string name="lifestyle_male">Man Lifestyle</string>
-    <string name="lifestyle_female">Women Lifestyle</string>
-    <string name="news">Nachrichten</string>
-    <string name="personal">Persönlich</string>
-    <string name="politics_economics">Politik &amp; Wirtschaft</string>
-    <string name="popculture">Popkultur</string>
-    <string name="quotes_motivation">Motivation</string>
-    <string name="science_nature">Naturwissenschaften</string>
-    <string name="sports">Sport</string>
-    <string name="technology">Technologie</string>
+    <string name="art_culture">Art &amp; Culture</string>
+    <string name="funny_fascinating">Funny</string>
+    <string name="gaming">Gaming</string>
+    <string name="lifestyle_male">Men\\\'s Lifestyle</string>
+    <string name="lifestyle_female">Women\\\'s Lifestyle</string>
+    <string name="news">News</string>
+    <string name="personal">Personal</string>
+    <string name="politics_economics">Politics</string>
+    <string name="popculture">Media</string>
+    <string name="quotes_motivation">Quotes</string>
+    <string name="science_nature">Science</string>
+    <string name="sports">Sports</string>
+    <string name="technology">Technology</string>
     <string name="select_categories">Select Categories</string>
     <string name="error_player">There was an error initializing the YouTubePlayer (%1$s)</string>
-    <string name="no_internet_available">Kein Internet verfügbar</string>
+    <string name="no_internet_available">Internet not available</string>
     <string name="write">Write</string>
-    <string name="post_reported_message">Post wurde gemeldet.</string>
-    <string name="post_empty_not_allowed">Der Post muss Inhalt haben</string>
+    <string name="post_reported_message">Post reported</string>
+    <string name="post_empty_not_allowed">Empty posts are not allowed</string>
+    <string name="post_send_failure_msg">Sending failed, saved post in Drafts.</string>
 </resources>
